@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人寵配對 - 數據校準專用版 🛠️</title>
+    <!-- 引入 Pico.css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <!-- 引入 TensorFlow.js 同 MobileNet -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
+    <style>
+        body { padding: 20px; text-align: center; max-width: 800px; margin: 0 auto; background-color: #f9f9f9; }
+        .preview-box { 
+            width: 150px; height: 150px; 
+            border: 2px dashed #ccc; 
+            margin: 10px auto; 
+            display: flex; align-items: center; justify-content: center; 
+            overflow: hidden; background: #fff; border-radius: 10px;
+        }
+        img { width: 100%; height: 100%; object-fit: cover; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        
+        /* 校準工具區 */
+        .calibration-zone {
+            background: #fff;
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .slider-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        input[type=range] { flex-grow: 1; }
+        .score-display { font-size: 1.5rem; font-weight: bold; color: #e63946; width: 60px; }
+        
+        #data-log { 
+            margin-top: 20px; 
+            text-align: left; 
+            font-size: 0.8rem; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            background: #eee; 
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <hgroup>
+            <h1>🛠️ 校準數據收集器</h1>
+            <h2>幫 AI 補習：話俾佢知咩叫「似」</h2>
+        </hgroup>
+
+        <!-- 1. 上載區 -->
+        <div class="grid">
+            <div>
+                <div class="preview-box" id="box1">主人</div>
+                <input type="file" id="upload1" accept="image/*" onchange="loadFile(event, 'img1', 'box1')">
+                <img id="img1" style="display:none;" crossorigin="anonymous"> 
+            </div>
+            <div>
+                <div class="preview-box" id="box2">寵物</div>
+                <input type="file" id="upload2" accept="image/*" onchange="loadFile(event, 'img2', 'box2')">
+                <img id="img2" style="display:none;" crossorigin="anonymous">
+            </div>
+        </div>
+
+        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled>🤖 1. 先計算 AI 分數</button>
+        
+        <!-- 2. 人工評分區 (隱藏直到分析完成) -->
+        <div id="calibration-zone" class="calibration-zone" style="display:none;">
+            <h3>👁️ 2. 你覺得有幾似？ (人工評分)</h3>
+            
+            <div style="margin-bottom: 10px;">
+                <strong>AI 原始距離 (Raw Distance): </strong> 
+                <span id="raw-score-display" style="color:blue; font-weight:bold;">---</span>
+            </div>
+
+            <label for="human-score">拉動滑桿評分 (0 = 唔似, 100 = 餅印):</label>
+            <div class="slider-container">
+                <span>0</span>
+                <input type="range" id="human-score" min="0" max="100" value="50" oninput="updateSliderVal(this.value)">
+                <span>100</span>
+                <span id="slider-val" class="score-display">50</span>
+            </div>
+
+            <br>
+            <button onclick="addDataPoint()" class="contrast">📝 3. 記錄這組數據</button>
+        </div>
+
+        <!-- 3. 數據記錄區 -->
+        <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
+            <h4>已收集數據 (<span id="count">0</span> 組)</h4>
+            <pre id="data-log">暫無數據...</pre>
+            <button onclick="downloadCSV()" class="secondary">⬇️ 下載 CSV 檔案 (Send 俾我)</button>
+        </div>
+
+    </main>
+
+    <script>
+        let model;
+        let currentRawScore = null;
+        let dataPoints = []; // 儲存所有數據
+        const btn = document.getElementById('analyzeBtn');
+
+        // 初始化
+        async function loadModel() {
+            btn.innerText = "⏳ 載入模型中...";
+            try {
+                model = await mobilenet.load();
+                console.log("Model Loaded!");
+                btn.innerText = "🤖 1. 計算 AI 分數";
+                btn.disabled = false;
+            } catch (e) {
+                console.error(e);
+                btn.innerText = "⚠️ 模型載入失敗";
+            }
+        }
+        loadModel();
+
+        // 圖片預覽
+        function loadFile(event, imgId, boxId) {
+            const output = document.getElementById(imgId);
+            const box = document.getElementById(boxId);
+            if (event.target.files && event.target.files[0]) {
+                output.src = URL.createObjectURL(event.target.files[0]);
+                output.onload = () => { URL.revokeObjectURL(output.src) }
+                box.innerHTML = ""; 
+                box.appendChild(output.cloneNode());
+                box.children[0].style.display = "block";
+                
+                // Reset UI
+                document.getElementById('calibration-zone').style.display = 'none';
+                currentRawScore = null;
+            }
+        }
+
+        // AI 計算
+        async function analyzeSimilarity() {
+            const img1 = document.getElementById('img1');
+            const img2 = document.getElementById('img2');
+
+            if (!img1.src || !img2.src || img1.src == "" || img2.src == "") {
+                alert("請先上載兩張相！");
+                return;
+            }
+
+            btn.setAttribute("aria-busy", "true");
+            
+            // 延遲少少俾 UI update
+            setTimeout(async () => {
+                try {
+                    const activation1 = model.infer(img1, true);
+                    const activation2 = model.infer(img2, true);
+                    const rawSim = cosineSimilarity(activation1, activation2);
+                    
+                    currentRawScore = rawSim; // 暫存分數
+                    
+                    // 顯示下一步
+                    document.getElementById('calibration-zone').style.display = 'block';
+                    document.getElementById('raw-score-display').innerText = rawSim.toFixed(5);
+                    
+                } catch (error) {
+                    console.error(error);
+                    alert("分析錯誤");
+                }
+                btn.setAttribute("aria-busy", "false");
+            }, 100);
+        }
+
+        // 記錄數據
+        function addDataPoint() {
+            if (currentRawScore === null) return;
+
+            const humanScore = document.getElementById('human-score').value;
+            
+            // 加入 Array
+            dataPoints.push({
+                raw_distance: currentRawScore.toFixed(5),
+                human_score: humanScore,
+                timestamp: new Date().toLocaleTimeString()
+            });
+
+            // 更新畫面 Log
+            updateLogDisplay();
+
+            // 重置 UI 方便下一張
+            alert(`已記錄！\nAI距離: ${currentRawScore.toFixed(4)}\n你俾既分: ${humanScore}`);
+            document.getElementById('calibration-zone').style.display = 'none';
+            document.getElementById('box1').innerText = "預覽圖";
+            document.getElementById('box2').innerText = "預覽圖";
+            document.getElementById('img1').removeAttribute('src');
+            document.getElementById('img2').removeAttribute('src');
+            document.getElementById('upload1').value = "";
+            document.getElementById('upload2').value = "";
+        }
+
+        function updateSliderVal(val) {
+            document.getElementById('slider-val').innerText = val;
+        }
+
+        function updateLogDisplay() {
+            const logDiv = document.getElementById('data-log');
+            document.getElementById('count').innerText = dataPoints.length;
+            
+            // 顯示最新 5 條
+            let html = dataPoints.map((d, i) => 
+                `#${i+1} -> AI: ${d.raw_distance} | 人類: ${d.human_score}%`
+            ).join('\n');
+            logDiv.innerText = html;
+        }
+
+        // 下載 CSV
+        function downloadCSV() {
+            if (dataPoints.length === 0) {
+                alert("無數據點 Download 啊大哥？😅");
+                return;
+            }
+
+            // 製作 CSV 內容
+            let csvContent = "data:text/csv;charset=utf-8,Raw_Distance,Human_Score_Percent\n";
+            dataPoints.forEach(row => {
+                csvContent += `${row.raw_distance},${row.human_score}\n`;
+            });
+
+            // 觸發下載
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "calibration_data.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+
+        function cosineSimilarity(t1, t2) {
+            const v1 = t1.dataSync();
+            const v2 = t2.dataSync();
+            let dotProduct = 0, normA = 0, normB = 0;
+            for (let i = 0; i < v1.length; i++) {
+                dotProduct += v1[i] * v2[i];
+                normA += v1[i] * v1[i];
+                normB += v2[i] * v2[i];
+            }
+            return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        }
+    </script>
+</body>
+</html>
