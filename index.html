@@ -3,135 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人寵配對 - 數據校準 (v1.2) 🛠️</title>
-    <!-- 引入 Pico.css -->
+    <title>🐶 人寵配對分析儀 (官方正式版)</title>
+    <!-- 引入 Pico.css (樣式) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <!-- 引入 TensorFlow.js 同 MobileNet -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <style>
-        body { padding: 20px; text-align: center; max-width: 800px; margin: 0 auto; background-color: #f9f9f9; }
+        body { padding: 20px; text-align: center; max-width: 800px; margin: 0 auto; background-color: #fdfbf7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        h1 { color: #4a4a4a; margin-bottom: 0.5rem; }
+        
         .preview-box { 
-            width: 150px; height: 150px; 
-            border: 2px dashed #ccc; 
+            width: 180px; height: 180px; 
+            border: 3px solid #eee; 
             margin: 10px auto; 
             display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; background: #fff; border-radius: 10px;
+            overflow: hidden; background: #fff; border-radius: 50%; /* 圓形頭像 */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
         }
+        .preview-box:hover { transform: scale(1.05); border-color: #ffb703; }
         img { width: 100%; height: 100%; object-fit: cover; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         
-        /* 校準工具區 */
-        .calibration-zone {
-            background: #fff; border: 2px solid #333; padding: 20px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none;
-        }
-        .slider-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-        input[type=range] { flex-grow: 1; }
-        .score-display { font-size: 1.5rem; font-weight: bold; color: #e63946; width: 60px; }
-        
-        /* 難度選擇按鈕 */
-        .difficulty-group { display: flex; justify-content: space-around; margin-bottom: 20px; text-align: left; }
-        .difficulty-option { cursor: pointer; padding: 10px; border: 1px solid #ddd; border-radius: 8px; flex: 1; margin: 0 5px; text-align: center; }
-        .difficulty-option:hover { background: #f0f0f0; }
-        input[type="radio"] { margin-right: 5px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
 
-        #data-log { margin-top: 20px; text-align: left; font-size: 0.8rem; max-height: 200px; overflow-y: auto; background: #eee; padding: 10px; border-radius: 5px; }
+        /* 結果展示區 */
+        #result-area { 
+            display: none; 
+            margin-top: 30px; 
+            padding: 40px; 
+            background: linear-gradient(135deg, #fff 0%, #fff8e1 100%); 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .score-circle {
+            width: 150px; height: 150px;
+            background: #ffb703;
+            color: #fff;
+            border-radius: 50%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
+        }
+        .score-number { font-size: 3.5rem; font-weight: 800; line-height: 1; }
+        .score-label { font-size: 1rem; opacity: 0.9; }
+        
+        .comment { font-size: 1.2rem; color: #555; font-weight: bold; margin-bottom: 20px; }
+        
+        /* 難度選擇 (簡化版) */
+        .settings-panel { 
+            text-align: left; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; font-size: 0.9rem; border: 1px solid #eee;
+        }
+        details summary { cursor: pointer; color: #888; }
     </style>
 </head>
 <body>
 
     <main class="container">
         <hgroup>
-            <h1>🛠️ 數據校準 v1.2</h1>
-            <h2>加入難度標籤，提升 AI 準確度</h2>
+            <h1>🐶 人寵配對分析儀</h1>
+            <p>AI 幫你測下，你同主子到底有幾似樣？ (100% 私隱保護)</p>
         </hgroup>
 
-        <!-- 1. 上載區 -->
+        <!-- 上載區 -->
         <div class="grid">
             <div>
-                <div class="preview-box" id="box1">主人</div>
-                <input type="file" id="upload1" accept="image/*" onchange="loadFile(event, 'img1', 'box1')">
+                <h3>1. 主人相 👱</h3>
+                <div class="preview-box" id="box1" onclick="document.getElementById('upload1').click()" style="cursor: pointer;">
+                    <span style="color:#ccc; font-size:2rem;">+</span>
+                </div>
+                <input type="file" id="upload1" accept="image/*" onchange="loadFile(event, 'img1', 'box1')" style="display:none;">
+                <button class="outline" onclick="document.getElementById('upload1').click()" style="font-size:0.8rem; padding: 5px 15px;">上載相片</button>
                 <img id="img1" style="display:none;" crossorigin="anonymous"> 
             </div>
             <div>
-                <div class="preview-box" id="box2">寵物</div>
-                <input type="file" id="upload2" accept="image/*" onchange="loadFile(event, 'img2', 'box2')">
+                <h3>2. 寵物相 🐱</h3>
+                <div class="preview-box" id="box2" onclick="document.getElementById('upload2').click()" style="cursor: pointer;">
+                     <span style="color:#ccc; font-size:2rem;">+</span>
+                </div>
+                <input type="file" id="upload2" accept="image/*" onchange="loadFile(event, 'img2', 'box2')" style="display:none;">
+                <button class="outline" onclick="document.getElementById('upload2').click()" style="font-size:0.8rem; padding: 5px 15px;">上載相片</button>
                 <img id="img2" style="display:none;" crossorigin="anonymous">
             </div>
         </div>
 
-        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled>🤖 1. 先計算 AI 分數</button>
+        <!-- 進階設定 (默認收埋) -->
+        <details class="settings-panel">
+            <summary>⚙️ 進階選項 (如戴眼鏡/側面請點此)</summary>
+            <p>如果相片有遮擋 (如戴墨鏡、口罩) 或大側面，請選擇「困難模式」，AI 會調整算法。</p>
+            <label>
+                <input type="checkbox" id="isHardMode"> 
+                <strong>開啟困難模式 (黑超/側面/光線暗)</strong>
+            </label>
+        </details>
+
+        <br>
+        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled style="width: 100%; font-size: 1.2rem; padding: 20px;">🤖 立即分析相似度</button>
         
-        <!-- 2. 人工評分區 -->
-        <div id="calibration-zone" class="calibration-zone">
-            <h3>👁️ 2. 請輸入數據</h3>
-            
-            <div style="margin-bottom: 15px;">
-                <strong>AI 原始距離 (Raw): </strong> 
-                <span id="raw-score-display" style="color:blue; font-weight:bold;">---</span>
+        <!-- 結果展示 -->
+        <div id="result-area">
+            <div class="score-circle">
+                <span class="score-number" id="score">0</span>
+                <span class="score-label">% 相似</span>
             </div>
-
-            <!-- 難度選擇 -->
-            <fieldset>
-                <legend><strong>難度 (Difficulty)</strong></legend>
-                <div class="difficulty-group">
-                    <label class="difficulty-option" style="border-bottom: 3px solid #4CAF50;">
-                        <input type="radio" name="difficulty" value="Easy" checked>
-                        Easy<br><small>(正面/無遮)</small>
-                    </label>
-                    <label class="difficulty-option" style="border-bottom: 3px solid #FFC107;">
-                        <input type="radio" name="difficulty" value="Medium">
-                        Medium<br><small>(輕微/眼鏡)</small>
-                    </label>
-                    <label class="difficulty-option" style="border-bottom: 3px solid #F44336;">
-                        <input type="radio" name="difficulty" value="Hard">
-                        Hard<br><small>(黑超/側面)</small>
-                    </label>
-                </div>
-            </fieldset>
-
-            <!-- 相似度滑桿 -->
-            <label for="human-score"><strong>人眼覺得幾似? (0-100)</strong></label>
-            <div class="slider-container">
-                <span>0</span>
-                <input type="range" id="human-score" min="0" max="100" value="50" oninput="updateSliderVal(this.value)">
-                <span>100</span>
-                <span id="slider-val" class="score-display">50</span>
-            </div>
-
-            <button onclick="addDataPoint()" class="contrast">📝 3. 記錄並下一張</button>
-        </div>
-
-        <!-- 3. 數據記錄區 -->
-        <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
-            <h4>已收集: <span id="count">0</span> 組</h4>
-            <pre id="data-log">暫無數據...</pre>
-            <button onclick="downloadCSV()" class="secondary">⬇️ 下載 CSV (Send 俾我)</button>
+            <div class="comment" id="comment">正在解讀基因密碼...</div>
+            <button onclick="window.location.reload()" class="secondary outline">🔄 再玩一次</button>
+            <br><br>
+            <small style="color:#aaa;">Share to Instagram Story 📸</small>
         </div>
 
     </main>
 
     <script>
         let model;
-        let currentRawScore = null;
-        let dataPoints = [];
         const btn = document.getElementById('analyzeBtn');
 
-        // 初始化
+        // 1. 載入模型
         async function loadModel() {
-            btn.innerText = "⏳ 載入模型中...";
+            console.log("Loading Model...");
             try {
-                model = await mobilenet.load();
+                model = await mobilenet.load(); // 載入 MobileNet
                 console.log("Model Loaded!");
-                btn.innerText = "🤖 1. 計算 AI 分數";
+                btn.innerText = "✨ 立即分析相似度";
                 btn.disabled = false;
             } catch (e) {
                 console.error(e);
-                btn.innerText = "⚠️ 模型載入失敗";
+                btn.innerText = "⚠️ 系統忙碌中，請刷新頁面";
             }
         }
         loadModel();
 
+        // 圖片預覽
         function loadFile(event, imgId, boxId) {
             const output = document.getElementById(imgId);
             const box = document.getElementById(boxId);
@@ -141,15 +147,15 @@
                 box.innerHTML = ""; 
                 box.appendChild(output.cloneNode());
                 box.children[0].style.display = "block";
-                
-                document.getElementById('calibration-zone').style.display = 'none';
-                currentRawScore = null;
+                document.getElementById('result-area').style.display = 'none';
             }
         }
 
+        // 核心邏輯
         async function analyzeSimilarity() {
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
+            const isHardMode = document.getElementById('isHardMode').checked;
 
             if (!img1.src || !img2.src || img1.src == "" || img2.src == "") {
                 alert("請先上載兩張相！");
@@ -157,91 +163,81 @@
             }
 
             btn.setAttribute("aria-busy", "true");
-            
+            btn.innerText = "AI 運算中...";
+
+            // 延遲執行以免卡死 UI
             setTimeout(async () => {
                 try {
+                    // 1. 獲取特徵向量
                     const activation1 = model.infer(img1, true);
                     const activation2 = model.infer(img2, true);
-                    const rawSim = cosineSimilarity(activation1, activation2);
                     
-                    currentRawScore = rawSim;
+                    // 2. 計算原始距離 (0 ~ 1+)
+                    const rawDist = cosineSimilarity(activation1, activation2);
+                    console.log("Raw Distance:", rawDist); // Debug 用
+
+                    // 3. --- 黃金公式 (Golden Formula) ---
+                    // 根據你提供的數據：0.405 是最好 (對應 ~95分)，0.72 是最差 (對應 ~10分)
+                    // 我地用 mapRange 做線性投射
+                    let finalScore = mapRange(rawDist, 0.35, 0.75, 98, 10);
                     
-                    document.getElementById('calibration-zone').style.display = 'block';
-                    document.getElementById('raw-score-display').innerText = rawSim.toFixed(5);
-                    
+                    // 4. 難度懲罰
+                    if (isHardMode) {
+                        // 如果係 Hard Mode，因為 AI 準度下降，我地保守少少，扣分或加分令佢趨向中間值
+                        // 這裡簡單處理：扣 10% 信心分
+                        finalScore = finalScore * 0.9; 
+                    }
+
+                    // 5. 邊界處理 (唔好爆分)
+                    finalScore = Math.round(finalScore);
+                    if (finalScore > 99) finalScore = 99;
+                    if (finalScore < 5) finalScore = Math.floor(Math.random() * 10) + 5; // 俾少少同情分
+
+                    // 6. 顯示結果
+                    showResult(finalScore);
+
                 } catch (error) {
                     console.error(error);
-                    alert("分析錯誤");
+                    alert("分析失敗，請試下用其他相片");
                 }
                 btn.setAttribute("aria-busy", "false");
+                btn.innerText = "✨ 立即分析相似度";
             }, 100);
         }
 
-        function addDataPoint() {
-            if (currentRawScore === null) return;
+        function showResult(score) {
+            const resultArea = document.getElementById('result-area');
+            const scoreText = document.getElementById('score');
+            const commentText = document.getElementById('comment');
 
-            const humanScore = document.getElementById('human-score').value;
-            // 獲取選擇的難度
-            const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+            resultArea.style.display = 'block';
             
-            dataPoints.push({
-                raw_distance: currentRawScore.toFixed(5),
-                human_score: humanScore,
-                difficulty: difficulty, // 新增欄位
-                timestamp: new Date().toLocaleTimeString()
-            });
+            // 數字跳動效果
+            let current = 0;
+            const timer = setInterval(() => {
+                current += 2;
+                if (current >= score) {
+                    current = score;
+                    clearInterval(timer);
+                }
+                scoreText.innerText = current;
+                
+                // 動態評語
+                if(current > 90) commentText.innerText = "😱 天啊！這是失散多年的兄弟吧？";
+                else if(current > 80) commentText.innerText = "❤️ 默契十足！絕對係親生既！";
+                else if(current > 60) commentText.innerText = "😎 眼神有幾分相似，幾有父子相！";
+                else if(current > 40) commentText.innerText = "🤔 外表唔似，但氣質搭夠！";
+                else commentText.innerText = "😂 雖然唔似樣，但愛意係 100% 既！";
+                
+                // 變色
+                if(current > 80) document.querySelector('.score-circle').style.background = "#38b000"; // Green
+                else if(current < 50) document.querySelector('.score-circle').style.background = "#e63946"; // Red
+                else document.querySelector('.score-circle').style.background = "#ffb703"; // Yellow
 
-            updateLogDisplay();
-
-            // Reset UI
-            alert(`已記錄！\n難度: ${difficulty}\nAI距離: ${currentRawScore.toFixed(4)}\n人評: ${humanScore}`);
-            document.getElementById('calibration-zone').style.display = 'none';
-            document.getElementById('box1').innerText = "主人";
-            document.getElementById('box2').innerText = "寵物";
-            document.getElementById('img1').removeAttribute('src');
-            document.getElementById('img2').removeAttribute('src');
-            document.getElementById('upload1').value = "";
-            document.getElementById('upload2').value = "";
-            
-            // 重置滑桿同 Radio
-            document.getElementById('human-score').value = 50;
-            document.getElementById('slider-val').innerText = "50";
-            document.querySelector('input[name="difficulty"][value="Easy"]').checked = true;
+            }, 20);
         }
 
-        function updateSliderVal(val) {
-            document.getElementById('slider-val').innerText = val;
-        }
-
-        function updateLogDisplay() {
-            const logDiv = document.getElementById('data-log');
-            document.getElementById('count').innerText = dataPoints.length;
-            
-            let html = dataPoints.map((d, i) => 
-                `#${i+1} [${d.difficulty}] AI:${d.raw_distance} | 人:${d.human_score}`
-            ).join('\n');
-            logDiv.innerText = html;
-        }
-
-        function downloadCSV() {
-            if (dataPoints.length === 0) {
-                alert("無數據點 Download 啊？");
-                return;
-            }
-            // CSV Header 多左 Difficulty
-            let csvContent = "data:text/csv;charset=utf-8,Raw_Distance,Human_Score,Difficulty\n";
-            dataPoints.forEach(row => {
-                csvContent += `${row.raw_distance},${row.human_score},${row.difficulty}\n`;
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "calibration_data_v1.2.csv");
-            document.body.appendChild(link);
-            link.click();
-        }
-
+        // 數學工具
         function cosineSimilarity(t1, t2) {
             const v1 = t1.dataSync();
             const v2 = t2.dataSync();
@@ -252,6 +248,10 @@
                 normB += v2[i] * v2[i];
             }
             return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        }
+
+        function mapRange(value, low1, high1, low2, high2) {
+            return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
         }
     </script>
 </body>
