@@ -3,141 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 人寵配對分析儀 (官方正式版)</title>
-    <!-- 引入 Pico.css (樣式) -->
+    <title>🐶 人寵配對分析儀 (v2.0 Color Edition)</title>
+    <!-- 引入 Pico.css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <!-- 引入 TensorFlow.js 同 MobileNet -->
+    <!-- 引入 TensorFlow.js & MobileNet -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
+    <!-- 引入 Color Thief (捉色用) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+
     <style>
+        /* (樣式照舊，加少少 Color 顯示) */
         body { padding: 20px; text-align: center; max-width: 800px; margin: 0 auto; background-color: #fdfbf7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        h1 { color: #4a4a4a; margin-bottom: 0.5rem; }
         
         .preview-box { 
             width: 180px; height: 180px; 
-            border: 3px solid #eee; 
-            margin: 10px auto; 
+            border: 3px solid #eee; margin: 10px auto; 
             display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; background: #fff; border-radius: 50%; /* 圓形頭像 */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            overflow: hidden; background: #fff; border-radius: 50%; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative;
         }
-        .preview-box:hover { transform: scale(1.05); border-color: #ffb703; }
         img { width: 100%; height: 100%; object-fit: cover; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-
-        /* 結果展示區 */
-        #result-area { 
-            display: none; 
-            margin-top: 30px; 
-            padding: 40px; 
-            background: linear-gradient(135deg, #fff 0%, #fff8e1 100%); 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* 顏色波波 */
+        .color-dot {
+            width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff;
+            position: absolute; bottom: 0; right: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none; /* 分析後先顯示 */
         }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        
+        #result-area { 
+            display: none; margin-top: 30px; padding: 40px; 
+            background: #fff; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
 
         .score-circle {
-            width: 150px; height: 150px;
-            background: #ffb703;
-            color: #fff;
-            border-radius: 50%;
+            width: 150px; height: 150px; background: #ffb703; color: #fff; border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            margin: 0 auto 20px auto;
-            box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
+            margin: 0 auto 20px auto; box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
         }
         .score-number { font-size: 3.5rem; font-weight: 800; line-height: 1; }
-        .score-label { font-size: 1rem; opacity: 0.9; }
         
-        .comment { font-size: 1.2rem; color: #555; font-weight: bold; margin-bottom: 20px; }
-        
-        /* 難度選擇 (簡化版) */
-        .settings-panel { 
-            text-align: left; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; font-size: 0.9rem; border: 1px solid #eee;
-        }
-        details summary { cursor: pointer; color: #888; }
+        .analysis-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+        .tag { background: #eee; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; color: #555; }
+        .tag.highlight { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+        details { text-align: left; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #eee; }
     </style>
 </head>
 <body>
 
     <main class="container">
-        <hgroup>
-            <h1>🐶 人寵配對分析儀</h1>
-            <p>AI 幫你測下，你同主子到底有幾似樣？ (100% 私隱保護)</p>
-        </hgroup>
+        <h1>🐶 人寵配對分析儀</h1>
+        <p>AI 全方位分析：五官 + 色系 + 神情 (v2.0)</p>
 
-        <!-- 上載區 -->
         <div class="grid">
             <div>
                 <h3>1. 主人相 👱</h3>
-                <div class="preview-box" id="box1" onclick="document.getElementById('upload1').click()" style="cursor: pointer;">
+                <div class="preview-box" id="box1" onclick="document.getElementById('upload1').click()">
                     <span style="color:#ccc; font-size:2rem;">+</span>
+                    <div id="color1" class="color-dot"></div>
                 </div>
                 <input type="file" id="upload1" accept="image/*" onchange="loadFile(event, 'img1', 'box1')" style="display:none;">
-                <button class="outline" onclick="document.getElementById('upload1').click()" style="font-size:0.8rem; padding: 5px 15px;">上載相片</button>
                 <img id="img1" style="display:none;" crossorigin="anonymous"> 
             </div>
             <div>
                 <h3>2. 寵物相 🐱</h3>
-                <div class="preview-box" id="box2" onclick="document.getElementById('upload2').click()" style="cursor: pointer;">
+                <div class="preview-box" id="box2" onclick="document.getElementById('upload2').click()">
                      <span style="color:#ccc; font-size:2rem;">+</span>
+                     <div id="color2" class="color-dot"></div>
                 </div>
                 <input type="file" id="upload2" accept="image/*" onchange="loadFile(event, 'img2', 'box2')" style="display:none;">
-                <button class="outline" onclick="document.getElementById('upload2').click()" style="font-size:0.8rem; padding: 5px 15px;">上載相片</button>
                 <img id="img2" style="display:none;" crossorigin="anonymous">
             </div>
         </div>
 
-        <!-- 進階設定 (默認收埋) -->
-        <details class="settings-panel">
-            <summary>⚙️ 進階選項 (如戴眼鏡/側面請點此)</summary>
-            <p>如果相片有遮擋 (如戴墨鏡、口罩) 或大側面，請選擇「困難模式」，AI 會調整算法。</p>
-            <label>
-                <input type="checkbox" id="isHardMode"> 
-                <strong>開啟困難模式 (黑超/側面/光線暗)</strong>
-            </label>
+        <details>
+            <summary>⚙️ 進階選項</summary>
+            <label><input type="checkbox" id="isHardMode"> 開啟困難模式 (黑超/側面)</label>
         </details>
-
         <br>
-        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled style="width: 100%; font-size: 1.2rem; padding: 20px;">🤖 立即分析相似度</button>
+        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled style="width: 100%; font-size: 1.2rem; padding: 20px;">🤖 立即分析</button>
         
-        <!-- 結果展示 -->
         <div id="result-area">
             <div class="score-circle">
                 <span class="score-number" id="score">0</span>
-                <span class="score-label">% 相似</span>
+                <span>% 相似</span>
             </div>
-            <div class="comment" id="comment">正在解讀基因密碼...</div>
+            <h3 id="comment">正在解讀...</h3>
+            
+            <div class="analysis-tags" id="tags">
+                <!-- 標籤會係度出現 -->
+            </div>
+            
+            <br>
             <button onclick="window.location.reload()" class="secondary outline">🔄 再玩一次</button>
-            <br><br>
-            <small style="color:#aaa;">Share to Instagram Story 📸</small>
         </div>
-
     </main>
 
     <script>
         let model;
+        const colorThief = new ColorThief();
         const btn = document.getElementById('analyzeBtn');
 
-        // 1. 載入模型
         async function loadModel() {
-            console.log("Loading Model...");
             try {
-                model = await mobilenet.load(); // 載入 MobileNet
-                console.log("Model Loaded!");
-                btn.innerText = "✨ 立即分析相似度";
+                model = await mobilenet.load();
+                btn.innerText = "✨ 立即分析";
                 btn.disabled = false;
-            } catch (e) {
-                console.error(e);
-                btn.innerText = "⚠️ 系統忙碌中，請刷新頁面";
-            }
+            } catch (e) { console.error(e); }
         }
         loadModel();
 
-        // 圖片預覽
         function loadFile(event, imgId, boxId) {
             const output = document.getElementById(imgId);
             const box = document.getElementById(boxId);
@@ -147,100 +127,96 @@
                 box.innerHTML = ""; 
                 box.appendChild(output.cloneNode());
                 box.children[0].style.display = "block";
+                
+                // 加番個 Color Dot Container
+                let dot = document.createElement("div");
+                dot.className = "color-dot";
+                dot.id = imgId.replace("img", "color");
+                box.appendChild(dot);
+                
                 document.getElementById('result-area').style.display = 'none';
             }
         }
 
-        // 核心邏輯
         async function analyzeSimilarity() {
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
-            const isHardMode = document.getElementById('isHardMode').checked;
-
-            if (!img1.src || !img2.src || img1.src == "" || img2.src == "") {
-                alert("請先上載兩張相！");
-                return;
-            }
+            
+            if (!img1.src || !img2.src) { alert("請先上載兩張相！"); return; }
 
             btn.setAttribute("aria-busy", "true");
-            btn.innerText = "AI 運算中...";
-
-            // 延遲執行以免卡死 UI
+            
             setTimeout(async () => {
                 try {
-                    // 1. 獲取特徵向量
+                    // 1. MobileNet 分析 (五官/輪廓)
                     const activation1 = model.infer(img1, true);
                     const activation2 = model.infer(img2, true);
-                    
-                    // 2. 計算原始距離 (0 ~ 1+)
                     const rawDist = cosineSimilarity(activation1, activation2);
-                    console.log("Raw Distance:", rawDist); // Debug 用
-
-                    // 3. --- 黃金公式 (Golden Formula) ---
-                    // 根據你提供的數據：0.405 是最好 (對應 ~95分)，0.72 是最差 (對應 ~10分)
-                    // 我地用 mapRange 做線性投射
-                    let finalScore = mapRange(rawDist, 0.35, 0.75, 98, 10);
                     
-                    // 4. 難度懲罰
-                    if (isHardMode) {
-                        // 如果係 Hard Mode，因為 AI 準度下降，我地保守少少，扣分或加分令佢趨向中間值
-                        // 這裡簡單處理：扣 10% 信心分
-                        finalScore = finalScore * 0.9; 
+                    // 2. 顏色分析 (Color Match)
+                    const c1 = colorThief.getColor(img1); // [R, G, B]
+                    const c2 = colorThief.getColor(img2);
+                    
+                    // 顯示捉到既色
+                    document.getElementById('color1').style.background = `rgb(${c1.join(',')})`;
+                    document.getElementById('color1').style.display = 'block';
+                    document.getElementById('color2').style.background = `rgb(${c2.join(',')})`;
+                    document.getElementById('color2').style.display = 'block';
+                    
+                    // 計算色差 (簡單版 Euclidean distance)
+                    const colorDist = Math.sqrt(
+                        Math.pow(c1[0]-c2[0], 2) + 
+                        Math.pow(c1[1]-c2[1], 2) + 
+                        Math.pow(c1[2]-c2[2], 2)
+                    );
+                    const isColorMatch = colorDist < 60; // 60以下算似色
+                    
+                    // 3. 計分 (Base Score)
+                    // 用番你個 0-80 邏輯
+                    let score = mapRange(rawDist, 0.35, 0.75, 100, 10);
+                    
+                    // 4. 加分 (Bonus)
+                    let bonusMsg = [];
+                    if (isColorMatch) {
+                        score += 5; // 撞色加 5 分
+                        bonusMsg.push("🎨 色系超襯");
                     }
+                    if (document.getElementById('isHardMode').checked) score *= 0.9;
+                    
+                    // 5. 封頂
+                    score = Math.min(99, Math.max(10, Math.round(score)));
 
-                    // 5. 邊界處理 (唔好爆分)
-                    finalScore = Math.round(finalScore);
-                    if (finalScore > 99) finalScore = 99;
-                    if (finalScore < 5) finalScore = Math.floor(Math.random() * 10) + 5; // 俾少少同情分
+                    // 6. 顯示
+                    showResult(score, bonusMsg);
 
-                    // 6. 顯示結果
-                    showResult(finalScore);
-
-                } catch (error) {
-                    console.error(error);
-                    alert("分析失敗，請試下用其他相片");
-                }
+                } catch (error) { console.error(error); alert("分析失敗"); }
                 btn.setAttribute("aria-busy", "false");
-                btn.innerText = "✨ 立即分析相似度";
             }, 100);
         }
 
-        function showResult(score) {
-            const resultArea = document.getElementById('result-area');
-            const scoreText = document.getElementById('score');
-            const commentText = document.getElementById('comment');
-
-            resultArea.style.display = 'block';
+        function showResult(score, tags) {
+            document.getElementById('result-area').style.display = 'block';
+            document.getElementById('score').innerText = score;
             
-            // 數字跳動效果
-            let current = 0;
-            const timer = setInterval(() => {
-                current += 2;
-                if (current >= score) {
-                    current = score;
-                    clearInterval(timer);
-                }
-                scoreText.innerText = current;
-                
-                // 動態評語
-                if(current > 90) commentText.innerText = "😱 天啊！這是失散多年的兄弟吧？";
-                else if(current > 80) commentText.innerText = "❤️ 默契十足！絕對係親生既！";
-                else if(current > 60) commentText.innerText = "😎 眼神有幾分相似，幾有父子相！";
-                else if(current > 40) commentText.innerText = "🤔 外表唔似，但氣質搭夠！";
-                else commentText.innerText = "😂 雖然唔似樣，但愛意係 100% 既！";
-                
-                // 變色
-                if(current > 80) document.querySelector('.score-circle').style.background = "#38b000"; // Green
-                else if(current < 50) document.querySelector('.score-circle').style.background = "#e63946"; // Red
-                else document.querySelector('.score-circle').style.background = "#ffb703"; // Yellow
+            // 評語
+            const comment = document.getElementById('comment');
+            if(score > 90) comment.innerText = "😱 失散多年既親人！";
+            else if(score > 75) comment.innerText = "❤️ 默契十足，天生一對！";
+            else if(score > 60) comment.innerText = "😎 幾有父子/母女相！";
+            else comment.innerText = "😂 雖然唔似，但勝在有愛！";
 
-            }, 20);
+            // Tags
+            const tagContainer = document.getElementById('tags');
+            tagContainer.innerHTML = "";
+            tags.forEach(t => {
+                tagContainer.innerHTML += `<span class="tag highlight">${t}</span>`;
+            });
+            if (score > 80) tagContainer.innerHTML += `<span class="tag">✨ 完美契合</span>`;
+            tagContainer.innerHTML += `<span class="tag">🧬 基因分析完成</span>`;
         }
 
-        // 數學工具
         function cosineSimilarity(t1, t2) {
-            const v1 = t1.dataSync();
-            const v2 = t2.dataSync();
+            const v1 = t1.dataSync(); const v2 = t2.dataSync();
             let dotProduct = 0, normA = 0, normB = 0;
             for (let i = 0; i < v1.length; i++) {
                 dotProduct += v1[i] * v2[i];
