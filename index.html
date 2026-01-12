@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人寵配對 - 數據校準專用版 🛠️</title>
+    <title>人寵配對 - 數據校準 (v1.2) 🛠️</title>
     <!-- 引入 Pico.css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <!-- 引入 TensorFlow.js 同 MobileNet -->
@@ -23,35 +23,27 @@
         
         /* 校準工具區 */
         .calibration-zone {
-            background: #fff;
-            border: 2px solid #333;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: #fff; border: 2px solid #333; padding: 20px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none;
         }
-        .slider-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .slider-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
         input[type=range] { flex-grow: 1; }
         .score-display { font-size: 1.5rem; font-weight: bold; color: #e63946; width: 60px; }
         
-        #data-log { 
-            margin-top: 20px; 
-            text-align: left; 
-            font-size: 0.8rem; 
-            max-height: 200px; 
-            overflow-y: auto; 
-            background: #eee; 
-            padding: 10px;
-            border-radius: 5px;
-        }
+        /* 難度選擇按鈕 */
+        .difficulty-group { display: flex; justify-content: space-around; margin-bottom: 20px; text-align: left; }
+        .difficulty-option { cursor: pointer; padding: 10px; border: 1px solid #ddd; border-radius: 8px; flex: 1; margin: 0 5px; text-align: center; }
+        .difficulty-option:hover { background: #f0f0f0; }
+        input[type="radio"] { margin-right: 5px; }
+
+        #data-log { margin-top: 20px; text-align: left; font-size: 0.8rem; max-height: 200px; overflow-y: auto; background: #eee; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
     <main class="container">
         <hgroup>
-            <h1>🛠️ 校準數據收集器</h1>
-            <h2>幫 AI 補習：話俾佢知咩叫「似」</h2>
+            <h1>🛠️ 數據校準 v1.2</h1>
+            <h2>加入難度標籤，提升 AI 準確度</h2>
         </hgroup>
 
         <!-- 1. 上載區 -->
@@ -70,16 +62,36 @@
 
         <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled>🤖 1. 先計算 AI 分數</button>
         
-        <!-- 2. 人工評分區 (隱藏直到分析完成) -->
-        <div id="calibration-zone" class="calibration-zone" style="display:none;">
-            <h3>👁️ 2. 你覺得有幾似？ (人工評分)</h3>
+        <!-- 2. 人工評分區 -->
+        <div id="calibration-zone" class="calibration-zone">
+            <h3>👁️ 2. 請輸入數據</h3>
             
-            <div style="margin-bottom: 10px;">
-                <strong>AI 原始距離 (Raw Distance): </strong> 
+            <div style="margin-bottom: 15px;">
+                <strong>AI 原始距離 (Raw): </strong> 
                 <span id="raw-score-display" style="color:blue; font-weight:bold;">---</span>
             </div>
 
-            <label for="human-score">拉動滑桿評分 (0 = 唔似, 100 = 餅印):</label>
+            <!-- 難度選擇 -->
+            <fieldset>
+                <legend><strong>難度 (Difficulty)</strong></legend>
+                <div class="difficulty-group">
+                    <label class="difficulty-option" style="border-bottom: 3px solid #4CAF50;">
+                        <input type="radio" name="difficulty" value="Easy" checked>
+                        Easy<br><small>(正面/無遮)</small>
+                    </label>
+                    <label class="difficulty-option" style="border-bottom: 3px solid #FFC107;">
+                        <input type="radio" name="difficulty" value="Medium">
+                        Medium<br><small>(輕微/眼鏡)</small>
+                    </label>
+                    <label class="difficulty-option" style="border-bottom: 3px solid #F44336;">
+                        <input type="radio" name="difficulty" value="Hard">
+                        Hard<br><small>(黑超/側面)</small>
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- 相似度滑桿 -->
+            <label for="human-score"><strong>人眼覺得幾似? (0-100)</strong></label>
             <div class="slider-container">
                 <span>0</span>
                 <input type="range" id="human-score" min="0" max="100" value="50" oninput="updateSliderVal(this.value)">
@@ -87,15 +99,14 @@
                 <span id="slider-val" class="score-display">50</span>
             </div>
 
-            <br>
-            <button onclick="addDataPoint()" class="contrast">📝 3. 記錄這組數據</button>
+            <button onclick="addDataPoint()" class="contrast">📝 3. 記錄並下一張</button>
         </div>
 
         <!-- 3. 數據記錄區 -->
         <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
-            <h4>已收集數據 (<span id="count">0</span> 組)</h4>
+            <h4>已收集: <span id="count">0</span> 組</h4>
             <pre id="data-log">暫無數據...</pre>
-            <button onclick="downloadCSV()" class="secondary">⬇️ 下載 CSV 檔案 (Send 俾我)</button>
+            <button onclick="downloadCSV()" class="secondary">⬇️ 下載 CSV (Send 俾我)</button>
         </div>
 
     </main>
@@ -103,7 +114,7 @@
     <script>
         let model;
         let currentRawScore = null;
-        let dataPoints = []; // 儲存所有數據
+        let dataPoints = [];
         const btn = document.getElementById('analyzeBtn');
 
         // 初始化
@@ -121,7 +132,6 @@
         }
         loadModel();
 
-        // 圖片預覽
         function loadFile(event, imgId, boxId) {
             const output = document.getElementById(imgId);
             const box = document.getElementById(boxId);
@@ -132,13 +142,11 @@
                 box.appendChild(output.cloneNode());
                 box.children[0].style.display = "block";
                 
-                // Reset UI
                 document.getElementById('calibration-zone').style.display = 'none';
                 currentRawScore = null;
             }
         }
 
-        // AI 計算
         async function analyzeSimilarity() {
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
@@ -150,16 +158,14 @@
 
             btn.setAttribute("aria-busy", "true");
             
-            // 延遲少少俾 UI update
             setTimeout(async () => {
                 try {
                     const activation1 = model.infer(img1, true);
                     const activation2 = model.infer(img2, true);
                     const rawSim = cosineSimilarity(activation1, activation2);
                     
-                    currentRawScore = rawSim; // 暫存分數
+                    currentRawScore = rawSim;
                     
-                    // 顯示下一步
                     document.getElementById('calibration-zone').style.display = 'block';
                     document.getElementById('raw-score-display').innerText = rawSim.toFixed(5);
                     
@@ -171,31 +177,36 @@
             }, 100);
         }
 
-        // 記錄數據
         function addDataPoint() {
             if (currentRawScore === null) return;
 
             const humanScore = document.getElementById('human-score').value;
+            // 獲取選擇的難度
+            const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
             
-            // 加入 Array
             dataPoints.push({
                 raw_distance: currentRawScore.toFixed(5),
                 human_score: humanScore,
+                difficulty: difficulty, // 新增欄位
                 timestamp: new Date().toLocaleTimeString()
             });
 
-            // 更新畫面 Log
             updateLogDisplay();
 
-            // 重置 UI 方便下一張
-            alert(`已記錄！\nAI距離: ${currentRawScore.toFixed(4)}\n你俾既分: ${humanScore}`);
+            // Reset UI
+            alert(`已記錄！\n難度: ${difficulty}\nAI距離: ${currentRawScore.toFixed(4)}\n人評: ${humanScore}`);
             document.getElementById('calibration-zone').style.display = 'none';
-            document.getElementById('box1').innerText = "預覽圖";
-            document.getElementById('box2').innerText = "預覽圖";
+            document.getElementById('box1').innerText = "主人";
+            document.getElementById('box2').innerText = "寵物";
             document.getElementById('img1').removeAttribute('src');
             document.getElementById('img2').removeAttribute('src');
             document.getElementById('upload1').value = "";
             document.getElementById('upload2').value = "";
+            
+            // 重置滑桿同 Radio
+            document.getElementById('human-score').value = 50;
+            document.getElementById('slider-val').innerText = "50";
+            document.querySelector('input[name="difficulty"][value="Easy"]').checked = true;
         }
 
         function updateSliderVal(val) {
@@ -206,31 +217,27 @@
             const logDiv = document.getElementById('data-log');
             document.getElementById('count').innerText = dataPoints.length;
             
-            // 顯示最新 5 條
             let html = dataPoints.map((d, i) => 
-                `#${i+1} -> AI: ${d.raw_distance} | 人類: ${d.human_score}%`
+                `#${i+1} [${d.difficulty}] AI:${d.raw_distance} | 人:${d.human_score}`
             ).join('\n');
             logDiv.innerText = html;
         }
 
-        // 下載 CSV
         function downloadCSV() {
             if (dataPoints.length === 0) {
-                alert("無數據點 Download 啊大哥？😅");
+                alert("無數據點 Download 啊？");
                 return;
             }
-
-            // 製作 CSV 內容
-            let csvContent = "data:text/csv;charset=utf-8,Raw_Distance,Human_Score_Percent\n";
+            // CSV Header 多左 Difficulty
+            let csvContent = "data:text/csv;charset=utf-8,Raw_Distance,Human_Score,Difficulty\n";
             dataPoints.forEach(row => {
-                csvContent += `${row.raw_distance},${row.human_score}\n`;
+                csvContent += `${row.raw_distance},${row.human_score},${row.difficulty}\n`;
             });
 
-            // 觸發下載
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "calibration_data.csv");
+            link.setAttribute("download", "calibration_data_v1.2.csv");
             document.body.appendChild(link);
             link.click();
         }
