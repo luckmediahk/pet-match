@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 人寵配對 v3.2</title>
+    <title>🐶 人寵配對 v3.3</title>
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <!-- AI Libraries -->
@@ -17,54 +17,38 @@
         
         .preview-box { 
             width: 180px; height: 180px; 
-            border: 3px solid #eee; margin: 30px auto; /* 加大 margin 避開 bubble */
+            border: 3px solid #eee; margin: 30px auto; 
             position: relative; cursor: pointer;
             background: #fff; border-radius: 50%; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* 圖片容器 (負責圓形切割) */
         .img-container {
             width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
         img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 漫畫式 Bubble (絕對定位，飛出框外) */
+        /* 漫畫式 Bubble */
         .bubble {
             background: #fff; color: #333; padding: 10px 15px; border-radius: 15px;
             font-size: 0.8rem; font-weight: bold; line-height: 1.4;
-            position: absolute; top: -50px; right: -70px; /* 飛去右上角 */
-            width: 150px; z-index: 100;
-            display: none; 
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.15);
-            border: 2px solid #333;
-            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none; /* 唔好阻住撳相 */
+            position: absolute; top: -50px; right: -70px; 
+            width: 150px; z-index: 100; display: none; 
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.15); border: 2px solid #333;
+            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
         }
-        /* Bubble 尾巴 */
-        .bubble::after {
-            content: ''; position: absolute; bottom: -10px; left: 20px;
-            border-width: 12px 10px 0; border-style: solid; 
-            border-color: #333 transparent; display: block; width: 0;
-        }
-        .bubble::before {
-            content: ''; position: absolute; bottom: -6px; left: 23px;
-            border-width: 9px 7px 0; border-style: solid; 
-            border-color: #fff transparent; display: block; width: 0; z-index: 1;
-        }
+        .bubble::after { content: ''; position: absolute; bottom: -10px; left: 20px; border-width: 12px 10px 0; border-style: solid; border-color: #333 transparent; display: block; width: 0; }
+        .bubble::before { content: ''; position: absolute; bottom: -6px; left: 23px; border-width: 9px 7px 0; border-style: solid; border-color: #fff transparent; display: block; width: 0; z-index: 1; }
 
         @keyframes popUp { from { transform: scale(0) rotate(-10deg); opacity: 0; } to { transform: scale(1) rotate(0deg); opacity: 1; } }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 20px; }
-        
         #result-area { display: none; margin-top: 30px; padding: 40px; background: #fff; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .score-circle { width: 150px; height: 150px; background: #ffb703; color: #fff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px auto; }
         .score-number { font-size: 3.5rem; font-weight: 800; line-height: 1; }
-        
         .tag { background: #eee; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; color: #555; margin: 5px; display:inline-block;}
         .tag.highlight { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        
         #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
     </style>
 </head>
@@ -76,8 +60,8 @@
     </div>
 
     <main class="container">
-        <h1>🐶 人寵配對 v3.2</h1>
-        <p>智能偵測 + 超寬容品種識別</p>
+        <h1>🐶 人寵配對 v3.3</h1>
+        <p>智能偵測 + 反欺騙系統</p>
 
         <div class="grid">
             <!-- 主人相 -->
@@ -92,7 +76,6 @@
                 </div>
                 <input type="file" id="upload1" accept="image/*" onchange="checkHuman(event)" style="display:none;">
             </div>
-            
             <!-- 狗狗相 -->
             <div>
                 <h3>2. 狗狗相 🐶</h3>
@@ -128,11 +111,9 @@
         let humanStatus = { isHard: false };
         let dogStatus = { isHard: false };
 
-        // 擴充版狗狗白名單 (包埋毛毛野)
         const DOG_KEYWORDS = [
             'dog', 'terrier', 'retriever', 'spaniel', 'hound', 'corgi', 'poodle', 'shepherd', 'husky', 'beagle', 'bulldog', 'dalmatian', 'pug', 'collie', 'malamute', 'schnauzer', 'chihuahua', 'shiba', 'akita', 'pomeranian', 'boxer', 'rottweiler', 'doberman', 'pinscher', 'dane', 'mastiff', 'bernese', 'newfoundland', 'samoyed', 'spitz', 'whippet', 'greyhound', 'vizsla', 'weimaraner', 'pointer', 'setter', 'labrador', 'maltese', 'papillon', 'pekinese', 'shih-tzu', 'bichon', 'frise',
-            'wolf', 'fox', 'coyote', // 犬科
-            'teddy', 'toy', 'wool', 'wig', 'bear' // 誤判補救關鍵字
+            'wolf', 'fox', 'coyote', 'teddy', 'toy', 'wool', 'wig', 'bear'
         ];
 
         async function initAI() {
@@ -145,6 +126,7 @@
         }
         initAI();
 
+        // 2. 檢查人類相 (雙重驗證: FaceAPI + MobileNet)
         async function checkHuman(event) {
             await loadFile(event, 'img1', 'box1', 'bubble1');
             const img = document.getElementById('img1');
@@ -154,11 +136,24 @@
             btn.disabled = true;
 
             setTimeout(async () => {
+                // Check 1: MobileNet 睇下係咪動物
+                const predictions = await mobilenetModel.classify(img);
+                const isAnimal = predictions.some(p => {
+                    const k = p.className.toLowerCase();
+                    return DOG_KEYWORDS.some(dk => k.includes(dk)) || k.includes('cat') || k.includes('bird');
+                });
+
+                if (isAnimal) {
+                    showBubble(bubble, "🐶 喂喂！呢邊係放主人相架！", true, true);
+                    return; // Block
+                }
+
+                // Check 2: FaceAPI 搵人臉
                 const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
                 
                 if (!detection) {
                     showBubble(bubble, "🤔 搵唔到人樣喎？你係咪隱形俠？", true, true);
-                    return; // 嚴重錯誤，唔俾玩
+                    return;
                 }
 
                 const landmarks = detection.landmarks;
@@ -197,14 +192,10 @@
             btn.disabled = true;
 
             setTimeout(async () => {
-                // 拎 Top 5 predictions 增加命中率
                 const predictions = await mobilenetModel.classify(img, 5); 
-                console.log(predictions); // Debug 用
-                
                 let isDog = false;
                 let detectedBreed = "";
 
-                // 檢查有無中關鍵字
                 for (let p of predictions) {
                     const className = p.className.toLowerCase();
                     if (DOG_KEYWORDS.some(k => className.includes(k))) {
@@ -215,11 +206,9 @@
                 }
 
                 if (!isDog) {
-                    // Soft Warning: 唔肯定係咪狗，但唔 Block，照俾玩
-                    // 用黃色字提示
                     showBubble(bubble, "🐶 唔太似狗喎... 不過我地照試下啦！", true, false);
-                    dogStatus.isHard = true; // 當 Hard Mode 處理 (扣分)
-                    checkReady(); // 照樣 Unlock
+                    dogStatus.isHard = true;
+                    checkReady();
                 } else {
                     showBubble(bubble, `✅ 收到！係一隻可愛的 ${detectedBreed}`, false, false);
                     checkReady();
@@ -227,7 +216,6 @@
             }, 500);
         }
 
-        // isError = 紅色字 + 禁止, isWarning = 黃色/紅色字 + 允許
         function showBubble(el, msg, isWarning, isError) {
             el.innerText = msg;
             el.style.display = 'block';
@@ -236,12 +224,12 @@
                 el.style.border = '2px solid #d32f2f';
                 el.style.color = '#d32f2f';
             } else if (isWarning) {
-                el.style.border = '2px solid #fbc02d'; // 黃色
+                el.style.border = '2px solid #fbc02d';
                 el.style.color = '#f57f17';
                 if (el.id === 'bubble1') humanStatus.isHard = true;
                 if (el.id === 'bubble2') dogStatus.isHard = true;
             } else {
-                el.style.border = '2px solid #2e7d32'; // 綠色
+                el.style.border = '2px solid #2e7d32';
                 el.style.color = '#2e7d32';
             }
         }
@@ -262,10 +250,16 @@
         }
 
         function checkReady() {
+            // 檢查 Bubble 係咪紅色 Error
+            const bubble1 = document.getElementById('bubble1');
+            const bubble2 = document.getElementById('bubble2');
+            const isErr1 = bubble1.style.borderColor === 'rgb(211, 47, 47)'; // red color check
+            
+            // 確保兩張圖都有，而且無 Error
             const img1Vis = document.getElementById('img1').style.display === 'block';
             const img2Vis = document.getElementById('img2').style.display === 'block';
-            // 只要有圖就俾玩，Error Logic 已經在 showBubble 處理左
-            if (img1Vis && img2Vis) btn.disabled = false;
+            
+            if (img1Vis && img2Vis && !isErr1) btn.disabled = false;
         }
         
         function getBrightness(image) {
