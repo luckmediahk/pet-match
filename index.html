@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 人寵配對 v4.2</title>
+    <title>🐶 人寵配對 v4.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
@@ -25,13 +25,11 @@
         p.subtitle { color: #8E9AAF; font-size: 0.9rem; margin-top: 0; }
 
         .preview-box { 
-            width: 160px; height: 160px; 
-            border: 4px solid #fff; outline: 3px dashed #ddd; margin: 20px auto; 
+            width: 140px; height: 140px; 
+            border: 4px solid #fff; outline: 3px dashed #ddd; margin: 10px auto; 
             position: relative; cursor: pointer;
             background: #f0f0f0; border-radius: 50%; 
-            transition: transform 0.2s;
         }
-        .preview-box:active { transform: scale(0.95); }
         .img-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         img { width: 100%; height: 100%; object-fit: cover; }
         
@@ -40,31 +38,44 @@
             font-size: 0.8rem; font-weight: bold; position: absolute; top: -50px; right: -70px; width: 150px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid #333; display: none; z-index: 100;
         }
-        /* Bubble arrow */
-        .bubble::after { content: ''; position: absolute; bottom: -10px; left: 20px; border-width: 12px 10px 0; border-style: solid; border-color: #333 transparent; display: block; width: 0; }
 
-        .grid { display: flex; justify-content: space-around; gap: 10px; margin: 30px 0; }
+        .grid { display: flex; justify-content: space-around; gap: 10px; margin: 20px 0; }
         
-        button#analyzeBtn {
+        button.action-btn {
             background: var(--secondary); color: white; border: none; padding: 15px 40px;
             font-size: 1.2rem; border-radius: 50px; cursor: pointer; width: 100%;
             font-family: 'Fredoka', sans-serif; box-shadow: 0 5px 15px rgba(33, 158, 188, 0.4);
             transition: all 0.3s;
         }
-        button#analyzeBtn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        button.action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
         
+        /* Personality Check Modal */
+        #personality-check {
+            display: none; background: #E0F7FA; padding: 20px; border-radius: 20px; text-align: center; margin-top: 20px; border: 2px solid #B2EBF2;
+        }
+        .trait-tags { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 15px 0; }
+        .trait-tag {
+            background: #fff; border: 2px solid #ddd; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; color: #777; transition: all 0.2s;
+        }
+        .trait-tag.active {
+            background: #FFB703; border-color: #FB8500; color: #fff; transform: scale(1.1); box-shadow: 0 5px 10px rgba(255, 183, 3, 0.4);
+        }
+        
+        /* Result Card */
         #result-card {
             display: none; margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%);
             border-radius: 20px; border: 1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            text-align: center; position: relative; overflow: hidden;
+            text-align: center;
         }
-        
-        .score-big { font-size: 5rem; font-weight: 800; color: var(--secondary); line-height: 1; margin: 10px 0; text-shadow: 2px 2px 0px #eee; }
+        .score-big { font-size: 5rem; font-weight: 800; color: var(--secondary); line-height: 1; margin: 10px 0; }
         .verdict { font-size: 1.3rem; font-weight: bold; color: #FB8500; margin-bottom: 20px; }
         
-        .detail-section { background: #f7f7f7; padding: 15px; border-radius: 15px; margin: 20px 0; text-align: left; }
-        .detail-item { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 0.9rem; }
-        .detail-item .emoji { font-size: 1.5rem; }
+        /* Progress Bars */
+        .stat-row { display: flex; align-items: center; margin-bottom: 12px; font-size: 0.9rem; }
+        .stat-label { width: 100px; text-align: right; margin-right: 10px; font-weight: bold; color: #555; }
+        .progress-bg { flex-grow: 1; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #219EBC; width: 0%; transition: width 1s ease-out; }
+        .stat-val { width: 40px; text-align: left; margin-left: 10px; color: #888; }
         
         #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
     </style>
@@ -77,11 +88,10 @@
     </div>
 
     <div class="container">
-        <h1>🐾 人寵配對 v4.2</h1>
-        <p class="subtitle">AI 智能分析 • 看看你們有多似樣？</p>
+        <h1>🐾 人寵配對 v4.3</h1>
+        <p class="subtitle">AI 智能分析 • 性格深度配對</p>
 
         <div class="grid">
-            <!-- 主人相 -->
             <div style="text-align:center;">
                 <span style="font-size:1.5rem;">👱</span>
                 <div class="preview-box" id="box1" onclick="document.getElementById('upload1').click()">
@@ -93,7 +103,6 @@
                 </div>
                 <input type="file" id="upload1" accept="image/*" onchange="checkHuman(event)" style="display:none;">
             </div>
-            <!-- 狗狗相 -->
             <div style="text-align:center;">
                 <span style="font-size:1.5rem;">🐶</span>
                 <div class="preview-box" id="box2" onclick="document.getElementById('upload2').click()">
@@ -107,24 +116,50 @@
             </div>
         </div>
 
-        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled>✨ 立即分析</button>
+        <!-- Step 1 Button -->
+        <button id="preAnalyzeBtn" class="action-btn" onclick="preAnalyze()" disabled>✨ 立即分析</button>
+
+        <!-- Step 2: Personality Check -->
+        <div id="personality-check">
+            <h3>🐶 發現品種：<span id="breed-name" style="color:#FB8500;">...</span></h3>
+            <p>佢係咪有以下特徵？(點擊確認)</p>
+            <div class="trait-tags" id="trait-container">
+                <!-- Tags will be injected here -->
+            </div>
+            <button class="action-btn" onclick="finalAnalyze()" style="background:#FFB703; color:#000; margin-top:15px;">✅ 係呀！出報告！</button>
+        </div>
         
+        <!-- Step 3: Result -->
         <div id="result-card">
-            <p style="color:#888; margin:0;">相似度分析結果</p>
+            <p style="color:#888; margin:0;">AI 深度分析結果</p>
             <div class="score-big"><span id="score">0</span>%</div>
             <div class="verdict" id="comment">...</div>
             
-            <div class="detail-section">
-                <div style="font-weight:bold; margin-bottom:10px; color:#555;">📊 AI 分析報告</div>
-                <div id="details"></div>
+            <div style="background:#f9f9f9; padding:20px; border-radius:15px; margin-top:20px;">
+                <h4 style="margin-top:0; color:#555;">📊 AI 分析報告</h4>
+                
+                <div class="stat-row">
+                    <div class="stat-label">👀 五官神韻</div>
+                    <div class="progress-bg"><div class="progress-fill" id="bar1"></div></div>
+                    <div class="stat-val" id="val1">0%</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-label">🎨 毛色髮色</div>
+                    <div class="progress-bg"><div class="progress-fill" id="bar2"></div></div>
+                    <div class="stat-val" id="val2">0%</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-label">🧠 氣場相近</div>
+                    <div class="progress-bg"><div class="progress-fill" id="bar3"></div></div>
+                    <div class="stat-val" id="val3">0%</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-label">🤝 性格加成</div>
+                    <div class="progress-bg"><div class="progress-fill" id="bar4" style="background:#FFB703;"></div></div>
+                    <div class="stat-val" id="val4">0%</div>
+                </div>
             </div>
             
-            <div style="margin-top:20px; padding-top:20px; border-top:1px dashed #ddd; display:flex; justify-content:center; gap:20px;">
-                <!-- 修正了這裏的 ID 邏輯，確保圖片能顯示 -->
-                <img id="res-img1" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-                <img id="res-img2" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-            </div>
-
             <div style="font-size:0.8rem; color:#999; margin-top:20px;">
                 📸 Cap 圖 Share 去 IG Story 啦！
             </div>
@@ -136,7 +171,19 @@
     <script>
         let mobilenetModel, cocoSsdModel;
         const colorThief = new ColorThief();
-        let img1Data = {name:'', size:0}, img2Data = {name:'', size:0}; // Seed data
+        let currentBreed = "";
+        let personalityScore = 0;
+        let img1Data = {name:'', size:0}, img2Data = {name:'', size:0};
+
+        // Breed Data (Traits)
+        const breedTraits = {
+            'retriever': ['熱情 ❤️', '為食 🍖', '黐身 🤗'],
+            'poodle': ['聰明 🧠', '活潑 🎾', '有潔癖 ✨'],
+            'terrier': ['硬頸 😤', '好動 ⚡', '勇敢 🦁'],
+            'husky': ['拆家 🏚️', '表情包 🤪', '多野講 🗣️'],
+            'pug': ['愛訓覺 💤', '打鼻鼾 🔊', '樂觀 😄'],
+            'default': ['可愛 🥰', '乖巧 😇', '貪玩 🎾']
+        };
 
         async function initAI() {
             try {
@@ -147,17 +194,13 @@
         }
         initAI();
 
-        // Load File function (Bug Fix: Remove revokeObjectURL)
         function loadFile(event, imgId, boxId) {
             return new Promise(resolve => {
                 const output = document.getElementById(imgId);
                 const file = event.target.files[0];
                 if (file) {
-                    // Save metadata for seed
                     if(imgId === 'img1') img1Data = { name: file.name, size: file.size };
                     if(imgId === 'img2') img2Data = { name: file.name, size: file.size };
-
-                    // IMPORTANT: Do NOT revoke URL here, need it for result card later
                     output.src = URL.createObjectURL(file);
                     output.onload = () => { resolve(); }
                     output.style.display = 'block';
@@ -171,16 +214,12 @@
             const img = document.getElementById('img1');
             const bubble = document.getElementById('bubble1');
             bubble.style.display = 'none';
-
-            // Real Check Logic Back!
             setTimeout(async () => {
                 if (!cocoSsdModel) return;
                 const detections = await cocoSsdModel.detect(img);
-                
                 const hasDog = detections.some(d => d.class === 'dog' && d.score > 0.4);
                 if (hasDog) { showBubble(bubble, "🐶 喂喂！呢邊係放主人相架！", true); }
                 else { showBubble(bubble, "✅ 這張相好正！", false); }
-                
                 checkReady();
             }, 300);
         }
@@ -190,18 +229,14 @@
             const img = document.getElementById('img2');
             const bubble = document.getElementById('bubble2');
             bubble.style.display = 'none';
-
             setTimeout(async () => {
                 if (!cocoSsdModel) return;
                 const detections = await cocoSsdModel.detect(img);
-                
                 const hasPerson = detections.some(d => d.class === 'person' && d.score > 0.5);
                 const hasCat = detections.some(d => d.class === 'cat' && d.score > 0.4);
-
                 if (hasPerson) { showBubble(bubble, "🐶 主子獨照好啲喎！", true); }
                 else if (hasCat) { showBubble(bubble, "🐱 喵？呢度係狗狗專區喎！", true); }
                 else { showBubble(bubble, "✅ 收到！確認係狗狗！", false); }
-
                 checkReady();
             }, 300);
         }
@@ -216,78 +251,106 @@
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
             if (img1.style.display === 'block' && img2.style.display === 'block') {
-                document.getElementById('analyzeBtn').disabled = false;
+                document.getElementById('preAnalyzeBtn').disabled = false;
             }
         }
-        
-        function simpleHash(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
-            return Math.abs(hash);
+
+        // Step 1: Pre-Analyze (Breed Detection)
+        async function preAnalyze() {
+            const btn = document.getElementById('preAnalyzeBtn');
+            const img2 = document.getElementById('img2');
+            btn.innerText = "🔍 識別品種中...";
+            btn.disabled = true;
+
+            const predictions = await mobilenetModel.classify(img2, 3);
+            currentBreed = predictions[0].className.split(',')[0];
+            
+            // Find matched traits
+            let traits = breedTraits['default'];
+            for (const key in breedTraits) {
+                if (currentBreed.toLowerCase().includes(key)) {
+                    traits = breedTraits[key];
+                    break;
+                }
+            }
+
+            // Show UI
+            document.getElementById('breed-name').innerText = currentBreed;
+            const container = document.getElementById('trait-container');
+            container.innerHTML = "";
+            traits.forEach(t => {
+                container.innerHTML += `<div class="trait-tag" onclick="toggleTrait(this)">${t}</div>`;
+            });
+            
+            btn.style.display = 'none';
+            document.getElementById('personality-check').style.display = 'block';
         }
-        
-        async function analyzeSimilarity() {
+
+        function toggleTrait(el) {
+            el.classList.toggle('active');
+            // Calculate bonus score
+            const activeCount = document.querySelectorAll('.trait-tag.active').length;
+            personalityScore = activeCount * 5; // Each trait +5%
+        }
+
+        // Step 2: Final Analyze
+        async function finalAnalyze() {
+            document.getElementById('personality-check').style.display = 'none';
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
-            const btn = document.getElementById('analyzeBtn');
+
+            // 1. MobileNet Similarity
+            const act1 = mobilenetModel.infer(img1, true);
+            const act2 = mobilenetModel.infer(img2, true);
+            const rawDist = cosineSimilarity(act1, act2); // 0 to 1
             
-            btn.innerText = "🤖 分析中...";
-            btn.disabled = true;
+            // 2. Color Match
+            const c1 = colorThief.getColor(img1);
+            const c2 = colorThief.getColor(img2);
+            const colorDist = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
             
-            setTimeout(async () => {
-                const act1 = mobilenetModel.infer(img1, true);
-                const act2 = mobilenetModel.infer(img2, true);
-                const rawDist = cosineSimilarity(act1, act2);
-                
-                const c1 = colorThief.getColor(img1);
-                const c2 = colorThief.getColor(img2);
-                const colorDiff = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
-                
-                // Breed Detection (New Feature!)
-                const predictions = await mobilenetModel.classify(img2, 1);
-                const breedName = predictions[0].className.split(',')[0]; // Get top 1 result
+            // 3. Random Seed
+            function simpleHash(str) { let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h); }
+            const seed = simpleHash(img1Data.name + img1Data.size + img2Data.name + img2Data.size);
+            const r1 = (seed % 10);
+            
+            // Scores for Progress Bars
+            let s1 = Math.round(mapRange(rawDist, 0.2, 0.8, 40, 95)) + r1; // Similarity
+            let s2 = Math.max(20, 100 - Math.round(colorDist / 3)); // Color
+            let s3 = 60 + (seed % 30); // Vibe (Random but deterministic)
+            let s4 = personalityScore; // Personality Bonus
+            
+            let totalScore = Math.round((s1 * 0.4) + (s2 * 0.3) + (s3 * 0.2) + s4);
+            totalScore = Math.min(99, Math.max(10, totalScore));
 
-                // Seed Random
-                const seed = simpleHash(img1Data.name + img1Data.size + img2Data.name + img2Data.size);
-                const seededRandom = (seed % 10) - 5; 
-                
-                let score = mapRange(rawDist, 0.2, 0.8, 100, 30);
-                let details = [];
-                
-                // Breed Tag
-                details.push({ emoji: '🐕', text: `品種似係：${breedName}` });
+            // Set Values
+            setBar('bar1', 'val1', s1);
+            setBar('bar2', 'val2', s2);
+            setBar('bar3', 'val3', s3);
+            setBar('bar4', 'val4', s4 > 0 ? `+${s4}%` : '0%', s4); // Display +% for bonus
 
-                if (colorDiff < 80) { score += 15; details.push({ emoji: '🎨', text: '色系超夾 (Color Match)' }); }
-                if (rawDist > 0.5) { details.push({ emoji: '📐', text: '五官/構圖神似' }); }
-                
-                score += seededRandom;
-                score = Math.min(98, Math.max(12, Math.round(score)));
-                
-                const comments = [
-                    { min: 90, text: "😱 根本係前世情人！" },
-                    { min: 80, text: "❤️ 餅印咁款，絕配！" },
-                    { min: 70, text: "😎 幾有父子/母女相！" },
-                    { min: 50, text: "🤔 氣質幾似，可以一戰！" },
-                    { min: 0,  text: "😂 唔似樣，但勝在有愛！" }
-                ];
-                const verdict = comments.find(c => score >= c.min).text;
+            document.getElementById('score').innerText = totalScore;
+            
+            // Verdict
+             const comments = [
+                { min: 90, text: "😱 99%係失散左既親人！" },
+                { min: 80, text: "❤️ 似過同一個祖宗！" },
+                { min: 60, text: "😎 可能上世住隔離村！" },
+                { min: 40, text: "🤔 你地係異極相吸！" },
+                { min: 0,  text: "😂 唔似樣，但勝在有愛！" }
+            ];
+            document.getElementById('comment').innerText = comments.find(c => totalScore >= c.min).text;
+            
+            document.getElementById('result-card').style.display = 'block';
+            document.getElementById('restartBtn').style.display = 'block';
+        }
 
-                document.getElementById('score').innerText = score;
-                document.getElementById('comment').innerText = verdict;
-                
-                // Fix for broken images: Re-assign src
-                document.getElementById('res-img1').src = img1.src;
-                document.getElementById('res-img2').src = img2.src;
-                
-                const detailsDiv = document.getElementById('details');
-                detailsDiv.innerHTML = '';
-                details.forEach(d => { detailsDiv.innerHTML += `<div class="detail-item"><span class="emoji">${d.emoji}</span> ${d.text}</div>`; });
-                
-                document.getElementById('result-card').style.display = 'block';
-                document.getElementById('restartBtn').style.display = 'block';
-                btn.style.display = 'none';
-
-            }, 800);
+        function setBar(barId, valId, val, rawVal) {
+            const v = rawVal !== undefined ? rawVal : val; // Use rawVal for width calculation if provided
+            setTimeout(() => {
+                document.getElementById(barId).style.width = Math.min(100, v) + '%';
+                document.getElementById(valId).innerText = typeof val === 'string' ? val : val + '%';
+            }, 100);
         }
 
         function cosineSimilarity(t1, t2) {
