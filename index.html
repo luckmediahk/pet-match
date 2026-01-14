@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
+<!-- ... Head & CSS 保持不變 (v4.11) ... -->
+<!-- ... 確保 CSS 入面 .role-label 係 margin-top: 12px (放在下方) ... -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,121 +13,54 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
     <style>
-        :root { 
-            --brand: #54b97c;
-            --accent: #FFB703;
-            --bg: #F0FDF4;
-        }
-        body { 
-            font-family: 'Fredoka', 'Noto Sans TC', sans-serif; 
-            background-color: var(--bg); color: #333; margin: 0; padding: 20px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100' opacity='0.08'%3E%3Cpath fill='%2354b97c' d='M26.8 21.6c-4.1-3.6-10.4-2.5-13.3 2.2-2.9 4.7-.9 10.9 3.2 14.5 4.1 3.6 10.4 2.5 13.3-2.2 3-4.7 1-10.9-3.2-14.5zm25.9-4.8c-5.2-1.7-10.7 1.3-12.2 6.6-1.5 5.3 1.5 10.8 6.7 12.5 5.2 1.7 10.7-1.3 12.2-6.6 1.5-5.3-1.5-10.9-6.7-12.5zm23.6 8c-4.9-2.6-10.9-.3-13.3 5-2.4 5.3-.2 11.5 4.7 14.1 4.9 2.6 10.9.3 13.3-5 2.5-5.3.3-11.5-4.7-14.1zm-3.1 31c-3.5-3.6-8.8-5.7-14.7-5.1-4.7.5-9 3.1-12.3 6.8-5.3 6-5.8 15-2 21.7 3.5 6.1 10.1 9.9 17.5 9.4 7.4-.5 13.7-4.9 16.5-11.5 2.8-6.6 1.4-14.6-5-21.3z'/%3E%3C/svg%3E");
-            background-size: 100px 100px;
-        }
-        
-        .container { 
-            max-width: 600px; margin: 0 auto; 
-            background: rgba(255,255,255,0.95); 
-            padding: 30px; border-radius: 30px; 
-            box-shadow: 0 15px 40px rgba(84, 185, 124, 0.15); 
-            border: 2px solid rgba(84, 185, 124, 0.1);
-            position: relative;
-        }
-
-        /* Language Switcher */
-        .lang-switch {
-            position: absolute; top: 20px; right: 20px;
-            background: #e6f7ee; border-radius: 20px; padding: 5px;
-            display: flex; gap: 5px;
-        }
-        .lang-btn {
-            border: none; background: transparent; padding: 5px 12px;
-            border-radius: 15px; cursor: pointer; font-weight: bold; color: var(--brand);
-            font-size: 0.8rem; transition: all 0.2s;
-        }
+        /* ... 保持 v4.11 的 CSS ... */
+        :root { --brand: #54b97c; --accent: #FFB703; --bg: #F0FDF4; }
+        body { font-family: 'Fredoka', 'Noto Sans TC', sans-serif; background-color: var(--bg); color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.98); padding: 30px; border-radius: 30px; box-shadow: 0 15px 40px rgba(84, 185, 124, 0.15); border: 2px solid rgba(84, 185, 124, 0.1); position: relative; }
+        .lang-switch { position: absolute; top: 20px; right: 20px; background: #e6f7ee; border-radius: 20px; padding: 5px; display: flex; gap: 5px; }
+        .lang-btn { border: none; background: transparent; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-weight: bold; color: var(--brand); font-size: 0.8rem; transition: all 0.2s; }
         .lang-btn.active { background: var(--brand); color: #fff; }
-        
         h1 { color: var(--brand); margin-bottom: 5px; text-shadow: 1px 1px 0px #eee; margin-top: 10px; }
-        .brand-tag { 
-            font-size: 0.8rem; color: var(--brand); 
-            font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
-            background: #e6f7ee; display: inline-block; padding: 5px 15px; border-radius: 20px; margin-bottom: 10px;
-        }
+        .brand-tag { font-size: 0.8rem; color: var(--brand); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: #e6f7ee; display: inline-block; padding: 5px 15px; border-radius: 20px; margin-bottom: 10px; }
+        
+        /* v4.11 Label Style (Below Circle) */
+        .role-label { font-size: 1rem; font-weight: bold; color: var(--brand); margin-top: 12px; display: block; }
 
-        .preview-box { 
-            width: 160px; height: 160px; 
-            border: 4px solid #fff; outline: 3px dashed #ddd; margin: 10px auto; 
-            position: relative; cursor: pointer;
-            background: #f0f0f0; border-radius: 50%; 
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
+        .preview-box { width: 160px; height: 160px; border: 4px solid #fff; outline: 3px dashed #ddd; margin: 10px auto; position: relative; cursor: pointer; background: #f0f0f0; border-radius: 50%; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .preview-box:hover { transform: scale(1.05); border-color: var(--brand); }
         .preview-box.locked { pointer-events: none; opacity: 0.8; border-color: #ddd; outline: none; }
-        
         .img-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         img { width: 100%; height: 100%; object-fit: cover; }
         
-        .bubble {
-            background: #fff; color: #333; padding: 10px 15px; border-radius: 15px;
-            font-size: 0.8rem; font-weight: bold; position: absolute; top: -50px; right: -80px; width: 160px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid #333; display: none; z-index: 100;
-        }
+        .bubble { background: #fff; color: #333; padding: 10px 15px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; position: absolute; top: -50px; right: -80px; width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid #333; display: none; z-index: 100; }
         .bubble.error { border-color: #d32f2f; color: #d32f2f; }
         .bubble.success { border-color: var(--brand); color: var(--brand); }
-
+        
         .grid { display: flex; justify-content: space-around; gap: 10px; margin: 20px 0; }
-        
-        button.action-btn {
-            background: var(--brand); color: white; border: none; padding: 15px 40px;
-            font-size: 1.2rem; border-radius: 50px; cursor: pointer; width: 100%;
-            font-family: 'Fredoka', sans-serif; 
-            box-shadow: 0 8px 20px rgba(84, 185, 124, 0.3);
-            transition: all 0.3s;
-        }
+        button.action-btn { background: var(--brand); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; width: 100%; font-family: 'Fredoka', sans-serif; box-shadow: 0 8px 20px rgba(84, 185, 124, 0.3); transition: all 0.3s; }
         button.action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
-        
-        #personality-check {
-            display: none; background: #e6f7ee; padding: 25px; border-radius: 20px; text-align: center; margin-top: 20px; border: 2px solid var(--brand);
-        }
+        #personality-check { display: none; background: #e6f7ee; padding: 25px; border-radius: 20px; text-align: center; margin-top: 20px; border: 2px solid var(--brand); }
         .trait-tags { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
-        .trait-tag {
-            background: #fff; border: 2px solid #fff; padding: 12px 15px; border-radius: 15px; cursor: pointer; font-weight: bold; color: #555; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .trait-tag.active {
-            background: var(--brand); border-color: var(--brand); color: #fff;
-        }
+        .trait-tag { background: #fff; border: 2px solid #fff; padding: 12px 15px; border-radius: 15px; cursor: pointer; font-weight: bold; color: #555; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .trait-tag.active { background: var(--brand); border-color: var(--brand); color: #fff; }
         .trait-check { font-size: 1.2rem; display: none; }
         .trait-tag.active .trait-check { display: inline; }
-        
-        #result-card {
-            display: none; margin-top: 30px; padding: 30px; background: #fff;
-            border-radius: 20px; border: 2px solid #eee; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+        #result-card { display: none; margin-top: 30px; padding: 30px; background: #fff; border-radius: 20px; border: 2px solid #eee; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; }
         .score-big { font-size: 5rem; font-weight: 800; color: var(--brand); line-height: 1; margin: 10px 0; }
         .verdict { font-size: 1.3rem; font-weight: bold; color: var(--accent); margin-bottom: 20px; }
-        
         .stat-row { display: flex; align-items: center; margin-bottom: 12px; font-size: 0.9rem; }
         .stat-label { width: 100px; text-align: right; margin-right: 10px; font-weight: bold; color: #555; }
         .progress-bg { flex-grow: 1; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--brand); width: 0%; transition: width 1s ease-out; }
         .stat-val { width: 50px; text-align: left; margin-left: 10px; color: #888; }
-        
-        .cert-btn {
-            background: linear-gradient(45deg, #FFB703, #FF8C00); color: #fff; border: none; 
-            padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; 
-            margin-top: 20px; box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
-            display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;
-        }
-        
+        .cert-btn { background: linear-gradient(45deg, #FFB703, #FF8C00); color: #fff; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; margin-top: 20px; box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4); display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; }
         #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
         #certCanvas { display: none; }
     </style>
 </head>
 <body>
 
+    <!-- ... HTML Structure 保持不變 (v4.11) ... -->
     <div id="loading-overlay">
         <div style="font-size: 3rem;">🐶</div>
         <h3 style="color:#555;" data-i18n="loading">正在喚醒 AI 狗狗...</h3>
@@ -139,11 +74,10 @@
 
         <div class="brand-tag">ANIMALSSUM.COM</div>
         <h1 data-i18n="title">🐾 人寵配對 AI</h1>
-        <p class="subtitle" data-i18n="subtitle">Brand Color Edition • 看看你們有多夾？</p>
+        <p class="subtitle" data-i18n="subtitle">Brand Color Edition • 測試你們相似度？</p>
 
         <div class="grid">
             <div style="text-align:center;">
-                <span style="font-size:1.5rem;">👱</span>
                 <div class="preview-box" id="box1" onclick="uploadImg('upload1')">
                     <div id="bubble1" class="bubble"></div>
                     <div class="img-container">
@@ -151,10 +85,10 @@
                         <img id="img1" style="display:none;" crossorigin="anonymous">
                     </div>
                 </div>
+                <span class="role-label" data-i18n="labelHuman">人類</span>
                 <input type="file" id="upload1" accept="image/*" onchange="checkHuman(event)" style="display:none;">
             </div>
             <div style="text-align:center;">
-                <span style="font-size:1.5rem;">🐶</span>
                 <div class="preview-box" id="box2" onclick="uploadImg('upload2')">
                      <div id="bubble2" class="bubble"></div>
                      <div class="img-container">
@@ -162,47 +96,48 @@
                         <img id="img2" style="display:none;" crossorigin="anonymous">
                      </div>
                 </div>
+                <span class="role-label" data-i18n="labelDog">狗狗</span>
                 <input type="file" id="upload2" accept="image/*" onchange="checkDog(event)" style="display:none;">
             </div>
         </div>
 
         <button id="preAnalyzeBtn" class="action-btn" onclick="preAnalyze()" disabled data-i18n="analyzeBtn">✨ 立即分析</button>
 
+        <!-- ... Personality Check ... -->
         <div id="personality-check">
-            <h3><span data-i18n="foundBreed">🐶 發現狗狗係：</span><span id="breed-name" style="color:var(--brand);">...</span></h3>
-            <p><span data-i18n="traitPrompt">既然咁似樣，你地係咪有以下 共同特徵？</span><br><small data-i18n="traitHint">(請誠實作答，全中有加分!)</small></p>
+            <h3><span data-i18n="foundBreed">🐶 發現狗狗是：</span><span id="breed-name" style="color:var(--brand);">...</span></h3>
+            <p><span data-i18n="traitPrompt">加分位：你們是否有以下 共同特徵？</span><br><small data-i18n="traitHint">(請誠實作答，全中有加乘!)</small></p>
             <div class="trait-tags" id="trait-container"></div>
-            <button class="action-btn" onclick="finalAnalyze()" style="margin-top:20px;" data-i18n="reportBtn">✅ 係呀！出報告！</button>
+            <button class="action-btn" onclick="finalAnalyze()" style="margin-top:20px;" data-i18n="reportBtn">✅ ok！出報告！</button>
         </div>
         
+        <!-- ... Result Card ... -->
         <div id="result-card">
             <p style="color:#888; margin:0;" data-i18n="resultTitle">AI 深度分析結果</p>
             <div class="score-big"><span id="score">0</span>%</div>
             <div class="verdict" id="comment">...</div>
-            
             <div style="background:#fcfcfc; padding:20px; border-radius:15px; margin-top:20px; border:1px solid #f0f0f0;">
                 <h4 style="margin-top:0; color:#555;" data-i18n="reportTitle">📊 AI 分析報告</h4>
                 <div class="stat-row"><div class="stat-label" data-i18n="statFace">👀 五官神韻</div><div class="progress-bg"><div class="progress-fill" id="bar1"></div></div><div class="stat-val" id="val1">0%</div></div>
                 <div class="stat-row"><div class="stat-label" data-i18n="statColor">🎨 毛色髮色</div><div class="progress-bg"><div class="progress-fill" id="bar2"></div></div><div class="stat-val" id="val2">0%</div></div>
-                <div class="stat-row"><div class="stat-label" data-i18n="statVibe">🧠 氣場相近</div><div class="progress-bg"><div class="progress-fill" id="bar3"></div></div><div class="stat-val" id="val3">0%</div></div>
+                <div class="stat-row"><div class="stat-label" data-i18n="statVibe">🧠 氣場相似度</div><div class="progress-bg"><div class="progress-fill" id="bar3"></div></div><div class="stat-val" id="val3">0%</div></div>
                 <div class="stat-row"><div class="stat-label" data-i18n="statMatch">🤝 默契加成</div><div class="progress-bg"><div class="progress-fill" id="bar4" style="background:var(--accent);"></div></div><div class="stat-val" id="val4">0%</div></div>
             </div>
-            
             <button class="cert-btn" onclick="generateCertificate()"><span style="font-size:1.2rem">📜</span> <span data-i18n="downloadCert">下載配對證書</span></button>
         </div>
-        
         <button onclick="window.location.reload()" style="background:transparent; color:#999; border:none; margin-top:20px; cursor:pointer; text-decoration:underline; display:none;" id="restartBtn" data-i18n="restart">🔄 再玩一次</button>
     </div>
-    
     <canvas id="certCanvas" width="800" height="1000"></canvas>
 
     <script>
-        // --- i18n Dictionary ---
+        // ... i18n & Comments 保持 v4.11 不變 ...
         const i18nData = {
             zh: {
                 loading: "正在喚醒 AI 狗狗...",
                 title: "🐾 人寵配對 AI",
                 subtitle: "Brand Color Edition • 測試你們相似度？",
+                labelHuman: "人類",
+                labelDog: "狗狗",
                 analyzeBtn: "✨ 立即分析",
                 foundBreed: "🐶 發現狗狗是：",
                 traitPrompt: "加分位：你們是否有以下 共同特徵？",
@@ -217,6 +152,7 @@
                 downloadCert: "下載配對證書",
                 restart: "🔄 再玩一次",
                 analyzeText: "🔍 識別品種中...",
+                // New Bubble Keys for v4.12
                 bubbleHumanErr: "🐱 咦！此乃狗奴才（人類）專用喎！",
                 bubbleDogErr: "🐶 喂喂！呢邊係放主人相架！",
                 bubbleHumanOk: "✅ 這張相ok！",
@@ -231,6 +167,8 @@
                 loading: "Waking up AI Dog...",
                 title: "🐾 Pet Match AI",
                 subtitle: "Brand Color Edition • Are you a perfect match?",
+                labelHuman: "Human",
+                labelDog: "Doggo",
                 analyzeBtn: "✨ Analyze Now",
                 foundBreed: "🐶 Breed Detected: ",
                 traitPrompt: "Since you look alike, do you share these traits?",
@@ -245,7 +183,8 @@
                 downloadCert: "Download Certificate",
                 restart: "🔄 Play Again",
                 analyzeText: "🔍 Identifying Breed...",
-                bubbleHumanErr: "🐱 Whoops! Human slaves only!",
+                // New Bubble Keys for v4.12
+                bubbleHumanErr: "🐱 Whoops! Human slaves only!", // Use this for Dog detection too
                 bubbleDogErr: "🐶 Hold up! Where's the Hooman?",
                 bubbleHumanOk: "✅ Looking sharp!",
                 bubbleDogHumanErr: "🐶 One woofer is enough! No Hoomans!",
@@ -257,7 +196,7 @@
             }
         };
 
-        // Comments Dictionary
+        // ... CommentsData & TraitsData 保持不變 ...
         const commentsData = {
             zh: [
                 { min: 90, text: "😱 99%係失散咗既親人！感恩天上安排你哋重遇返！🩷" },
@@ -277,7 +216,6 @@
             ]
         };
 
-        // Traits Dictionary (Simplified for demo, can expand)
         const traitsData = {
             zh: {
                 retriever: ['大家都咁為食 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗'],
@@ -292,34 +230,21 @@
         };
 
         let currentLang = 'zh';
-
         function setLang(lang) {
             currentLang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if(i18nData[lang][key]) el.innerText = i18nData[lang][key];
             });
-            
-            // Toggle Buttons
             document.getElementById('btn-zh').className = lang === 'zh' ? 'lang-btn active' : 'lang-btn';
             document.getElementById('btn-en').className = lang === 'en' ? 'lang-btn active' : 'lang-btn';
-
-            // Re-render button text if analyzing
             if(document.getElementById('preAnalyzeBtn').disabled && document.getElementById('preAnalyzeBtn').innerText.includes('...')) {
                  document.getElementById('preAnalyzeBtn').innerText = i18nData[lang].analyzeText;
             }
         }
-
-        // Auto Detect Language
         const browserLang = navigator.language || navigator.userLanguage; 
-        if(browserLang.toLowerCase().includes('en')) {
-            setLang('en');
-        } else {
-            setLang('zh'); // Default ZH
-        }
+        if(browserLang.toLowerCase().includes('en')) { setLang('en'); } else { setLang('zh'); }
 
-        // ... [Rest of the core logic logic remains similar, just updated text references] ...
-        
         let mobilenetModel, cocoSsdModel;
         const colorThief = new ColorThief();
         let currentBreed = "";
@@ -328,6 +253,7 @@
         let img1Data = {name:'', size:0}, img2Data = {name:'', size:0};
         let humanHasCat = false;
         let isLocked = false;
+        let humanHasDog = false; // 新增 Flag
 
         async function initAI() {
             try {
@@ -339,7 +265,6 @@
         initAI();
 
         function uploadImg(id) { if(!isLocked) document.getElementById(id).click(); }
-        
         function loadFile(event, imgId, boxId) {
             return new Promise(resolve => {
                 const output = document.getElementById(imgId);
@@ -355,6 +280,7 @@
             });
         }
 
+        // --- UPDATED checkHuman Logic (Strict Mode) ---
         async function checkHuman(event) {
             if(isLocked) return;
             await loadFile(event, 'img1', 'box1');
@@ -362,18 +288,27 @@
             const bubble = document.getElementById('bubble1');
             bubble.style.display = 'none';
             humanHasCat = false;
+            humanHasDog = false;
             
             setTimeout(async () => {
                 if (!cocoSsdModel) return;
                 const detections = await cocoSsdModel.detect(img);
+                
+                // 1. Check for Dog (Primary Reject)
                 const hasDog = detections.some(d => d.class === 'dog' && d.score > 0.4);
+                // 2. Check for Cat (Secondary Reject)
                 const hasCat = detections.some(d => d.class === 'cat' && d.score > 0.4);
                 
-                if (hasCat) { 
+                if (hasDog) { 
+                    // UPDATED: Now catching DOGS in human slot
+                    showBubble(bubble, i18nData[currentLang].bubbleDogErr, true, true); 
+                    humanHasDog = true;
+                } else if (hasCat) { 
                     showBubble(bubble, i18nData[currentLang].bubbleHumanErr, true, true); 
                     humanHasCat = true;
-                } else if (hasDog) { showBubble(bubble, i18nData[currentLang].bubbleDogErr, true, false); }
-                else { showBubble(bubble, i18nData[currentLang].bubbleHumanOk, false, false); }
+                } else { 
+                    showBubble(bubble, i18nData[currentLang].bubbleHumanOk, false, false); 
+                }
                 checkReady();
             }, 300);
         }
@@ -405,112 +340,78 @@
         function checkReady() {
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
-            if (img1.style.display === 'block' && img2.style.display === 'block' && !humanHasCat) {
+            // Strict Check: No Cat AND No Dog allowed in Human slot
+            if (img1.style.display === 'block' && img2.style.display === 'block' && !humanHasCat && !humanHasDog) {
                 document.getElementById('preAnalyzeBtn').disabled = false;
             } else {
                 document.getElementById('preAnalyzeBtn').disabled = true;
             }
         }
 
+        // ... Rest of logic (preAnalyze, finalAnalyze, etc.) identical to v4.11 ...
         async function preAnalyze() {
             isLocked = true;
             document.getElementById('box1').classList.add('locked');
             document.getElementById('box2').classList.add('locked');
             document.getElementById('bubble1').style.display = 'none';
             document.getElementById('bubble2').style.display = 'none';
-            
             const btn = document.getElementById('preAnalyzeBtn');
             const img2 = document.getElementById('img2');
             btn.innerText = i18nData[currentLang].analyzeText;
             btn.disabled = true;
-
             const predictions = await mobilenetModel.classify(img2, 3);
             currentBreed = predictions[0].className.split(',')[0];
-            
-            // Get Traits based on Lang
             let traitList = traitsData[currentLang]['default'];
-            // Simple logic for traits (expand in prod)
-            
             document.getElementById('breed-name').innerText = currentBreed;
             const container = document.getElementById('trait-container');
             container.innerHTML = "";
-            traitList.forEach(t => {
-                container.innerHTML += `<div class="trait-tag" onclick="toggleTrait(this)"><span>${t}</span><span class="trait-check">✅</span></div>`;
-            });
-            
+            traitList.forEach(t => { container.innerHTML += `<div class="trait-tag" onclick="toggleTrait(this)"><span>${t}</span><span class="trait-check">✅</span></div>`; });
             btn.style.display = 'none';
             document.getElementById('personality-check').style.display = 'block';
         }
-
         function toggleTrait(el) {
             el.classList.toggle('active');
             const activeCount = document.querySelectorAll('.trait-tag.active').length;
             personalityScore = activeCount * 4;
         }
-
         async function finalAnalyze() {
             document.getElementById('personality-check').style.display = 'none';
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
-
             const act1 = mobilenetModel.infer(img1, true);
             const act2 = mobilenetModel.infer(img2, true);
             const rawDist = cosineSimilarity(act1, act2);
-            
             const c1 = colorThief.getColor(img1);
             const c2 = colorThief.getColor(img2);
             const colorDist = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
-            
             function simpleHash(str) { let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h); }
             const seed = simpleHash(img1Data.name + img1Data.size + img2Data.name + img2Data.size);
             const r1 = (seed % 10);
-            
             let s1 = Math.round(mapRange(rawDist, 0.2, 0.8, 50, 95)) + r1;
             let s2 = Math.max(30, 100 - Math.round(colorDist / 2.5));
             let s3 = 60 + (seed % 30);
             let s4 = personalityScore;
-            
             let totalScore = Math.round((s1 * 0.4) + (s2 * 0.3) + (s3 * 0.1) + s4);
             totalScore = Math.min(99, Math.max(15, totalScore));
             finalScore = totalScore;
-
-            setBar('bar1', 'val1', s1);
-            setBar('bar2', 'val2', s2);
-            setBar('bar3', 'val3', s3);
-            setBar('bar4', 'val4', s4 > 0 ? `+${s4}%` : '0%', s4);
-
+            setBar('bar1', 'val1', s1); setBar('bar2', 'val2', s2); setBar('bar3', 'val3', s3); setBar('bar4', 'val4', s4 > 0 ? `+${s4}%` : '0%', s4);
             document.getElementById('score').innerText = totalScore;
-            
             const comments = commentsData[currentLang];
             document.getElementById('comment').innerText = comments.find(c => totalScore >= c.min).text;
-            
             document.getElementById('result-card').style.display = 'block';
             document.getElementById('restartBtn').style.display = 'block';
         }
-
-        // --- Pro Certificate Generation (Supports i18n) ---
         function generateCertificate() {
             const canvas = document.getElementById('certCanvas');
             const ctx = canvas.getContext('2d');
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
-            
-            // Background & Frame
             ctx.fillStyle = "#F0FDF4"; ctx.fillRect(0, 0, 800, 1000);
             ctx.lineWidth = 15; ctx.strokeStyle = "#54b97c"; ctx.strokeRect(30, 30, 740, 940);
-            
-            // Badge
             ctx.beginPath(); ctx.arc(400, 110, 50, 0, 2 * Math.PI); ctx.fillStyle = "#54b97c"; ctx.fill();
             ctx.font = "40px Arial"; ctx.fillStyle = "white"; ctx.textAlign = "center"; ctx.fillText("🐾", 400, 125);
-
-            // Title
-            ctx.fillStyle = "#333"; ctx.font = "bold 50px 'Noto Sans TC'";
-            ctx.fillText(i18nData[currentLang].certTitle, 400, 200); // i18n Title
-            
-            ctx.font = "24px 'Fredoka'"; ctx.fillStyle = "#888";
-            ctx.fillText("ANIMALSSUM.COM OFFICIAL", 400, 240);
-
-            // Images
+            ctx.fillStyle = "#333"; ctx.font = "bold 50px 'Noto Sans TC'"; ctx.fillText(i18nData[currentLang].certTitle, 400, 200);
+            ctx.font = "24px 'Fredoka'"; ctx.fillStyle = "#888"; ctx.fillText("ANIMALSSUM.COM OFFICIAL", 400, 240);
             function drawRoundImg(img, x, y, size) {
                 ctx.save(); ctx.beginPath(); ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
                 ctx.drawImage(img, x, y, size, size); ctx.restore();
@@ -519,37 +420,16 @@
             }
             drawRoundImg(img1, 120, 300, 240);
             drawRoundImg(img2, 440, 300, 240);
-            
-            // Score
-            ctx.fillStyle = "#54b97c"; ctx.font = "bold 140px 'Fredoka'";
-            ctx.fillText(finalScore + "%", 400, 680);
-            
-            ctx.font = "bold 30px 'Noto Sans TC'"; ctx.fillStyle = "#FFB703";
-            ctx.fillText(document.getElementById('comment').innerText, 400, 740);
-
-            // Details
+            ctx.fillStyle = "#54b97c"; ctx.font = "bold 140px 'Fredoka'"; ctx.fillText(finalScore + "%", 400, 680);
+            ctx.font = "bold 30px 'Noto Sans TC'"; ctx.fillStyle = "#FFB703"; ctx.fillText(document.getElementById('comment').innerText, 400, 740);
             ctx.fillStyle = "#fff"; ctx.fillRect(100, 780, 600, 120);
             ctx.strokeStyle = "#ddd"; ctx.lineWidth=2; ctx.strokeRect(100, 780, 600, 120);
-            
-            ctx.fillStyle = "#555"; ctx.font = "24px 'Noto Sans TC'";
-            ctx.fillText(i18nData[currentLang].certBreed + currentBreed, 400, 830);
-            const d = new Date();
-            ctx.fillText(i18nData[currentLang].certDate + d.getFullYear() + "." + (d.getMonth()+1) + "." + d.getDate(), 400, 870);
-
-            // Footer
-            ctx.font = "18px 'Arial'"; ctx.fillStyle = "#999";
-            ctx.fillText("Generative AI Powered by AnimalsSum", 400, 960);
-            
-            const link = document.createElement('a');
-            link.download = 'animalssum-certificate.jpg';
-            link.href = canvas.toDataURL('image/jpeg');
-            link.click();
+            ctx.fillStyle = "#555"; ctx.font = "24px 'Noto Sans TC'"; ctx.fillText(i18nData[currentLang].certBreed + currentBreed, 400, 830);
+            const d = new Date(); ctx.fillText(i18nData[currentLang].certDate + d.getFullYear() + "." + (d.getMonth()+1) + "." + d.getDate(), 400, 870);
+            ctx.font = "18px 'Arial'"; ctx.fillStyle = "#999"; ctx.fillText("Generative AI Powered by AnimalsSum", 400, 960);
+            const link = document.createElement('a'); link.download = 'animalssum-certificate.jpg'; link.href = canvas.toDataURL('image/jpeg'); link.click();
         }
-
-        function setBar(barId, valId, val, rawVal) {
-            const v = rawVal !== undefined ? rawVal : val;
-            setTimeout(() => { document.getElementById(barId).style.width = Math.min(100, v) + '%'; document.getElementById(valId).innerText = typeof val === 'string' ? val : val + '%'; }, 100);
-        }
+        function setBar(barId, valId, val, rawVal) { const v = rawVal !== undefined ? rawVal : val; setTimeout(() => { document.getElementById(barId).style.width = Math.min(100, v) + '%'; document.getElementById(valId).innerText = typeof val === 'string' ? val : val + '%'; }, 100); }
         function cosineSimilarity(t1, t2) { const v1 = t1.dataSync(); const v2 = t2.dataSync(); let dotProduct = 0, normA = 0, normB = 0; for (let i = 0; i < v1.length; i++) { dotProduct += v1[i] * v2[i]; normA += v1[i] * v1[i]; normB += v2[i] * v2[i]; } return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)); }
         function mapRange(value, low1, high1, low2, high2) { return low2 + (high2 - low2) * (value - low1) / (high1 - low1); }
     </script>
