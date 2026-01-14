@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 人寵配對 v4.3</title>
+    <title>🐶 人寵配對 v4.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
@@ -49,19 +49,20 @@
         }
         button.action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
         
-        /* Personality Check Modal */
         #personality-check {
-            display: none; background: #E0F7FA; padding: 20px; border-radius: 20px; text-align: center; margin-top: 20px; border: 2px solid #B2EBF2;
+            display: none; background: #E0F7FA; padding: 25px; border-radius: 20px; text-align: center; margin-top: 20px; border: 2px solid #B2EBF2;
         }
-        .trait-tags { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 15px 0; }
+        .trait-tags { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
         .trait-tag {
-            background: #fff; border: 2px solid #ddd; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; color: #777; transition: all 0.2s;
+            background: #fff; border: 2px solid #ddd; padding: 12px 15px; border-radius: 15px; cursor: pointer; font-weight: bold; color: #555; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between;
         }
+        .trait-tag:hover { background: #f0f0f0; }
         .trait-tag.active {
-            background: #FFB703; border-color: #FB8500; color: #fff; transform: scale(1.1); box-shadow: 0 5px 10px rgba(255, 183, 3, 0.4);
+            background: #FFB703; border-color: #FB8500; color: #fff; transform: scale(1.02); box-shadow: 0 5px 10px rgba(255, 183, 3, 0.3);
         }
+        .trait-check { font-size: 1.2rem; display: none; }
+        .trait-tag.active .trait-check { display: inline; }
         
-        /* Result Card */
         #result-card {
             display: none; margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%);
             border-radius: 20px; border: 1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
@@ -70,7 +71,6 @@
         .score-big { font-size: 5rem; font-weight: 800; color: var(--secondary); line-height: 1; margin: 10px 0; }
         .verdict { font-size: 1.3rem; font-weight: bold; color: #FB8500; margin-bottom: 20px; }
         
-        /* Progress Bars */
         .stat-row { display: flex; align-items: center; margin-bottom: 12px; font-size: 0.9rem; }
         .stat-label { width: 100px; text-align: right; margin-right: 10px; font-weight: bold; color: #555; }
         .progress-bg { flex-grow: 1; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
@@ -88,8 +88,8 @@
     </div>
 
     <div class="container">
-        <h1>🐾 人寵配對 v4.3</h1>
-        <p class="subtitle">AI 智能分析 • 性格深度配對</p>
+        <h1>🐾 人寵配對 v4.4</h1>
+        <p class="subtitle">AI 智能分析 • 看看你地係咪真係咁夾？</p>
 
         <div class="grid">
             <div style="text-align:center;">
@@ -116,20 +116,18 @@
             </div>
         </div>
 
-        <!-- Step 1 Button -->
         <button id="preAnalyzeBtn" class="action-btn" onclick="preAnalyze()" disabled>✨ 立即分析</button>
 
-        <!-- Step 2: Personality Check -->
+        <!-- Interactive Check -->
         <div id="personality-check">
-            <h3>🐶 發現品種：<span id="breed-name" style="color:#FB8500;">...</span></h3>
-            <p>佢係咪有以下特徵？(點擊確認)</p>
-            <div class="trait-tags" id="trait-container">
-                <!-- Tags will be injected here -->
-            </div>
+            <h3>🐶 發現狗狗係：<span id="breed-name" style="color:#FB8500;">...</span></h3>
+            <p>既然咁似樣，你地係咪有以下 <b style="color:#219EBC;">共同特徵</b>？<br><small>(請誠實作答，全中有加分!)</small></p>
+            
+            <div class="trait-tags" id="trait-container"></div>
+            
             <button class="action-btn" onclick="finalAnalyze()" style="background:#FFB703; color:#000; margin-top:15px;">✅ 係呀！出報告！</button>
         </div>
         
-        <!-- Step 3: Result -->
         <div id="result-card">
             <p style="color:#888; margin:0;">AI 深度分析結果</p>
             <div class="score-big"><span id="score">0</span>%</div>
@@ -137,7 +135,6 @@
             
             <div style="background:#f9f9f9; padding:20px; border-radius:15px; margin-top:20px;">
                 <h4 style="margin-top:0; color:#555;">📊 AI 分析報告</h4>
-                
                 <div class="stat-row">
                     <div class="stat-label">👀 五官神韻</div>
                     <div class="progress-bg"><div class="progress-fill" id="bar1"></div></div>
@@ -154,7 +151,7 @@
                     <div class="stat-val" id="val3">0%</div>
                 </div>
                 <div class="stat-row">
-                    <div class="stat-label">🤝 性格加成</div>
+                    <div class="stat-label">🤝 默契加成</div>
                     <div class="progress-bg"><div class="progress-fill" id="bar4" style="background:#FFB703;"></div></div>
                     <div class="stat-val" id="val4">0%</div>
                 </div>
@@ -175,14 +172,14 @@
         let personalityScore = 0;
         let img1Data = {name:'', size:0}, img2Data = {name:'', size:0};
 
-        // Breed Data (Traits)
+        // Updated Traits (Human & Dog shared)
         const breedTraits = {
-            'retriever': ['熱情 ❤️', '為食 🍖', '黐身 🤗'],
-            'poodle': ['聰明 🧠', '活潑 🎾', '有潔癖 ✨'],
-            'terrier': ['硬頸 😤', '好動 ⚡', '勇敢 🦁'],
-            'husky': ['拆家 🏚️', '表情包 🤪', '多野講 🗣️'],
-            'pug': ['愛訓覺 💤', '打鼻鼾 🔊', '樂觀 😄'],
-            'default': ['可愛 🥰', '乖巧 😇', '貪玩 🎾']
+            'retriever': ['大家都係吃貨 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗', '長期傻笑好樂觀 😄', '出街一定要擔野/拎野 🎾', '好鍾意游水/玩水 💧'],
+            'poodle': ['兩個都有潔癖 (唔污糟得) ✨', '出街前都要整頭扮靚 💇‍♀️', '極度聰明 (識聽人話) 🧠', '有時會發脾氣/扭計 😤', '行路好優雅 💃'],
+            'husky': ['係屋企好鍾意大叫/唱歌 🎤', '表情包 (成日做鬼臉) 🤪', '精力過盛 (拆家專員) ⚡', '其實係玻璃心 ❤️', '好鍾意頂嘴 🗣️'],
+            'bulldog': ['一樣咁懶訓 (秒睡) 💤', '訓覺會打鼻鼾 🔊', '個樣好惡但心地善良 🦁', '行兩步就話要休息 🛋️', '好鍾意被人按摩 💆'],
+            'chihuahua': ['身型細粒但好惡 😈', '極度護主 (我要保護你!) 🛡️', '唔鍾意陌生人 🚫', '好容易震 (驚青) 🥶', '最鍾意匿埋係被窩 🛌'],
+            'default': ['大家都好貪玩 🎾', '有時會發呆 (放空) 😶', '好鍾意食零食 🍪', '性格好固執 (硬頸) 🐂', '最鍾意黐住對方 ❤️']
         };
 
         async function initAI() {
@@ -255,7 +252,6 @@
             }
         }
 
-        // Step 1: Pre-Analyze (Breed Detection)
         async function preAnalyze() {
             const btn = document.getElementById('preAnalyzeBtn');
             const img2 = document.getElementById('img2');
@@ -265,7 +261,6 @@
             const predictions = await mobilenetModel.classify(img2, 3);
             currentBreed = predictions[0].className.split(',')[0];
             
-            // Find matched traits
             let traits = breedTraits['default'];
             for (const key in breedTraits) {
                 if (currentBreed.toLowerCase().includes(key)) {
@@ -274,12 +269,15 @@
                 }
             }
 
-            // Show UI
             document.getElementById('breed-name').innerText = currentBreed;
             const container = document.getElementById('trait-container');
             container.innerHTML = "";
             traits.forEach(t => {
-                container.innerHTML += `<div class="trait-tag" onclick="toggleTrait(this)">${t}</div>`;
+                container.innerHTML += `
+                    <div class="trait-tag" onclick="toggleTrait(this)">
+                        <span>${t}</span>
+                        <span class="trait-check">✅</span>
+                    </div>`;
             });
             
             btn.style.display = 'none';
@@ -288,50 +286,42 @@
 
         function toggleTrait(el) {
             el.classList.toggle('active');
-            // Calculate bonus score
             const activeCount = document.querySelectorAll('.trait-tag.active').length;
-            personalityScore = activeCount * 5; // Each trait +5%
+            personalityScore = activeCount * 4; // Max 5 items * 4 = 20%
         }
 
-        // Step 2: Final Analyze
         async function finalAnalyze() {
             document.getElementById('personality-check').style.display = 'none';
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
 
-            // 1. MobileNet Similarity
             const act1 = mobilenetModel.infer(img1, true);
             const act2 = mobilenetModel.infer(img2, true);
-            const rawDist = cosineSimilarity(act1, act2); // 0 to 1
+            const rawDist = cosineSimilarity(act1, act2);
             
-            // 2. Color Match
             const c1 = colorThief.getColor(img1);
             const c2 = colorThief.getColor(img2);
             const colorDist = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
             
-            // 3. Random Seed
             function simpleHash(str) { let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h); }
             const seed = simpleHash(img1Data.name + img1Data.size + img2Data.name + img2Data.size);
             const r1 = (seed % 10);
             
-            // Scores for Progress Bars
-            let s1 = Math.round(mapRange(rawDist, 0.2, 0.8, 40, 95)) + r1; // Similarity
-            let s2 = Math.max(20, 100 - Math.round(colorDist / 3)); // Color
-            let s3 = 60 + (seed % 30); // Vibe (Random but deterministic)
-            let s4 = personalityScore; // Personality Bonus
+            let s1 = Math.round(mapRange(rawDist, 0.2, 0.8, 50, 95)) + r1;
+            let s2 = Math.max(30, 100 - Math.round(colorDist / 2.5));
+            let s3 = 60 + (seed % 30);
+            let s4 = personalityScore;
             
-            let totalScore = Math.round((s1 * 0.4) + (s2 * 0.3) + (s3 * 0.2) + s4);
-            totalScore = Math.min(99, Math.max(10, totalScore));
+            let totalScore = Math.round((s1 * 0.4) + (s2 * 0.3) + (s3 * 0.1) + s4); // Personality adds up to 20%
+            totalScore = Math.min(99, Math.max(15, totalScore));
 
-            // Set Values
             setBar('bar1', 'val1', s1);
             setBar('bar2', 'val2', s2);
             setBar('bar3', 'val3', s3);
-            setBar('bar4', 'val4', s4 > 0 ? `+${s4}%` : '0%', s4); // Display +% for bonus
+            setBar('bar4', 'val4', s4 > 0 ? `+${s4}%` : '0%', s4);
 
             document.getElementById('score').innerText = totalScore;
             
-            // Verdict
              const comments = [
                 { min: 90, text: "😱 99%係失散左既親人！" },
                 { min: 80, text: "❤️ 似過同一個祖宗！" },
@@ -346,7 +336,7 @@
         }
 
         function setBar(barId, valId, val, rawVal) {
-            const v = rawVal !== undefined ? rawVal : val; // Use rawVal for width calculation if provided
+            const v = rawVal !== undefined ? rawVal : val;
             setTimeout(() => {
                 document.getElementById(barId).style.width = Math.min(100, v) + '%';
                 document.getElementById(valId).innerText = typeof val === 'string' ? val : val + '%';
