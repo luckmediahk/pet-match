@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 人寵配對 v4.6 | AnimalsSum</title>
+    <title>🐶 人寵配對 v4.7 | AnimalsSum</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
@@ -12,29 +12,27 @@
 
     <style>
         :root { 
-            --brand: #54b97c;       /* User Brand Color */
-            --accent: #FFB703;      /* Warm Yellow for contrast */
-            --bg: #F0FDF4;          /* Very light green tint background */
-            --text-dark: #2C3E50;
+            --brand: #54b97c;
+            --accent: #FFB703;
+            --bg: #F0FDF4;
         }
         body { 
             font-family: 'Fredoka', 'Noto Sans TC', sans-serif; 
-            background-color: var(--bg); color: var(--text-dark); margin: 0; padding: 20px;
-            /* Simple pattern */
-            background-image: radial-gradient(var(--brand) 10%, transparent 11%), radial-gradient(var(--brand) 10%, transparent 11%);
-            background-size: 40px 40px; background-position: 0 0, 20px 20px; opacity: 0.95;
+            background-color: var(--bg); color: #333; margin: 0; padding: 20px;
+            /* Large Paw Pattern */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100' opacity='0.08'%3E%3Cpath fill='%2354b97c' d='M26.8 21.6c-4.1-3.6-10.4-2.5-13.3 2.2-2.9 4.7-.9 10.9 3.2 14.5 4.1 3.6 10.4 2.5 13.3-2.2 3-4.7 1-10.9-3.2-14.5zm25.9-4.8c-5.2-1.7-10.7 1.3-12.2 6.6-1.5 5.3 1.5 10.8 6.7 12.5 5.2 1.7 10.7-1.3 12.2-6.6 1.5-5.3-1.5-10.9-6.7-12.5zm23.6 8c-4.9-2.6-10.9-.3-13.3 5-2.4 5.3-.2 11.5 4.7 14.1 4.9 2.6 10.9.3 13.3-5 2.5-5.3.3-11.5-4.7-14.1zm-3.1 31c-3.5-3.6-8.8-5.7-14.7-5.1-4.7.5-9 3.1-12.3 6.8-5.3 6-5.8 15-2 21.7 3.5 6.1 10.1 9.9 17.5 9.4 7.4-.5 13.7-4.9 16.5-11.5 2.8-6.6 1.4-14.6-5-21.3z'/%3E%3C/svg%3E");
+            background-size: 100px 100px;
         }
         
         .container { 
             max-width: 600px; margin: 0 auto; 
-            background: rgba(255,255,255,0.98); 
+            background: rgba(255,255,255,0.95); 
             padding: 30px; border-radius: 30px; 
             box-shadow: 0 15px 40px rgba(84, 185, 124, 0.15); 
-            border: 2px solid rgba(84, 185, 124, 0.2);
+            border: 2px solid rgba(84, 185, 124, 0.1);
         }
         
         h1 { color: var(--brand); margin-bottom: 5px; text-shadow: 1px 1px 0px #eee; }
-        p.subtitle { color: #8E9AAF; font-size: 0.9rem; margin-top: 0; }
         .brand-tag { 
             font-size: 0.8rem; color: var(--brand); 
             font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
@@ -42,7 +40,7 @@
         }
 
         .preview-box { 
-            width: 180px; height: 180px; 
+            width: 160px; height: 160px; 
             border: 4px solid #fff; outline: 3px dashed #ddd; margin: 10px auto; 
             position: relative; cursor: pointer;
             background: #f0f0f0; border-radius: 50%; 
@@ -50,10 +48,11 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         .preview-box:hover { transform: scale(1.05); border-color: var(--brand); }
+        .preview-box.locked { pointer-events: none; opacity: 0.8; border-color: #ddd; outline: none; }
+        
         .img-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Bubbles */
         .bubble {
             background: #fff; color: #333; padding: 10px 15px; border-radius: 15px;
             font-size: 0.8rem; font-weight: bold; position: absolute; top: -50px; right: -80px; width: 160px; 
@@ -62,7 +61,7 @@
         .bubble.error { border-color: #d32f2f; color: #d32f2f; }
         .bubble.success { border-color: var(--brand); color: var(--brand); }
 
-        .grid { display: flex; justify-content: space-around; gap: 15px; margin: 20px 0; }
+        .grid { display: flex; justify-content: space-around; gap: 10px; margin: 20px 0; }
         
         button.action-btn {
             background: var(--brand); color: white; border: none; padding: 15px 40px;
@@ -72,7 +71,6 @@
             transition: all 0.3s;
         }
         button.action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
-        button.action-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(84, 185, 124, 0.4); }
         
         /* Interactive Check */
         #personality-check {
@@ -83,9 +81,8 @@
             background: #fff; border: 2px solid #fff; padding: 12px 15px; border-radius: 15px; cursor: pointer; font-weight: bold; color: #555; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .trait-tag:hover { transform: translateX(3px); }
         .trait-tag.active {
-            background: var(--brand); border-color: var(--brand); color: #fff; transform: scale(1.02); box-shadow: 0 5px 15px rgba(84, 185, 124, 0.3);
+            background: var(--brand); border-color: var(--brand); color: #fff;
         }
         .trait-check { font-size: 1.2rem; display: none; }
         .trait-tag.active .trait-check { display: inline; }
@@ -105,18 +102,16 @@
         .progress-fill { height: 100%; background: var(--brand); width: 0%; transition: width 1s ease-out; }
         .stat-val { width: 50px; text-align: left; margin-left: 10px; color: #888; }
         
-        /* Certificate Button */
         .cert-btn {
             background: linear-gradient(45deg, #FFB703, #FF8C00); color: #fff; border: none; 
             padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; 
             margin-top: 20px; box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
             display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;
         }
-        .cert-btn:hover { transform: scale(1.05); }
-
+        
         #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
         
-        /* Hidden Canvas for Certificate Generation */
+        /* Canvas hidden */
         #certCanvas { display: none; }
     </style>
 </head>
@@ -130,12 +125,12 @@
     <div class="container">
         <div class="brand-tag">ANIMALSSUM.COM</div>
         <h1>🐾 人寵配對 AI</h1>
-        <p class="subtitle">Brand Color Edition • 看看你們有多夾？</p>
+        <p class="subtitle" style="color:#888;">Brand Color Edition</p>
 
         <div class="grid">
             <div style="text-align:center;">
                 <span style="font-size:1.5rem;">👱</span>
-                <div class="preview-box" id="box1" onclick="document.getElementById('upload1').click()">
+                <div class="preview-box" id="box1" onclick="uploadImg('upload1')">
                     <div id="bubble1" class="bubble"></div>
                     <div class="img-container">
                         <span style="color:#ddd; font-size:3rem;">+</span>
@@ -146,7 +141,7 @@
             </div>
             <div style="text-align:center;">
                 <span style="font-size:1.5rem;">🐶</span>
-                <div class="preview-box" id="box2" onclick="document.getElementById('upload2').click()">
+                <div class="preview-box" id="box2" onclick="uploadImg('upload2')">
                      <div id="bubble2" class="bubble"></div>
                      <div class="img-container">
                         <span style="color:#ddd; font-size:3rem;">+</span>
@@ -162,9 +157,7 @@
         <div id="personality-check">
             <h3>🐶 發現狗狗係：<span id="breed-name" style="color:var(--brand);">...</span></h3>
             <p>既然咁似樣，你地係咪有以下 <b style="color:var(--accent);">共同特徵</b>？<br><small>(請誠實作答，全中有加分!)</small></p>
-            
             <div class="trait-tags" id="trait-container"></div>
-            
             <button class="action-btn" onclick="finalAnalyze()" style="margin-top:20px;">✅ 係呀！出報告！</button>
         </div>
         
@@ -175,42 +168,19 @@
             
             <div style="background:#fcfcfc; padding:20px; border-radius:15px; margin-top:20px; border:1px solid #f0f0f0;">
                 <h4 style="margin-top:0; color:#555;">📊 AI 分析報告</h4>
-                <div class="stat-row">
-                    <div class="stat-label">👀 五官神韻</div>
-                    <div class="progress-bg"><div class="progress-fill" id="bar1"></div></div>
-                    <div class="stat-val" id="val1">0%</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-label">🎨 毛色髮色</div>
-                    <div class="progress-bg"><div class="progress-fill" id="bar2"></div></div>
-                    <div class="stat-val" id="val2">0%</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-label">🧠 氣場相近</div>
-                    <div class="progress-bg"><div class="progress-fill" id="bar3"></div></div>
-                    <div class="stat-val" id="val3">0%</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-label">🤝 默契加成</div>
-                    <div class="progress-bg"><div class="progress-fill" id="bar4" style="background:var(--accent);"></div></div>
-                    <div class="stat-val" id="val4">0%</div>
-                </div>
+                <div class="stat-row"><div class="stat-label">👀 五官神韻</div><div class="progress-bg"><div class="progress-fill" id="bar1"></div></div><div class="stat-val" id="val1">0%</div></div>
+                <div class="stat-row"><div class="stat-label">🎨 毛色髮色</div><div class="progress-bg"><div class="progress-fill" id="bar2"></div></div><div class="stat-val" id="val2">0%</div></div>
+                <div class="stat-row"><div class="stat-label">🧠 氣場相近</div><div class="progress-bg"><div class="progress-fill" id="bar3"></div></div><div class="stat-val" id="val3">0%</div></div>
+                <div class="stat-row"><div class="stat-label">🤝 默契加成</div><div class="progress-bg"><div class="progress-fill" id="bar4" style="background:var(--accent);"></div></div><div class="stat-val" id="val4">0%</div></div>
             </div>
             
-            <button class="cert-btn" onclick="generateCertificate()">
-                <span>📜</span> 下載配對證書
-            </button>
-            
-            <div style="font-size:0.8rem; color:#999; margin-top:20px;">
-                📸 Cap 圖 Share 去 IG Story 啦！
-            </div>
+            <button class="cert-btn" onclick="generateCertificate()"><span>📜</span> 下載配對證書</button>
         </div>
         
         <button onclick="window.location.reload()" style="background:transparent; color:#999; border:none; margin-top:20px; cursor:pointer; text-decoration:underline; display:none;" id="restartBtn">🔄 再玩一次</button>
     </div>
     
-    <!-- Canvas for generating certificate -->
-    <canvas id="certCanvas" width="600" height="800"></canvas>
+    <canvas id="certCanvas" width="800" height="1000"></canvas>
 
     <script>
         let mobilenetModel, cocoSsdModel;
@@ -220,12 +190,11 @@
         let finalScore = 0;
         let img1Data = {name:'', size:0}, img2Data = {name:'', size:0};
         let humanHasCat = false;
+        let isLocked = false;
 
-        // Trait Data
         const breedTraits = {
             'retriever': ['大家都係吃貨 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗', '長期傻笑好樂觀 😄', '出街一定要擔野/拎野 🎾', '好鍾意游水/玩水 💧'],
             'poodle': ['兩個都有潔癖 (唔污糟得) ✨', '出街前都要整頭扮靚 💇‍♀️', '極度聰明 (識聽人話) 🧠', '有時會發脾氣/扭計 😤', '行路好優雅 💃'],
-            'husky': ['係屋企好鍾意大叫/唱歌 🎤', '表情包 (成日做鬼臉) 🤪', '精力過盛 (拆家專員) ⚡', '其實係玻璃心 ❤️', '好鍾意頂嘴 🗣️'],
             'default': ['大家都好貪玩 🎾', '有時會發呆 (放空) 😶', '好鍾意食零食 🍪', '性格好固執 (硬頸) 🐂', '最鍾意黐住對方 ❤️']
         };
 
@@ -237,6 +206,10 @@
             } catch (e) { alert("AI 載入失敗"); }
         }
         initAI();
+
+        function uploadImg(id) {
+            if(!isLocked) document.getElementById(id).click();
+        }
 
         function loadFile(event, imgId, boxId) {
             return new Promise(resolve => {
@@ -254,6 +227,7 @@
         }
 
         async function checkHuman(event) {
+            if(isLocked) return;
             await loadFile(event, 'img1', 'box1');
             const img = document.getElementById('img1');
             const bubble = document.getElementById('bubble1');
@@ -269,14 +243,14 @@
                 if (hasCat) { 
                     showBubble(bubble, "🐱 喂喂！呢邊係狗主人專用呀！", true, true); 
                     humanHasCat = true;
-                }
-                else if (hasDog) { showBubble(bubble, "🐶 喂喂！呢邊係放主人相架！", true, false); }
+                } else if (hasDog) { showBubble(bubble, "🐶 喂喂！呢邊係放主人相架！", true, false); }
                 else { showBubble(bubble, "✅ 這張相好正！", false, false); }
                 checkReady();
             }, 300);
         }
 
         async function checkDog(event) {
+            if(isLocked) return;
             await loadFile(event, 'img2', 'box2');
             const img = document.getElementById('img2');
             const bubble = document.getElementById('bubble2');
@@ -296,9 +270,7 @@
         function showBubble(el, msg, isWarning, isError) {
             el.innerText = msg; el.style.display = 'block';
             el.className = 'bubble ' + (isError ? 'error' : (isWarning ? '' : 'success'));
-            if(!isError && !isWarning) {
-                 el.style.border = '2px solid #54b97c'; el.style.color = '#54b97c';
-            }
+            if(!isError && !isWarning) { el.style.border = '2px solid #54b97c'; el.style.color = '#54b97c'; }
         }
 
         function checkReady() {
@@ -312,6 +284,13 @@
         }
 
         async function preAnalyze() {
+            // LOCK UI
+            isLocked = true;
+            document.getElementById('box1').classList.add('locked');
+            document.getElementById('box2').classList.add('locked');
+            document.getElementById('bubble1').style.display = 'none';
+            document.getElementById('bubble2').style.display = 'none';
+            
             const btn = document.getElementById('preAnalyzeBtn');
             const img2 = document.getElementById('img2');
             btn.innerText = "🔍 識別品種中...";
@@ -322,21 +301,14 @@
             
             let traits = breedTraits['default'];
             for (const key in breedTraits) {
-                if (currentBreed.toLowerCase().includes(key)) {
-                    traits = breedTraits[key];
-                    break;
-                }
+                if (currentBreed.toLowerCase().includes(key)) { traits = breedTraits[key]; break; }
             }
 
             document.getElementById('breed-name').innerText = currentBreed;
             const container = document.getElementById('trait-container');
             container.innerHTML = "";
             traits.forEach(t => {
-                container.innerHTML += `
-                    <div class="trait-tag" onclick="toggleTrait(this)">
-                        <span>${t}</span>
-                        <span class="trait-check">✅</span>
-                    </div>`;
+                container.innerHTML += `<div class="trait-tag" onclick="toggleTrait(this)"><span>${t}</span><span class="trait-check">✅</span></div>`;
             });
             
             btn.style.display = 'none';
@@ -354,7 +326,6 @@
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
 
-            // Analysis Logic
             const act1 = mobilenetModel.infer(img1, true);
             const act2 = mobilenetModel.infer(img2, true);
             const rawDist = cosineSimilarity(act1, act2);
@@ -382,7 +353,6 @@
             setBar('bar4', 'val4', s4 > 0 ? `+${s4}%` : '0%', s4);
 
             document.getElementById('score').innerText = totalScore;
-            
             const comments = [
                 { min: 90, text: "😱 99%係失散左既親人！" },
                 { min: 80, text: "❤️ 似過同一個祖宗！" },
@@ -397,53 +367,79 @@
             document.getElementById('restartBtn').style.display = 'block';
         }
 
-        // --- Certificate Generation Function ---
+        // --- Pro Certificate Generation ---
         function generateCertificate() {
             const canvas = document.getElementById('certCanvas');
             const ctx = canvas.getContext('2d');
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
             
-            // 1. Background
+            // Background
             ctx.fillStyle = "#F0FDF4";
-            ctx.fillRect(0, 0, 600, 800);
+            ctx.fillRect(0, 0, 800, 1000);
             
-            // 2. Border
+            // Frame
+            ctx.lineWidth = 15;
             ctx.strokeStyle = "#54b97c";
-            ctx.lineWidth = 20;
-            ctx.strokeRect(0, 0, 600, 800);
+            ctx.strokeRect(30, 30, 740, 940);
             
-            // 3. Header
+            // Top Badge
+            ctx.beginPath();
+            ctx.arc(400, 110, 50, 0, 2 * Math.PI);
             ctx.fillStyle = "#54b97c";
-            ctx.font = "bold 30px 'Noto Sans TC'";
-            ctx.textAlign = "center";
-            ctx.fillText("ANIMALSSUM.COM", 300, 80);
-            
+            ctx.fill();
+            ctx.font = "40px Arial"; ctx.fillStyle = "white"; ctx.textAlign = "center"; ctx.fillText("🐾", 400, 125);
+
+            // Title
             ctx.fillStyle = "#333";
-            ctx.font = "bold 40px 'Noto Sans TC'";
-            ctx.fillText("🏆 官方認證配對證書", 300, 140);
+            ctx.font = "bold 50px 'Noto Sans TC'";
+            ctx.fillText("人寵配對認證", 400, 200);
             
-            // 4. Images (Circles are hard in raw canvas without clipping, using Rects for stability)
-            ctx.drawImage(img1, 100, 200, 180, 180);
-            ctx.drawImage(img2, 320, 200, 180, 180);
+            ctx.font = "24px 'Fredoka'";
+            ctx.fillStyle = "#888";
+            ctx.fillText("ANIMALSSUM.COM OFFICIAL", 400, 240);
+
+            // Images with Rings
+            function drawRoundImg(img, x, y, size) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2, true);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(img, x, y, size, size);
+                ctx.restore();
+                ctx.beginPath();
+                ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2, true);
+                ctx.strokeStyle = "#54b97c";
+                ctx.lineWidth = 8;
+                ctx.stroke();
+            }
+            drawRoundImg(img1, 120, 300, 240);
+            drawRoundImg(img2, 440, 300, 240);
             
-            // 5. Score
+            // Score
             ctx.fillStyle = "#54b97c";
-            ctx.font = "bold 100px 'Fredoka'";
-            ctx.fillText(finalScore + "%", 300, 500);
+            ctx.font = "bold 140px 'Fredoka'";
+            ctx.fillText(finalScore + "%", 400, 680);
             
-            // 6. Text
-            ctx.fillStyle = "#555";
-            ctx.font = "24px 'Noto Sans TC'";
-            ctx.fillText("配對品種: " + currentBreed, 300, 580);
-            ctx.fillText("評語: " + document.getElementById('comment').innerText, 300, 630);
+            ctx.font = "bold 30px 'Noto Sans TC'";
+            ctx.fillStyle = "#FFB703";
+            ctx.fillText(document.getElementById('comment').innerText, 400, 740);
+
+            // Details Box
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(100, 780, 600, 120);
+            ctx.strokeStyle = "#ddd"; ctx.lineWidth=2; ctx.strokeRect(100, 780, 600, 120);
             
-            // 7. Footer
-            ctx.font = "16px 'Noto Sans TC'";
-            ctx.fillStyle = "#999";
-            ctx.fillText("此證書由 AI 嚴格審查，真實有效 😎", 300, 750);
+            ctx.fillStyle = "#555"; ctx.font = "24px 'Noto Sans TC'";
+            ctx.fillText("配對品種: " + currentBreed, 400, 830);
+            const d = new Date();
+            ctx.fillText("認證日期: " + d.getFullYear() + "." + (d.getMonth()+1) + "." + d.getDate(), 400, 870);
+
+            // Footer
+            ctx.font = "18px 'Arial'"; ctx.fillStyle = "#999";
+            ctx.fillText("Generative AI Powered by AnimalsSum", 400, 960);
             
-            // 8. Download
             const link = document.createElement('a');
             link.download = 'animalssum-certificate.jpg';
             link.href = canvas.toDataURL('image/jpeg');
@@ -452,21 +448,10 @@
 
         function setBar(barId, valId, val, rawVal) {
             const v = rawVal !== undefined ? rawVal : val;
-            setTimeout(() => {
-                document.getElementById(barId).style.width = Math.min(100, v) + '%';
-                document.getElementById(valId).innerText = typeof val === 'string' ? val : val + '%';
-            }, 100);
+            setTimeout(() => { document.getElementById(barId).style.width = Math.min(100, v) + '%'; document.getElementById(valId).innerText = typeof val === 'string' ? val : val + '%'; }, 100);
         }
-
-        function cosineSimilarity(t1, t2) {
-            const v1 = t1.dataSync(); const v2 = t2.dataSync();
-            let dotProduct = 0, normA = 0, normB = 0;
-            for (let i = 0; i < v1.length; i++) { dotProduct += v1[i] * v2[i]; normA += v1[i] * v1[i]; normB += v2[i] * v2[i]; }
-            return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-        }
-        function mapRange(value, low1, high1, low2, high2) {
-            return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
-        }
+        function cosineSimilarity(t1, t2) { const v1 = t1.dataSync(); const v2 = t2.dataSync(); let dotProduct = 0, normA = 0, normB = 0; for (let i = 0; i < v1.length; i++) { dotProduct += v1[i] * v2[i]; normA += v1[i] * v1[i]; normB += v2[i] * v2[i]; } return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)); }
+        function mapRange(value, low1, high1, low2, high2) { return low2 + (high2 - low2) * (value - low1) / (high1 - low1); }
     </script>
 </body>
 </html>
