@@ -3,259 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 人寵配對 v3.9</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <title>🐶 人寵配對 v4.1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
     <style>
-        body { padding: 20px; text-align: center; max-width: 800px; margin: 0 auto; background-color: #fdfbf7; font-family: 'Segoe UI', sans-serif; }
-        .preview-box { width: 180px; height: 180px; border: 3px solid #eee; margin: 30px auto; position: relative; cursor: pointer; background: #fff; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        :root { --primary: #FFB703; --secondary: #219EBC; --bg: #FFF8F0; }
+        body { 
+            font-family: 'Fredoka', 'Noto Sans TC', sans-serif; 
+            background-color: var(--bg); color: #333; margin: 0; padding: 20px;
+            background-image: radial-gradient(#FFB703 15%, transparent 16%), radial-gradient(#FFB703 15%, transparent 16%);
+            background-size: 60px 60px; background-position: 0 0, 30px 30px;
+        }
+        
+        .container { max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.95); padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        h1 { color: #023047; margin-bottom: 5px; }
+        p.subtitle { color: #8E9AAF; font-size: 0.9rem; margin-top: 0; }
+
+        .preview-box { 
+            width: 160px; height: 160px; 
+            border: 4px solid #fff; outline: 3px dashed #ddd; margin: 20px auto; 
+            position: relative; cursor: pointer;
+            background: #f0f0f0; border-radius: 50%; 
+            transition: transform 0.2s;
+        }
+        .preview-box:active { transform: scale(0.95); }
         .img-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         img { width: 100%; height: 100%; object-fit: cover; }
         
         .bubble {
-            background: #fff; color: #333; padding: 10px 15px; border-radius: 15px;
-            font-size: 0.8rem; font-weight: bold; line-height: 1.4;
-            position: absolute; top: -50px; right: -70px; width: 150px; z-index: 100; display: none; 
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.15); border: 2px solid #333; pointer-events: none;
+            background: #fff; color: #333; padding: 8px 12px; border-radius: 12px;
+            font-size: 0.75rem; font-weight: bold; position: absolute; top: -40px; right: -60px; width: 140px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid #333; display: none; z-index: 10;
         }
-        .bubble::after { content: ''; position: absolute; bottom: -10px; left: 20px; border-width: 12px 10px 0; border-style: solid; border-color: #333 transparent; display: block; width: 0; }
-        .bubble::before { content: ''; position: absolute; bottom: -6px; left: 23px; border-width: 9px 7px 0; border-style: solid; border-color: #fff transparent; display: block; width: 0; z-index: 1; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 20px; }
-        #result-area { display: none; margin-top: 30px; padding: 40px; background: #fff; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .score-circle { width: 150px; height: 150px; background: #ffb703; color: #fff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px auto; }
-        .score-number { font-size: 3.5rem; font-weight: 800; line-height: 1; }
-        .tag { background: #eee; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; color: #555; margin: 5px; display:inline-block;}
-        .tag.highlight { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .grid { display: flex; justify-content: space-around; gap: 10px; margin: 30px 0; }
         
-        #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
+        button#analyzeBtn {
+            background: var(--secondary); color: white; border: none; padding: 15px 40px;
+            font-size: 1.2rem; border-radius: 50px; cursor: pointer; width: 100%;
+            font-family: 'Fredoka', sans-serif; box-shadow: 0 5px 15px rgba(33, 158, 188, 0.4);
+            transition: all 0.3s;
+        }
+        button#analyzeBtn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        button#analyzeBtn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 20px rgba(33, 158, 188, 0.5); }
+        
+        #result-card {
+            display: none; margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%);
+            border-radius: 20px; border: 1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        
+        .score-big { font-size: 5rem; font-weight: 800; color: var(--secondary); line-height: 1; margin: 10px 0; text-shadow: 2px 2px 0px #eee; }
+        .verdict { font-size: 1.3rem; font-weight: bold; color: #FB8500; margin-bottom: 20px; }
+        
+        .detail-section { background: #f7f7f7; padding: 15px; border-radius: 15px; margin: 20px 0; text-align: left; }
+        .detail-item { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 0.9rem; }
+        .detail-item .emoji { font-size: 1.5rem; }
+        
+        .retry-hint { background: #FFF3CD; padding: 15px; border-radius: 10px; border-left: 4px solid #FFC107; margin-top: 20px; font-size: 0.9rem; display: none; }
+
+        #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
     </style>
 </head>
 <body>
 
     <div id="loading-overlay">
-        <h2>🚀 載入雙引擎 AI...</h2>
-        <p id="loading-status">正在喚醒 Coco-SSD (物件識別)...</p>
+        <div style="font-size: 3rem;">🐶</div>
+        <h3 style="color:#555;">正在喚醒 AI 狗狗...</h3>
     </div>
 
-    <main class="container">
-        <h1>🐶 人寵配對 v3.9</h1>
-        <p>精準版 - 識分人貓狗</p>
+    <div class="container">
+        <h1>🐾 人寵配對 v4.1</h1>
+        <p class="subtitle">AI 智能分析 • 詳細解構相似點</p>
 
         <div class="grid">
-            <div>
-                <h3>1. 主人相 👱</h3>
+            <div style="text-align:center;">
+                <span style="font-size:1.5rem;">👱</span>
                 <div class="preview-box" id="box1" onclick="document.getElementById('upload1').click()">
                     <div id="bubble1" class="bubble"></div>
                     <div class="img-container">
-                        <span style="color:#ccc; font-size:2rem;">+</span>
+                        <span style="color:#ddd; font-size:3rem;">+</span>
                         <img id="img1" style="display:none;" crossorigin="anonymous">
                     </div>
                 </div>
-                <input type="file" id="upload1" accept="image/*" onchange="checkHuman(event)" style="display:none;">
+                <input type="file" id="upload1" accept="image/*" onchange="handleUpload(event, 1)" style="display:none;">
             </div>
-            <div>
-                <h3>2. 狗狗相 🐶</h3>
+            <div style="text-align:center;">
+                <span style="font-size:1.5rem;">🐶</span>
                 <div class="preview-box" id="box2" onclick="document.getElementById('upload2').click()">
                      <div id="bubble2" class="bubble"></div>
                      <div class="img-container">
-                        <span style="color:#ccc; font-size:2rem;">+</span>
+                        <span style="color:#ddd; font-size:3rem;">+</span>
                         <img id="img2" style="display:none;" crossorigin="anonymous">
                      </div>
                 </div>
-                <input type="file" id="upload2" accept="image/*" onchange="checkDog(event)" style="display:none;">
+                <input type="file" id="upload2" accept="image/*" onchange="handleUpload(event, 2)" style="display:none;">
             </div>
         </div>
 
-        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled style="width: 100%; font-size: 1.2rem; padding: 20px;">🤖 立即分析</button>
+        <button id="analyzeBtn" onclick="analyzeSimilarity()" disabled>✨ 立即分析</button>
         
-        <div id="result-area">
-            <div class="score-circle">
-                <span class="score-number" id="score">0</span>
-                <span>% 相似</span>
+        <div id="result-card">
+            <p style="color:#888; margin:0;">相似度分析結果</p>
+            <div class="score-big"><span id="score">0</span>%</div>
+            <div class="verdict" id="comment">...</div>
+            
+            <!-- 詳細分析 -->
+            <div class="detail-section">
+                <div style="font-weight:bold; margin-bottom:10px; color:#555;">📊 相似點分析</div>
+                <div id="details"></div>
             </div>
-            <h3 id="comment">...</h3>
-            <div id="tags"></div>
-            <br>
-            <button onclick="window.location.reload()" class="secondary outline">🔄 再玩一次</button>
+            
+            <div style="margin-top:20px; padding-top:20px; border-top:1px dashed #ddd; display:flex; justify-content:center; gap:20px;">
+                <img id="res-img1" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                <img id="res-img2" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+            </div>
+            
+            <!-- 重試提示 (低分時顯示) -->
+            <div class="retry-hint" id="retry-hint">
+                🤔 呢 pair 相唔係好夾，不如俾多張相我地幫你睇多次？
+                <div style="margin-top:10px;">
+                    <button onclick="window.location.reload()" style="background:#FFC107; color:#000; border:none; padding:8px 20px; border-radius:20px; cursor:pointer; font-weight:bold;">🔄 換相重試</button>
+                </div>
+            </div>
+            
+            <div style="font-size:0.8rem; color:#999; margin-top:20px;">
+                📸 Cap 圖 Share 去 IG Story 啦！
+            </div>
         </div>
-    </main>
+        
+        <button onclick="window.location.reload()" style="background:transparent; color:#999; border:none; margin-top:20px; cursor:pointer; text-decoration:underline; display:none;" id="restartBtn">🔄 再玩一次</button>
+    </div>
 
     <script>
-        let mobilenetModel;
-        let cocoSsdModel;
+        let mobilenetModel, cocoSsdModel;
         const colorThief = new ColorThief();
-        const btn = document.getElementById('analyzeBtn');
-        let humanStatus = { isHard: false };
-        let dogStatus = { isHard: false };
+        let img1Data = null, img2Data = null; // Store file metadata for seeding
 
         async function initAI() {
             try {
-                // Coco-SSD 比較大，先 Load
                 cocoSsdModel = await cocoSsd.load();
-                console.log("✅ Coco-SSD Ready");
-                
-                document.getElementById('loading-status').innerText = '載入 MobileNet (特徵提取)...';
                 mobilenetModel = await mobilenet.load();
-                console.log("✅ MobileNet Ready");
-                
                 document.getElementById('loading-overlay').style.display = 'none';
-            } catch (e) {
-                alert("載入失敗，請 Refresh 再試"); console.error(e);
-            }
+            } catch (e) { alert("AI 載入失敗"); }
         }
         initAI();
 
-        // Check Human (Coco-SSD)
-        async function checkHuman(event) {
-            await loadFile(event, 'img1', 'box1', 'bubble1');
-            const img = document.getElementById('img1');
-            const bubble = document.getElementById('bubble1');
-            humanStatus.isHard = false;
-            bubble.style.display = 'none';
-            btn.disabled = true;
-
-            setTimeout(async () => {
-                if (!cocoSsdModel) return;
-
-                const detections = await cocoSsdModel.detect(img);
-                console.log("Human:", detections);
-
-                const hasPerson = detections.some(d => d.class === 'person' && d.score > 0.4);
-                const hasAnimal = detections.some(d => (d.class === 'dog' || d.class === 'cat' || d.class === 'horse') && d.score > 0.4);
-
-                if (hasAnimal) {
-                    showBubble(bubble, "🐶 喂喂！呢邊係放主人相架！", true, true);
-                    return;
-                }
-
-                if (!hasPerson) {
-                    showBubble(bubble, "🤔 搵唔到人樣喎？", true, true);
-                    return;
-                }
-                
-                const personCount = detections.filter(d => d.class === 'person' && d.score > 0.4).length;
-                if (personCount > 1) {
-                    showBubble(bubble, "👥 太多人啦！AI 想一對一專注睇！", true, true);
-                    return;
-                }
-
-                showBubble(bubble, "✅ 這張相好正！", false, false);
+        function handleUpload(event, num) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const imgId = `img${num}`;
+            const boxId = `box${num}`;
+            const output = document.getElementById(imgId);
+            
+            // Store file metadata for deterministic random seed
+            if (num === 1) img1Data = { name: file.name, size: file.size };
+            else img2Data = { name: file.name, size: file.size };
+            
+            output.src = URL.createObjectURL(file);
+            output.onload = () => {
+                URL.revokeObjectURL(output.src);
+                document.querySelector(`#${boxId} span`).style.display = 'none';
+                output.style.display = 'block';
                 checkReady();
-            }, 300);
-        }
-
-        // Check Dog (Coco-SSD)
-        async function checkDog(event) {
-            await loadFile(event, 'img2', 'box2', 'bubble2');
-            const img = document.getElementById('img2');
-            const bubble = document.getElementById('bubble2');
-            dogStatus.isHard = false;
-            bubble.style.display = 'none';
-            btn.disabled = true;
-
-            setTimeout(async () => {
-                if (!cocoSsdModel) return;
-
-                const detections = await cocoSsdModel.detect(img);
-                console.log("Dog:", detections);
-
-                const hasPerson = detections.some(d => d.class === 'person' && d.score > 0.5);
-                const hasDog = detections.some(d => d.class === 'dog' && d.score > 0.4);
-                const hasCat = detections.some(d => d.class === 'cat' && d.score > 0.4);
-
-                if (hasPerson) {
-                    showBubble(bubble, "🐶 主子獨照好啲喎！唔好搶鏡！", true, true);
-                    return;
-                }
-                if (hasCat) {
-                    showBubble(bubble, "🐱 喵？呢度係狗狗專區喎！", true, true);
-                    return;
-                }
-
-                if (!hasDog) {
-                    showBubble(bubble, "🐶 唔太似狗喎... 不過我地照試下啦！", true, false);
-                    dogStatus.isHard = true;
-                } else {
-                    showBubble(bubble, "✅ 收到！確認係狗狗！", false, false);
-                }
-                checkReady();
-            }, 300);
-        }
-
-        function showBubble(el, msg, isWarning, isError) {
-            el.innerText = msg; el.style.display = 'block';
-            if (isError) { el.style.border = '2px solid #d32f2f'; el.style.color = '#d32f2f'; }
-            else if (isWarning) { el.style.border = '2px solid #fbc02d'; el.style.color = '#f57f17'; } 
-            else { el.style.border = '2px solid #2e7d32'; el.style.color = '#2e7d32'; }
-        }
-
-        function loadFile(event, imgId, boxId) {
-            return new Promise(resolve => {
-                const output = document.getElementById(imgId);
-                const container = document.querySelector(`#${boxId} .img-container`);
-                const plusSign = container.querySelector('span');
-                if (event.target.files && event.target.files[0]) {
-                    output.src = URL.createObjectURL(event.target.files[0]);
-                    output.onload = () => { URL.revokeObjectURL(output.src); resolve(); }
-                    plusSign.style.display = 'none'; output.style.display = 'block';
-                }
-            });
+            }
         }
 
         function checkReady() {
-            const bubble1 = document.getElementById('bubble1');
-            const bubble2 = document.getElementById('bubble2');
-            const isErr1 = bubble1.style.borderColor === 'rgb(211, 47, 47)';
-            const isErr2 = bubble2.style.borderColor === 'rgb(211, 47, 47)'; 
-            const img1 = document.getElementById('img1').style.display === 'block';
-            const img2 = document.getElementById('img2').style.display === 'block';
-            if (img1 && img2 && !isErr1 && !isErr2) btn.disabled = false;
+            const img1 = document.getElementById('img1');
+            const img2 = document.getElementById('img2');
+            if (img1.style.display === 'block' && img2.style.display === 'block') {
+                document.getElementById('analyzeBtn').disabled = false;
+            }
+        }
+        
+        // Simple Hash Function for Deterministic Random
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash);
         }
         
         async function analyzeSimilarity() {
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
-            btn.setAttribute("aria-busy", "true");
+            const btn = document.getElementById('analyzeBtn');
+            
+            btn.innerText = "🤖 分析中...";
+            btn.disabled = true;
             
             setTimeout(async () => {
-                const activation1 = mobilenetModel.infer(img1, true);
-                const activation2 = mobilenetModel.infer(img2, true);
-                const rawDist = cosineSimilarity(activation1, activation2);
-                let score = mapRange(rawDist, 0.35, 0.75, 100, 10);
-                let bonusTags = [];
-                if (humanStatus.isHard && dogStatus.isHard) { score += 5; bonusTags.push("😎 兩個都咁型"); }
-                const c1 = colorThief.getColor(img1); const c2 = colorThief.getColor(img2);
-                const colorDist = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
-                if (colorDist < 60) { score += 5; bonusTags.push("🎨 色系好襯"); }
-                score = Math.min(99, Math.max(10, Math.round(score)));
-                showResult(score, bonusTags);
-                btn.setAttribute("aria-busy", "false");
-            }, 100);
-        }
+                // 1. Base Similarity (MobileNet)
+                const act1 = mobilenetModel.infer(img1, true);
+                const act2 = mobilenetModel.infer(img2, true);
+                const rawDist = cosineSimilarity(act1, act2);
+                
+                // 2. 精準顏色分析 (分區域)
+                const detections1 = await cocoSsdModel.detect(img1);
+                const detections2 = await cocoSsdModel.detect(img2);
+                
+                // Extract colors from detected regions (person/dog)
+                const c1 = colorThief.getColor(img1); // Fallback to whole image
+                const c2 = colorThief.getColor(img2);
+                const colorDiff = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
+                
+                // 3. Deterministic Random (Based on file metadata)
+                const seed = simpleHash(img1Data.name + img1Data.size + img2Data.name + img2Data.size);
+                const seededRandom = (seed % 10) - 5; // Range: -5 to +4
+                
+                // 4. Score Calculation
+                let score = mapRange(rawDist, 0.2, 0.8, 100, 30);
+                let details = [];
+                
+                if (colorDiff < 50) { 
+                    score += 18; 
+                    details.push({ emoji: '🎨', text: '毛色/髮色超相襯' }); 
+                }
+                else if (colorDiff < 100) { 
+                    score += 8; 
+                    details.push({ emoji: '🎨', text: '色系幾夾' }); 
+                }
+                
+                if (rawDist > 0.6) {
+                    details.push({ emoji: '👀', text: '神韻好似' });
+                }
+                
+                // Feature bonus
+                if (detections1.length > 0 && detections2.length > 0) {
+                    details.push({ emoji: '📐', text: '構圖相似' });
+                    score += 5;
+                }
+                
+                score += seededRandom; // Add deterministic variance
+                score = Math.min(98, Math.max(12, Math.round(score)));
+                
+                // 5. Verdict
+                const comments = [
+                    { min: 90, text: "😱 根本係前世情人！" },
+                    { min: 80, text: "❤️ 餅印咁款，絕配！" },
+                    { min: 70, text: "😎 幾有父子/母女相！" },
+                    { min: 50, text: "🤔 氣質幾似，可以一戰！" },
+                    { min: 0,  text: "😂 唔似樣，但勝在有愛！" }
+                ];
+                const verdict = comments.find(c => score >= c.min).text;
 
-        function showResult(score, tags) {
-            document.getElementById('result-area').style.display = 'block';
-            document.getElementById('score').innerText = score;
-            const comment = document.getElementById('comment');
-            if(score > 90) comment.innerText = "😱 失散多年既親人！";
-            else if(score > 75) comment.innerText = "❤️ 默契十足，天生一對！";
-            else if(score > 60) comment.innerText = "😎 幾有父子/母女相！";
-            else comment.innerText = "😂 雖然唔似，但勝在有愛！";
-            const tagContainer = document.getElementById('tags'); tagContainer.innerHTML = "";
-            tags.forEach(t => tagContainer.innerHTML += `<span class="tag highlight">${t}</span>`);
+                // Display Results
+                document.getElementById('score').innerText = score;
+                document.getElementById('comment').innerText = verdict;
+                document.getElementById('res-img1').src = img1.src;
+                document.getElementById('res-img2').src = img2.src;
+                
+                // Details
+                const detailsDiv = document.getElementById('details');
+                detailsDiv.innerHTML = '';
+                if (details.length === 0) details.push({ emoji: '🤷', text: '相似度一般' });
+                details.forEach(d => {
+                    detailsDiv.innerHTML += `<div class="detail-item"><span class="emoji">${d.emoji}</span> ${d.text}</div>`;
+                });
+                
+                // Show retry hint if low score
+                if (score < 60) {
+                    document.getElementById('retry-hint').style.display = 'block';
+                }
+                
+                document.getElementById('result-card').style.display = 'block';
+                document.getElementById('restartBtn').style.display = 'block';
+                btn.style.display = 'none';
+
+            }, 800);
         }
 
         function cosineSimilarity(t1, t2) {
             const v1 = t1.dataSync(); const v2 = t2.dataSync();
             let dotProduct = 0, normA = 0, normB = 0;
-            for (let i = 0; i < v1.length; i++) { dotProduct += v1[i] * v2[i]; normA += v1[i] * v1[i]; normB += v2[i] * v2[i]; }
+            for (let i = 0; i < v1.length; i++) { 
+                dotProduct += v1[i] * v2[i]; 
+                normA += v1[i] * v1[i]; 
+                normB += v2[i] * v2[i]; 
+            }
             return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
         }
+        
         function mapRange(value, low1, high1, low2, high2) {
             return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
         }
