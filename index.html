@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 人寵配對 v3.6</title>
+    <title>🐶 人寵配對 v3.9</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
     <style>
@@ -37,13 +38,13 @@
 <body>
 
     <div id="loading-overlay">
-        <h2>🚀 載入 AI 中...</h2>
-        <p>預計 3 秒</p>
+        <h2>🚀 載入雙引擎 AI...</h2>
+        <p id="loading-status">正在喚醒 Coco-SSD (物件識別)...</p>
     </div>
 
     <main class="container">
-        <h1>🐶 人寵配對 v3.6</h1>
-        <p>極速版 - 專為手機優化</p>
+        <h1>🐶 人寵配對 v3.9</h1>
+        <p>精準版 - 識分人貓狗</p>
 
         <div class="grid">
             <div>
@@ -86,27 +87,30 @@
 
     <script>
         let mobilenetModel;
+        let cocoSsdModel;
         const colorThief = new ColorThief();
         const btn = document.getElementById('analyzeBtn');
         let humanStatus = { isHard: false };
         let dogStatus = { isHard: false };
 
-        const DOG_KEYWORDS = ['dog', 'terrier', 'retriever', 'spaniel', 'hound', 'corgi', 'poodle', 'shepherd', 'husky', 'beagle', 'bulldog', 'dalmatian', 'pug', 'collie', 'malamute', 'schnauzer', 'chihuahua', 'shiba', 'akita', 'pomeranian', 'boxer', 'rottweiler', 'doberman', 'pinscher', 'dane', 'mastiff', 'bernese', 'newfoundland', 'samoyed', 'spitz', 'whippet', 'greyhound', 'vizsla', 'weimaraner', 'pointer', 'setter', 'labrador', 'maltese', 'papillon', 'pekinese', 'shih-tzu', 'bichon', 'frise', 'wolf', 'fox', 'coyote', 'teddy', 'toy', 'wool', 'wig', 'bear'];
-
-        const HUMAN_KEYWORDS = ['person', 'man', 'woman', 'boy', 'girl', 'suit', 'tie', 'jersey', 'face', 'people'];
-
-        // 快速載入 (只用 MobileNet)
         async function initAI() {
             try {
+                // Coco-SSD 比較大，先 Load
+                cocoSsdModel = await cocoSsd.load();
+                console.log("✅ Coco-SSD Ready");
+                
+                document.getElementById('loading-status').innerText = '載入 MobileNet (特徵提取)...';
                 mobilenetModel = await mobilenet.load();
+                console.log("✅ MobileNet Ready");
+                
                 document.getElementById('loading-overlay').style.display = 'none';
             } catch (e) {
-                alert("載入失敗，請檢查網絡"); console.error(e);
+                alert("載入失敗，請 Refresh 再試"); console.error(e);
             }
         }
         initAI();
 
-        // 簡化版人臉檢查 (用 MobileNet 代替 FaceAPI)
+        // Check Human (Coco-SSD)
         async function checkHuman(event) {
             await loadFile(event, 'img1', 'box1', 'bubble1');
             const img = document.getElementById('img1');
@@ -116,44 +120,36 @@
             btn.disabled = true;
 
             setTimeout(async () => {
-                if (!mobilenetModel) { showBubble(bubble, "⏳ 請稍候...", true, true); return; }
+                if (!cocoSsdModel) return;
 
-                const predictions = await mobilenetModel.classify(img, 3);
-                console.log("Human Check:", predictions);
+                const detections = await cocoSsdModel.detect(img);
+                console.log("Human:", detections);
 
-                // Check 1: 動物過濾
-                const isAnimal = predictions.some(p => {
-                    const k = p.className.toLowerCase();
-                    return DOG_KEYWORDS.some(dk => k.includes(dk)) || k.includes('cat');
-                });
-                if (isAnimal) {
+                const hasPerson = detections.some(d => d.class === 'person' && d.score > 0.4);
+                const hasAnimal = detections.some(d => (d.class === 'dog' || d.class === 'cat' || d.class === 'horse') && d.score > 0.4);
+
+                if (hasAnimal) {
                     showBubble(bubble, "🐶 喂喂！呢邊係放主人相架！", true, true);
                     return;
                 }
 
-                // Check 2: 人類識別 (簡化版)
-                const isHuman = predictions.some(p => {
-                    const k = p.className.toLowerCase();
-                    return HUMAN_KEYWORDS.some(hk => k.includes(hk));
-                });
-
-                if (!isHuman) {
+                if (!hasPerson) {
                     showBubble(bubble, "🤔 搵唔到人樣喎？", true, true);
                     return;
                 }
-
-                // 光暗檢查
-                const brightness = getBrightness(img);
-                if (brightness < 50) {
-                    showBubble(bubble, "💡 開盞燈可以嗎？你嗰邊電費好貴？", true, false);
-                } else {
-                    showBubble(bubble, "✅ 這張相好正！", false, false);
-                }
                 
+                const personCount = detections.filter(d => d.class === 'person' && d.score > 0.4).length;
+                if (personCount > 1) {
+                    showBubble(bubble, "👥 太多人啦！AI 想一對一專注睇！", true, true);
+                    return;
+                }
+
+                showBubble(bubble, "✅ 這張相好正！", false, false);
                 checkReady();
             }, 300);
         }
 
+        // Check Dog (Coco-SSD)
         async function checkDog(event) {
             await loadFile(event, 'img2', 'box2', 'bubble2');
             const img = document.getElementById('img2');
@@ -163,35 +159,29 @@
             btn.disabled = true;
 
             setTimeout(async () => {
-                if (!mobilenetModel) { showBubble(bubble, "⏳ 請稍候...", true, true); return; }
+                if (!cocoSsdModel) return;
 
-                const predictions = await mobilenetModel.classify(img, 5);
-                console.log("Dog Check:", predictions);
+                const detections = await cocoSsdModel.detect(img);
+                console.log("Dog:", detections);
 
-                // 貓貓檢查
-                const isCat = predictions.some(p => p.className.toLowerCase().includes('cat') || p.className.toLowerCase().includes('tabby'));
-                if (isCat) {
+                const hasPerson = detections.some(d => d.class === 'person' && d.score > 0.5);
+                const hasDog = detections.some(d => d.class === 'dog' && d.score > 0.4);
+                const hasCat = detections.some(d => d.class === 'cat' && d.score > 0.4);
+
+                if (hasPerson) {
+                    showBubble(bubble, "🐶 主子獨照好啲喎！唔好搶鏡！", true, true);
+                    return;
+                }
+                if (hasCat) {
                     showBubble(bubble, "🐱 喵？呢度係狗狗專區喎！", true, true);
                     return;
                 }
 
-                // 狗狗檢查
-                let isDog = false;
-                let detectedBreed = "";
-                for (let p of predictions) {
-                    const className = p.className.toLowerCase();
-                    if (DOG_KEYWORDS.some(k => className.includes(k))) {
-                        isDog = true; 
-                        detectedBreed = p.className.split(',')[0]; 
-                        break;
-                    }
-                }
-
-                if (!isDog) {
+                if (!hasDog) {
                     showBubble(bubble, "🐶 唔太似狗喎... 不過我地照試下啦！", true, false);
                     dogStatus.isHard = true;
                 } else {
-                    showBubble(bubble, `✅ 收到！係 ${detectedBreed}`, false, false);
+                    showBubble(bubble, "✅ 收到！確認係狗狗！", false, false);
                 }
                 checkReady();
             }, 300);
@@ -200,10 +190,8 @@
         function showBubble(el, msg, isWarning, isError) {
             el.innerText = msg; el.style.display = 'block';
             if (isError) { el.style.border = '2px solid #d32f2f'; el.style.color = '#d32f2f'; }
-            else if (isWarning) { el.style.border = '2px solid #fbc02d'; el.style.color = '#f57f17'; 
-                if (el.id === 'bubble1') humanStatus.isHard = true; 
-                if (el.id === 'bubble2') dogStatus.isHard = true;
-            } else { el.style.border = '2px solid #2e7d32'; el.style.color = '#2e7d32'; }
+            else if (isWarning) { el.style.border = '2px solid #fbc02d'; el.style.color = '#f57f17'; } 
+            else { el.style.border = '2px solid #2e7d32'; el.style.color = '#2e7d32'; }
         }
 
         function loadFile(event, imgId, boxId) {
@@ -214,8 +202,7 @@
                 if (event.target.files && event.target.files[0]) {
                     output.src = URL.createObjectURL(event.target.files[0]);
                     output.onload = () => { URL.revokeObjectURL(output.src); resolve(); }
-                    plusSign.style.display = 'none'; 
-                    output.style.display = 'block';
+                    plusSign.style.display = 'none'; output.style.display = 'block';
                 }
             });
         }
@@ -230,21 +217,6 @@
             if (img1 && img2 && !isErr1 && !isErr2) btn.disabled = false;
         }
         
-        function getBrightness(image) {
-            let canvas = document.createElement('canvas'); 
-            canvas.width = image.width; 
-            canvas.height = image.height;
-            let ctx = canvas.getContext('2d'); 
-            ctx.drawImage(image, 0, 0);
-            let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
-            let colorSum = 0;
-            for(let x = 0, len = imageData.data.length; x < len; x+=4) {
-                let avg = Math.floor((imageData.data[x] + imageData.data[x+1] + imageData.data[x+2])/3);
-                colorSum += avg;
-            }
-            return Math.floor(colorSum / (image.width*image.height));
-        }
-
         async function analyzeSimilarity() {
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
@@ -255,19 +227,11 @@
                 const activation2 = mobilenetModel.infer(img2, true);
                 const rawDist = cosineSimilarity(activation1, activation2);
                 let score = mapRange(rawDist, 0.35, 0.75, 100, 10);
-                
                 let bonusTags = [];
-                if (humanStatus.isHard && dogStatus.isHard) { 
-                    score += 5; bonusTags.push("😎 兩個都咁型"); 
-                } else if (humanStatus.isHard || dogStatus.isHard) { 
-                    score *= 0.9; bonusTags.push("📉 受光線/角度影響"); 
-                }
-                
-                const c1 = colorThief.getColor(img1); 
-                const c2 = colorThief.getColor(img2);
+                if (humanStatus.isHard && dogStatus.isHard) { score += 5; bonusTags.push("😎 兩個都咁型"); }
+                const c1 = colorThief.getColor(img1); const c2 = colorThief.getColor(img2);
                 const colorDist = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
                 if (colorDist < 60) { score += 5; bonusTags.push("🎨 色系好襯"); }
-                
                 score = Math.min(99, Math.max(10, Math.round(score)));
                 showResult(score, bonusTags);
                 btn.setAttribute("aria-busy", "false");
@@ -282,22 +246,16 @@
             else if(score > 75) comment.innerText = "❤️ 默契十足，天生一對！";
             else if(score > 60) comment.innerText = "😎 幾有父子/母女相！";
             else comment.innerText = "😂 雖然唔似，但勝在有愛！";
-            const tagContainer = document.getElementById('tags'); 
-            tagContainer.innerHTML = "";
+            const tagContainer = document.getElementById('tags'); tagContainer.innerHTML = "";
             tags.forEach(t => tagContainer.innerHTML += `<span class="tag highlight">${t}</span>`);
         }
 
         function cosineSimilarity(t1, t2) {
             const v1 = t1.dataSync(); const v2 = t2.dataSync();
             let dotProduct = 0, normA = 0, normB = 0;
-            for (let i = 0; i < v1.length; i++) { 
-                dotProduct += v1[i] * v2[i]; 
-                normA += v1[i] * v1[i]; 
-                normB += v2[i] * v2[i]; 
-            }
+            for (let i = 0; i < v1.length; i++) { dotProduct += v1[i] * v2[i]; normA += v1[i] * v1[i]; normB += v2[i] * v2[i]; }
             return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
         }
-        
         function mapRange(value, low1, high1, low2, high2) {
             return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
         }
