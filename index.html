@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
-<!-- ... Head & CSS 保持不變 (v4.11) ... -->
-<!-- ... 確保 CSS 入面 .role-label 係 margin-top: 12px (放在下方) ... -->
+<!-- Head & CSS (Keeping previous styles) -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
     <style>
-        /* ... 保持 v4.11 的 CSS ... */
+        /* ... CSS Identical to v4.13 ... */
         :root { --brand: #54b97c; --accent: #FFB703; --bg: #F0FDF4; }
         body { font-family: 'Fredoka', 'Noto Sans TC', sans-serif; background-color: var(--bg); color: #333; margin: 0; padding: 20px; }
         .container { max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.98); padding: 30px; border-radius: 30px; box-shadow: 0 15px 40px rgba(84, 185, 124, 0.15); border: 2px solid rgba(84, 185, 124, 0.1); position: relative; }
@@ -22,20 +21,16 @@
         .lang-btn.active { background: var(--brand); color: #fff; }
         h1 { color: var(--brand); margin-bottom: 5px; text-shadow: 1px 1px 0px #eee; margin-top: 10px; }
         .brand-tag { font-size: 0.8rem; color: var(--brand); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: #e6f7ee; display: inline-block; padding: 5px 15px; border-radius: 20px; margin-bottom: 10px; }
-        
-        /* v4.11 Label Style (Below Circle) */
         .role-label { font-size: 1rem; font-weight: bold; color: var(--brand); margin-top: 12px; display: block; }
-
         .preview-box { width: 160px; height: 160px; border: 4px solid #fff; outline: 3px dashed #ddd; margin: 10px auto; position: relative; cursor: pointer; background: #f0f0f0; border-radius: 50%; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .preview-box:hover { transform: scale(1.05); border-color: var(--brand); }
         .preview-box.locked { pointer-events: none; opacity: 0.8; border-color: #ddd; outline: none; }
         .img-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         img { width: 100%; height: 100%; object-fit: cover; }
-        
         .bubble { background: #fff; color: #333; padding: 10px 15px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; position: absolute; top: -50px; right: -80px; width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid #333; display: none; z-index: 100; }
         .bubble.error { border-color: #d32f2f; color: #d32f2f; }
         .bubble.success { border-color: var(--brand); color: var(--brand); }
-        
+        .bubble.warning { border-color: #FFB703; color: #d49a02; } /* New Warning Style */
         .grid { display: flex; justify-content: space-around; gap: 10px; margin: 20px 0; }
         button.action-btn { background: var(--brand); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; width: 100%; font-family: 'Fredoka', sans-serif; box-shadow: 0 8px 20px rgba(84, 185, 124, 0.3); transition: all 0.3s; }
         button.action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
@@ -54,19 +49,23 @@
         .progress-fill { height: 100%; background: var(--brand); width: 0%; transition: width 1s ease-out; }
         .stat-val { width: 50px; text-align: left; margin-left: 10px; color: #888; }
         .cert-btn { background: linear-gradient(45deg, #FFB703, #FF8C00); color: #fff; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; margin-top: 20px; box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4); display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; }
-        #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
+        
+        /* Loading Overlay - Initially Hidden, Shown on demand */
+        #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; }
         #certCanvas { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- ... HTML Structure 保持不變 (v4.11) ... -->
     <div id="loading-overlay">
-        <div style="font-size: 3rem;">🐶</div>
-        <h3 style="color:#555;" data-i18n="loading">正在喚醒 AI 狗狗...</h3>
+        <div style="font-size: 3rem;">🧠</div>
+        <h3 style="color:#555;">Loading AI...</h3>
+        <p style="color:#888;">(First time takes a few seconds)</p>
     </div>
 
+    <!-- ... Body Content (Same as v4.13) ... -->
     <div class="container">
+        <!-- ... Lang Switch ... -->
         <div class="lang-switch">
             <button class="lang-btn active" onclick="setLang('zh')" id="btn-zh">繁</button>
             <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
@@ -103,7 +102,7 @@
 
         <button id="preAnalyzeBtn" class="action-btn" onclick="preAnalyze()" disabled data-i18n="analyzeBtn">✨ 立即分析</button>
 
-        <!-- ... Personality Check ... -->
+        <!-- ... Hidden Sections ... -->
         <div id="personality-check">
             <h3><span data-i18n="foundBreed">🐶 發現狗狗是：</span><span id="breed-name" style="color:var(--brand);">...</span></h3>
             <p><span data-i18n="traitPrompt">加分位：你們是否有以下 共同特徵？</span><br><small data-i18n="traitHint">(請誠實作答，全中有加乘!)</small></p>
@@ -111,7 +110,6 @@
             <button class="action-btn" onclick="finalAnalyze()" style="margin-top:20px;" data-i18n="reportBtn">✅ ok！出報告！</button>
         </div>
         
-        <!-- ... Result Card ... -->
         <div id="result-card">
             <p style="color:#888; margin:0;" data-i18n="resultTitle">AI 深度分析結果</p>
             <div class="score-big"><span id="score">0</span>%</div>
@@ -130,9 +128,9 @@
     <canvas id="certCanvas" width="800" height="1000"></canvas>
 
     <script>
-        // ... i18n & Comments 保持 v4.11 不變 ...
         const i18nData = {
             zh: {
+                // ... Existing ...
                 loading: "正在喚醒 AI 狗狗...",
                 title: "🐾 人寵配對 AI",
                 subtitle: "Brand Color Edition • 測試你們相似度？",
@@ -152,18 +150,23 @@
                 downloadCert: "下載配對證書",
                 restart: "🔄 再玩一次",
                 analyzeText: "🔍 識別品種中...",
-                // New Bubble Keys for v4.12
-                bubbleHumanErr: "🐱 咦！此乃狗奴才（人類）專用喎！",
-                bubbleDogErr: "🐶 喂喂！呢邊係放主人相架！",
-                bubbleHumanOk: "✅ 這張相ok！",
-                bubbleDogHumanErr: "🐶 汪汪一個就夠喇！",
-                bubbleDogCatErr: "🐱 喵星人？ sor 呢度係狗狗專區！",
+                // New Bubbles (Pet Slang)
+                bubbleDogErr: "🐶 人類？呢邊放汪星人架！",
+                bubbleHumanOk: "✅ 型喎人類！",
+                bubbleDogHumanErr: "🐶 人類？呢邊放汪星人架！", 
                 bubbleDogOk: "✅ 收到！確認係狗狗！",
+                
+                // NEW: Special Cases
+                bubbleSusDog: "🐶 究竟是人是狗？當是狗先～",
+                bubbleOtherAnimal: "🐱 你的寵物不是狗？快叫動物之心做其他動物AI啦",
+                bubbleNoObj: "👀 狗狗呢？ where is 狗狗？？",
+                
                 certTitle: "人寵配對認證",
                 certDate: "認證日期: ",
                 certBreed: "配對品種: ",
             },
             en: {
+                // ... Existing ...
                 loading: "Waking up AI Dog...",
                 title: "🐾 Pet Match AI",
                 subtitle: "Brand Color Edition • Are you a perfect match?",
@@ -183,89 +186,72 @@
                 downloadCert: "Download Certificate",
                 restart: "🔄 Play Again",
                 analyzeText: "🔍 Identifying Breed...",
-                // New Bubble Keys for v4.12
-                bubbleHumanErr: "🐱 Whoops! Human slaves only!", // Use this for Dog detection too
-                bubbleDogErr: "🐶 Hold up! Where's the Hooman?",
-                bubbleHumanOk: "✅ Looking sharp!",
+                // New Bubbles (Pet Slang)
+                bubbleDogErr: "🐶 Hooman? No! This is Doggo Zone!",
+                bubbleHumanOk: "✅ Looking sharp, Hooman!",
                 bubbleDogHumanErr: "🐶 One woofer is enough! No Hoomans!",
-                bubbleDogCatErr: "🐱 Meow? Sorry, Doggo Zone only!",
                 bubbleDogOk: "✅ Paw-fect! That's a dog!",
+                
+                // NEW: Special Cases
+                bubbleSusDog: "🐶 Hmm... Sus! Looks human but smells like doggo! Treating as Dog!",
+                bubbleOtherAnimal: "🐱 Not a dog? Go find Animal-Heart-AI!",
+                bubbleNoObj: "👀 Where is Doggo? I only see air!",
+
                 certTitle: "Pet Match Certificate",
                 certDate: "Date: ",
                 certBreed: "Breed: ",
             }
         };
-
-        // ... CommentsData & TraitsData 保持不變 ...
-        const commentsData = {
-            zh: [
-                { min: 90, text: "😱 99%係失散咗既親人！感恩天上安排你哋重遇返！🩷" },
-                { min: 80, text: "❤️ 勁！似過同一個祖宗！" },
-                { min: 60, text: "😎 可能上世住隔離村！" },
-                { min: 40, text: "🤔 可能上世冤家今世變摯友" },
-                { min: 25, text: "😂 你地係異樣相吸。不過相愛先最重要！" },
-                { min: 0,  text: "😂 sor 真係唔係好似樣，但感覺你哋眉目有愛！" }
-            ],
-            en: [
-                { min: 90, text: "😱 OMG! Literally separated at birth?! Thanks heavens you two met again! 🩷" },
-                { min: 80, text: "❤️ Twinning! Are you secretly related?" },
-                { min: 60, text: "😎 Definitive Soulmate Vibes for the next life" },
-                { min: 40, text: "🤔 Opposites attract! Still cute tho!" },
-                { min: 25, text: "😂 Past rivals, now best friends!" },
-                { min: 0,  text: "😂 Zero match, but 100% Love!" }
-            ]
-        };
-
-        const traitsData = {
-            zh: {
-                retriever: ['大家都咁為食 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗'],
-                poodle: ['兩個都有潔癖 (唔污糟得) ✨', '極度聰明 (識聽人話) 🧠'],
-                default: ['大家都好貪玩 🎾', '有時會發呆 (放空) 😶', '好鍾意食零食 🍪', '性格好固執 (硬頸) 🐂', '最鍾意黐住對方 ❤️']
-            },
-            en: {
-                retriever: ['Both are foodies (Run for snacks) 🍖', 'Super Social (Social King) 🤗'],
-                poodle: ['Both are clean freaks ✨', 'Super Smart (Understands humans) 🧠'],
-                default: ['Both are playful 🎾', 'Zone out sometimes 😶', 'Love snacks 🍪', 'Stubborn personality 🐂', 'Love being together ❤️']
-            }
-        };
+        // ... CommentsData & TraitsData Same ...
+        const commentsData = { zh: [{ min: 90, text: "😱 99%係失散咗既親人！感恩天上安排你哋重遇返！🩷" }, { min: 80, text: "❤️ 勁！似過同一個祖宗！" }, { min: 60, text: "😎 可能上世住隔離村！" }, { min: 40, text: "🤔 可能上世冤家今世變摯友" }, { min: 25, text: "😂 你地係異樣相吸。不過相愛先最重要！" }, { min: 0, text: "😂 sor 真係唔係好似樣，但感覺你哋眉目有愛！" }], en: [{ min: 90, text: "😱 OMG! Literally separated at birth?! Thanks heavens you two met again! 🩷" }, { min: 80, text: "❤️ Twinning! Are you secretly related?" }, { min: 60, text: "😎 Definitive Soulmate Vibes for the next life" }, { min: 40, text: "🤔 Opposites attract! Still cute tho!" }, { min: 25, text: "😂 Past rivals, now best friends!" }, { min: 0, text: "😂 Zero match, but 100% Love!" }] };
+        const traitsData = { zh: { retriever: ['大家都咁為食 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗'], poodle: ['兩個都有潔癖 (唔污糟得) ✨', '極度聰明 (識聽人話) 🧠'], default: ['大家都好貪玩 🎾', '有時會發呆 (放空) 😶', '好鍾意食零食 🍪', '性格好固執 (硬頸) 🐂', '最鍾意黐住對方 ❤️'] }, en: { retriever: ['Both are foodies (Run for snacks) 🍖', 'Super Social (Social King) 🤗'], poodle: ['Both are clean freaks ✨', 'Super Smart (Understands humans) 🧠'], default: ['Both are playful 🎾', 'Zone out sometimes 😶', 'Love snacks 🍪', 'Stubborn personality 🐂', 'Love being together ❤️'] } };
 
         let currentLang = 'zh';
-        function setLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(i18nData[lang][key]) el.innerText = i18nData[lang][key];
-            });
-            document.getElementById('btn-zh').className = lang === 'zh' ? 'lang-btn active' : 'lang-btn';
-            document.getElementById('btn-en').className = lang === 'en' ? 'lang-btn active' : 'lang-btn';
-            if(document.getElementById('preAnalyzeBtn').disabled && document.getElementById('preAnalyzeBtn').innerText.includes('...')) {
-                 document.getElementById('preAnalyzeBtn').innerText = i18nData[lang].analyzeText;
-            }
-        }
-        const browserLang = navigator.language || navigator.userLanguage; 
-        if(browserLang.toLowerCase().includes('en')) { setLang('en'); } else { setLang('zh'); }
+        function setLang(lang) { currentLang = lang; document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if(i18nData[lang][key]) el.innerText = i18nData[lang][key]; }); document.getElementById('btn-zh').className = lang === 'zh' ? 'lang-btn active' : 'lang-btn'; document.getElementById('btn-en').className = lang === 'en' ? 'lang-btn active' : 'lang-btn'; }
+        const browserLang = navigator.language || navigator.userLanguage; if(browserLang.toLowerCase().includes('en')) { setLang('en'); } else { setLang('zh'); }
 
         let mobilenetModel, cocoSsdModel;
+        let isModelLoaded = false;
         const colorThief = new ColorThief();
-        let currentBreed = "";
-        let personalityScore = 0;
-        let finalScore = 0;
+        let currentBreed = ""; let personalityScore = 0; let finalScore = 0;
         let img1Data = {name:'', size:0}, img2Data = {name:'', size:0};
-        let humanHasCat = false;
         let isLocked = false;
-        let humanHasDog = false; // 新增 Flag
+        let humanHasDog = false;
 
-        async function initAI() {
+        // Lazy Load Function
+        async function ensureModelsLoaded() {
+            if (isModelLoaded) return;
+            document.getElementById('loading-overlay').style.display = 'flex';
             try {
                 cocoSsdModel = await cocoSsd.load();
                 mobilenetModel = await mobilenet.load();
+                isModelLoaded = true;
                 document.getElementById('loading-overlay').style.display = 'none';
-            } catch (e) { alert("AI Load Error"); }
+            } catch (e) { 
+                alert("AI Load Error: " + e.message); 
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
         }
-        initAI();
+
+        const dogKeywords = ['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'dalmatian', 'boxer', 'rottweiler', 'pinscher', 'chihuahua', 'malamute', 'dane', 'mastiff', 'bernese', 'newfoundland', 'shiba', 'akita', 'pomeranian', 'maltese', 'papillon', 'pekinese', 'setter', 'pointer', 'vizsla', 'weimaraner', 'dachshund', 'whippet', 'greyhound', 'borzoi', 'basenji', 'chow', 'samoyed', 'keeshond', 'lhasa', 'shih', 'shar', 'bull', 'basset', 'sheepdog', 'cocker'];
+
+        async function isDogByMobilenet(imgElement) {
+            const preds = await mobilenetModel.classify(imgElement, 3);
+            return preds.some(p => dogKeywords.some(k => p.className.toLowerCase().includes(k)));
+        }
+        
+        // Detect Other Animals (not Person, not Dog)
+        async function isOtherAnimal(detections) {
+            const animals = ['cat', 'bird', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe'];
+            return detections.some(d => animals.includes(d.class) && d.score > 0.4);
+        }
 
         function uploadImg(id) { if(!isLocked) document.getElementById(id).click(); }
-        function loadFile(event, imgId, boxId) {
+        
+        async function loadFile(event, imgId, boxId) {
+            // Trigger Model Loading ONLY when user uploads
+            await ensureModelsLoaded(); 
+            
             return new Promise(resolve => {
                 const output = document.getElementById(imgId);
                 const file = event.target.files[0];
@@ -280,34 +266,26 @@
             });
         }
 
-        // --- UPDATED checkHuman Logic (Strict Mode) ---
         async function checkHuman(event) {
             if(isLocked) return;
             await loadFile(event, 'img1', 'box1');
             const img = document.getElementById('img1');
             const bubble = document.getElementById('bubble1');
             bubble.style.display = 'none';
-            humanHasCat = false;
-            humanHasDog = false;
+            humanHasDog = false; 
             
             setTimeout(async () => {
-                if (!cocoSsdModel) return;
+                if (!cocoSsdModel || !mobilenetModel) return;
+                
                 const detections = await cocoSsdModel.detect(img);
-                
-                // 1. Check for Dog (Primary Reject)
-                const hasDog = detections.some(d => d.class === 'dog' && d.score > 0.4);
-                // 2. Check for Cat (Secondary Reject)
-                const hasCat = detections.some(d => d.class === 'cat' && d.score > 0.4);
-                
-                if (hasDog) { 
-                    // UPDATED: Now catching DOGS in human slot
-                    showBubble(bubble, i18nData[currentLang].bubbleDogErr, true, true); 
+                const cocoDog = detections.some(d => d.class === 'dog' && d.score > 0.4);
+                const mobileDog = await isDogByMobilenet(img);
+
+                if (cocoDog || mobileDog) {
+                    showBubble(bubble, i18nData[currentLang].bubbleDogErr, true, true);
                     humanHasDog = true;
-                } else if (hasCat) { 
-                    showBubble(bubble, i18nData[currentLang].bubbleHumanErr, true, true); 
-                    humanHasCat = true;
-                } else { 
-                    showBubble(bubble, i18nData[currentLang].bubbleHumanOk, false, false); 
+                } else {
+                    showBubble(bubble, i18nData[currentLang].bubbleHumanOk, false, false);
                 }
                 checkReady();
             }, 300);
@@ -319,36 +297,69 @@
             const img = document.getElementById('img2');
             const bubble = document.getElementById('bubble2');
             bubble.style.display = 'none';
+            
             setTimeout(async () => {
-                if (!cocoSsdModel) return;
+                if (!cocoSsdModel || !mobilenetModel) return;
+                
                 const detections = await cocoSsdModel.detect(img);
-                const hasPerson = detections.some(d => d.class === 'person' && d.score > 0.5);
-                const hasCat = detections.some(d => d.class === 'cat' && d.score > 0.4);
-                if (hasPerson) { showBubble(bubble, i18nData[currentLang].bubbleDogHumanErr, true, false); }
-                else if (hasCat) { showBubble(bubble, i18nData[currentLang].bubbleDogCatErr, true, false); }
-                else { showBubble(bubble, i18nData[currentLang].bubbleDogOk, false, false); }
+                const cocoPerson = detections.some(d => d.class === 'person' && d.score > 0.5);
+                
+                // 1. MobileNet Check
+                const mobileDog = await isDogByMobilenet(img);
+                // 2. Other Animal Check
+                const isOther = await isOtherAnimal(detections);
+
+                if (mobileDog) {
+                    // MobileNet Confirms Dog
+                    if(cocoPerson) {
+                         // Funny Case: Looks like person but smells like dog
+                         showBubble(bubble, i18nData[currentLang].bubbleSusDog, true, false); // Warning Color
+                    } else {
+                         showBubble(bubble, i18nData[currentLang].bubbleDogOk, false, false);
+                    }
+                } else if (cocoPerson) {
+                    // Pure Person (MobileNet didn't find dog features)
+                    showBubble(bubble, i18nData[currentLang].bubbleDogHumanErr, true, true);
+                } else if (isOther) {
+                    // Cat, Bird, etc.
+                    showBubble(bubble, i18nData[currentLang].bubbleOtherAnimal, true, true);
+                } else if (detections.length === 0) {
+                     // Empty / Object
+                     showBubble(bubble, i18nData[currentLang].bubbleNoObj, true, true);
+                } else {
+                    // Fallback (e.g. fluffy blob)
+                    showBubble(bubble, i18nData[currentLang].bubbleDogOk, false, false);
+                }
                 checkReady();
             }, 300);
         }
 
         function showBubble(el, msg, isWarning, isError) {
             el.innerText = msg; el.style.display = 'block';
-            el.className = 'bubble ' + (isError ? 'error' : (isWarning ? '' : 'success'));
+            el.className = 'bubble ' + (isError ? 'error' : (isWarning ? 'warning' : 'success'));
             if(!isError && !isWarning) { el.style.border = '2px solid #54b97c'; el.style.color = '#54b97c'; }
+            else if(isWarning) { el.style.border = '2px solid #FFB703'; el.style.color = '#d49a02'; } // Warning Style
         }
 
         function checkReady() {
             const img1 = document.getElementById('img1');
             const img2 = document.getElementById('img2');
-            // Strict Check: No Cat AND No Dog allowed in Human slot
-            if (img1.style.display === 'block' && img2.style.display === 'block' && !humanHasCat && !humanHasDog) {
-                document.getElementById('preAnalyzeBtn').disabled = false;
+            const btn = document.getElementById('preAnalyzeBtn');
+            const bubble1 = document.getElementById('bubble1');
+            const bubble2 = document.getElementById('bubble2');
+            
+            // Allow if bubbles are Success OR Warning (Warning means proceed with caution)
+            const isB1Ok = !bubble1.classList.contains('error'); 
+            const isB2Ok = !bubble2.classList.contains('error');
+
+            if (img1.style.display === 'block' && img2.style.display === 'block' && isB1Ok && isB2Ok) {
+                btn.disabled = false;
             } else {
-                document.getElementById('preAnalyzeBtn').disabled = true;
+                btn.disabled = true;
             }
         }
 
-        // ... Rest of logic (preAnalyze, finalAnalyze, etc.) identical to v4.11 ...
+        // ... Rest of Functions (preAnalyze, finalAnalyze, cert) ...
         async function preAnalyze() {
             isLocked = true;
             document.getElementById('box1').classList.add('locked');
@@ -369,11 +380,7 @@
             btn.style.display = 'none';
             document.getElementById('personality-check').style.display = 'block';
         }
-        function toggleTrait(el) {
-            el.classList.toggle('active');
-            const activeCount = document.querySelectorAll('.trait-tag.active').length;
-            personalityScore = activeCount * 4;
-        }
+        function toggleTrait(el) { el.classList.toggle('active'); const activeCount = document.querySelectorAll('.trait-tag.active').length; personalityScore = activeCount * 4; }
         async function finalAnalyze() {
             document.getElementById('personality-check').style.display = 'none';
             const img1 = document.getElementById('img1');
