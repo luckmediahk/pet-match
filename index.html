@@ -3,508 +3,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🐶 AnimalsSum | AI 人寵配對</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>🐶 AnimalsSum | 人寵配對大作戰</title>
     
-    <!-- AI Libraries -->
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <!-- Confetti for celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         :root {
-            --primary: #54b97c;
-            --primary-dark: #3da065;
-            --accent: #FFB703;
-            --bg-gradient: linear-gradient(135deg, #f6fffa 0%, #e1f5fe 100%);
-            --glass: rgba(255, 255, 255, 0.95);
-            --shadow: 0 10px 30px rgba(84, 185, 124, 0.15);
+            --brand: #54b97c;
+            --brand-dark: #3da065;
+            --accent: #FFD93D; /* Yellow Pop */
+            --danger: #FF6B6B;
+            --dark: #2d3436;
+            --light: #f6fffa;
         }
 
         body {
             font-family: 'Noto Sans TC', 'Fredoka', sans-serif;
-            background: var(--bg-gradient);
-            color: #444;
+            background-color: #e0f7fa;
+            /* Fun abstract background */
+            background-image: radial-gradient(circle at 10% 20%, rgb(255, 252, 213) 0%, rgb(200, 247, 197) 90%);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            color: var(--dark);
+            overflow-x: hidden;
         }
 
-        .app-container {
-            background: var(--glass);
-            width: 100%;
+        .container {
             max-width: 500px;
-            border-radius: 30px;
-            padding: 30px 20px;
-            box-shadow: var(--shadow);
+            margin: 0 auto;
             position: relative;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.8);
-            margin-top: 10px;
+            padding-bottom: 50px;
         }
 
-        /* Header */
-        header { text-align: center; margin-bottom: 30px; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: 1px; }
-        h1 { margin: 10px 0 5px; font-size: 1.8rem; color: #333; }
-        .subtitle { color: #888; font-size: 0.9rem; margin: 0; }
-
-        /* Upload Grid */
-        .upload-grid {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 25px;
+        /* Fun Header */
+        header {
+            text-align: center;
+            padding: 20px 0;
+            animation: bounceInDown 0.8s;
         }
 
-        .upload-box {
-            flex: 1;
-            aspect-ratio: 1/1;
-            background: #fff;
-            border-radius: 20px;
-            border: 3px dashed #ddd;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .logo-tag {
+            background: var(--dark); color: var(--accent);
+            padding: 5px 15px; border-radius: 20px;
+            font-weight: 800; font-size: 0.8rem; letter-spacing: 2px;
+            display: inline-block; transform: rotate(-3deg);
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
         }
 
-        .upload-box:hover, .upload-box.has-img {
-            border-color: var(--primary);
-            border-style: solid;
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        h1 {
+            font-size: 2.2rem; margin: 10px 0 5px; color: var(--brand);
+            text-shadow: 2px 2px 0px #fff; font-weight: 900;
         }
         
-        .upload-box img {
-            width: 100%; height: 100%; object-fit: cover;
-            position: absolute; top: 0; left: 0;
-            display: none;
-        }
-
-        .upload-icon { font-size: 2rem; color: #ddd; margin-bottom: 5px; transition: 0.3s; }
-        .upload-label { font-size: 0.9rem; font-weight: bold; color: #aaa; transition: 0.3s; }
-        .upload-box:hover .upload-icon { color: var(--primary); }
-        .upload-box:hover .upload-label { color: var(--primary); }
-
-        /* Bubbles */
-        .status-bubble {
-            position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
-            background: #333; color: #fff; font-size: 0.75rem; padding: 4px 12px;
-            border-radius: 12px; white-space: nowrap; opacity: 0; transition: 0.3s;
-            pointer-events: none; z-index: 10;
-        }
-        .status-bubble.show { opacity: 1; bottom: 10px; }
-        .status-bubble.error { background: #ef5350; }
-        .status-bubble.success { background: var(--primary); }
-
-        /* Main Button */
-        .action-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(84, 185, 124, 0.4);
-            transition: transform 0.2s, background 0.2s;
+        /* The Match Area */
+        .match-arena {
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             gap: 10px;
-        }
-        .action-btn:active { transform: scale(0.98); }
-        .action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
-
-        /* Sections */
-        .section-card {
-            background: #fff;
-            padding: 25px;
-            border-radius: 25px;
-            margin-top: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
-            display: none; /* Hidden by default */
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Personality Tags */
-        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
-        .tag {
-            background: #f0f7f4; border: 1px solid #e0e0e0;
-            padding: 8px 15px; border-radius: 12px;
-            font-size: 0.9rem; color: #555; cursor: pointer;
-            transition: 0.2s; user-select: none;
-        }
-        .tag.selected {
-            background: var(--primary); color: white; border-color: var(--primary);
-            box-shadow: 0 3px 10px rgba(84, 185, 124, 0.3);
-        }
-
-        /* Result Score */
-        .score-display {
-            text-align: center; margin-bottom: 20px;
+            margin-top: 20px;
             position: relative;
         }
-        .score-val {
-            font-size: 5rem; font-weight: 800; color: var(--primary);
-            line-height: 1; text-shadow: 2px 2px 0px #ebf9f0;
+
+        .photo-card {
+            flex: 1;
+            background: #fff;
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            transition: transform 0.2s;
+            cursor: pointer;
+            border: 3px solid #fff;
+            overflow: hidden;
         }
-        .score-label { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
 
-        /* Bars */
-        .stat-item { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
-        .stat-bar { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
-        .stat-fill { height: 100%; width: 0%; background: var(--primary); transition: width 1s cubic-bezier(0.1, 0.7, 1.0, 0.1); }
+        .photo-card:active { transform: scale(0.95); }
+        .photo-card.locked { cursor: default; transform: none; }
 
-        /* Form for Data Collection */
-        .data-form { margin-top: 20px; padding-top: 20px; border-top: 1px dashed #eee; }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: bold; color: #666; margin-bottom: 5px; }
-        .form-input { 
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; 
-            font-family: inherit; font-size: 0.95rem; box-sizing: border-box;
+        .img-box {
+            width: 100%; aspect-ratio: 1/1;
+            background: #f0f2f5; border-radius: 15px;
+            overflow: hidden; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        
+        .placeholder {
+            font-size: 3rem; color: #cbd5e0;
             transition: 0.3s;
         }
-        .form-input:focus { border-color: var(--primary); outline: none; }
+        .photo-card:hover .placeholder { transform: scale(1.2); color: var(--brand); }
+
+        .role-badge {
+            text-align: center; font-weight: bold; margin-top: 8px;
+            font-size: 0.9rem; color: #888;
+        }
+
+        /* VS Lightning Bolt */
+        .vs-badge {
+            position: absolute; left: 50%; top: 40%;
+            transform: translate(-50%, -50%) rotate(10deg);
+            background: var(--accent);
+            color: var(--dark);
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-style: italic; font-size: 1.2rem;
+            border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        /* Scanner Animation */
+        .scanner-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--brand);
+            box-shadow: 0 0 10px var(--brand);
+            display: none;
+            z-index: 5;
+        }
+        .scanning .scanner-line {
+            display: block;
+            animation: scan 1.5s infinite linear;
+        }
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Fun Bubbles (Speech) */
+        .bubble {
+            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+            background: #333; color: #fff; padding: 5px 10px;
+            border-radius: 10px; font-size: 0.75rem; white-space: nowrap;
+            display: none; z-index: 20;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .bubble::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid; border-color: #333 transparent transparent transparent;
+        }
+        .bubble.warn { background: var(--accent); color: var(--dark); }
+        .bubble.warn::after { border-top-color: var(--accent); }
+        .bubble.err { background: var(--danger); color: white; }
+        .bubble.err::after { border-top-color: var(--danger); }
+        .bubble.ok { background: var(--brand); color: white; }
+        .bubble.ok::after { border-top-color: var(--brand); }
+
+        /* Big Action Button */
+        .main-btn {
+            background: var(--brand); color: white;
+            border: none; width: 100%; padding: 18px;
+            border-radius: 25px; font-size: 1.3rem; font-weight: 800;
+            margin-top: 30px; cursor: pointer;
+            box-shadow: 0 8px 0 #3da065, 0 15px 20px rgba(0,0,0,0.1);
+            transition: all 0.1s;
+            position: relative; overflow: hidden;
+        }
+        .main-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #3da065, 0 5px 10px rgba(0,0,0,0.1);
+        }
+        .main-btn:disabled {
+            background: #ccc; box-shadow: none; cursor: not-allowed; transform: none;
+        }
+
+        /* Trait Check Section */
+        #personality-check {
+            background: #fff; padding: 25px; border-radius: 25px;
+            margin-top: 25px; text-align: center; display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .trait-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0; }
+        .trait-btn {
+            background: #f7f9fc; border: 2px solid #eee;
+            padding: 10px 15px; border-radius: 15px; font-weight: bold;
+            color: #555; cursor: pointer; transition: 0.2s;
+        }
+        .trait-btn.active {
+            background: var(--brand); color: white; border-color: var(--brand);
+            transform: scale(1.05);
+        }
+
+        /* Result Card */
+        #result-card {
+            background: #fff; border-radius: 30px; margin-top: 20px;
+            padding: 30px 20px; text-align: center; display: none;
+            box-shadow: 0 20px 50px rgba(84, 185, 124, 0.2);
+            animation: slideUp 0.6s ease;
+        }
+        .score-circle {
+            width: 150px; height: 150px; background: var(--brand);
+            border-radius: 50%; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 4rem; font-weight: 900;
+            margin: 0 auto 15px; border: 8px solid #dcfce7;
+        }
+        .verdict { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin-bottom: 20px; text-shadow: 1px 1px 0 #eee; }
+
+        /* Data Form */
+        .data-box {
+            background: #f8f9fa; padding: 20px; border-radius: 20px;
+            margin-top: 25px; text-align: left;
+            border: 2px dashed #ddd;
+        }
+        .form-row { margin-bottom: 15px; }
+        .form-row label { display: block; font-size: 0.8rem; font-weight: bold; color: #888; margin-bottom: 5px; }
+        .form-row select, .form-row input {
+            width: 100%; padding: 12px; border-radius: 12px;
+            border: 2px solid #eee; background: white; font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        /* Utils */
+        @keyframes bounceInDown {
+            from { opacity: 0; transform: translate3d(0, -3000px, 0); }
+            60% { opacity: 1; transform: translate3d(0, 25px, 0); }
+            75% { transform: translate3d(0, -10px, 0); }
+            90% { transform: translate3d(0, 5px, 0); }
+            to { transform: none; }
+        }
+        @keyframes popUp { from { transform: scale(0.5); opacity:0; } to { transform: scale(1); opacity:1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity:0; } to { transform: translateY(0); opacity:1; } }
 
         /* Loading Overlay */
         #loader {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9); border-radius: 30px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100; display: none;
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255,255,255,0.95); z-index: 999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s;
         }
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid #eee; border-top-color: var(--primary);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-dog { font-size: 4rem; animation: shake 2s infinite; }
+        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
 
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        
-        <!-- Loading Overlay -->
-        <div id="loader">
-            <div class="spinner"></div>
-            <p id="loader-text" style="font-weight:bold; color:#555;">正在喚醒 AI...</p>
-        </div>
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="loader-dog">🐶</div>
+        <h3 style="color:#555;">喚醒 AI 狗狗中...</h3>
+        <p style="color:#999; font-size:0.8rem;">首次載入需要幾秒鐘</p>
+    </div>
 
+    <div class="container">
+        
         <header>
-            <div class="logo">🐾 ANIMALSSUM</div>
-            <h1>AI 人寵配對</h1>
-            <p class="subtitle">大數據分析 • 你同主子有幾似？</p>
+            <div class="logo-tag">ANIMALSSUM.COM</div>
+            <h1>人寵配對 V6.0</h1>
+            <p style="color:#777; font-weight:500;">AI 睇相 • 測出靈魂伴侶</p>
         </header>
 
-        <!-- Image Inputs -->
-        <div class="upload-grid">
-            <!-- Human -->
-            <div class="upload-box" id="box1" onclick="triggerUpload('input1')">
-                <div class="upload-icon">👤</div>
-                <div class="upload-label">人類 (主人)</div>
-                <img id="img1">
-                <div id="status1" class="status-bubble"></div>
-                <input type="file" id="input1" accept="image/*" hidden onchange="handleFile(this, 'img1', 'box1', 'human')">
+        <!-- Match Arena -->
+        <div class="match-arena">
+            
+            <!-- Human Card -->
+            <div class="photo-card" id="card1" onclick="uploadImg('upload1')">
+                <div id="bubble1" class="bubble"></div>
+                <div class="img-box">
+                    <div class="scanner-line"></div>
+                    <span class="placeholder">👤</span>
+                    <img id="img1">
+                </div>
+                <div class="role-badge">人類代表</div>
+                <input type="file" id="upload1" accept="image/*" style="display:none;" onchange="handleUpload(event, 'img1', 'bubble1', 'human')">
             </div>
 
-            <!-- Pet -->
-            <div class="upload-box" id="box2" onclick="triggerUpload('input2')">
-                <div class="upload-icon">🐶</div>
-                <div class="upload-label">愛寵</div>
-                <img id="img2">
-                <div id="status2" class="status-bubble"></div>
-                <input type="file" id="input2" accept="image/*" hidden onchange="handleFile(this, 'img2', 'box2', 'dog')">
+            <!-- VS Badge -->
+            <div class="vs-badge">VS</div>
+
+            <!-- Dog Card -->
+            <div class="photo-card" id="card2" onclick="uploadImg('upload2')">
+                <div id="bubble2" class="bubble"></div>
+                <div class="img-box">
+                    <div class="scanner-line"></div>
+                    <span class="placeholder">🐾</span>
+                    <img id="img2">
+                </div>
+                <div class="role-badge">汪星人</div>
+                <input type="file" id="upload2" accept="image/*" style="display:none;" onchange="handleUpload(event, 'img2', 'bubble2', 'dog')">
             </div>
+
         </div>
 
-        <button id="btn-analyze" class="action-btn" onclick="startAnalysis()" disabled>
-            ✨ 開始分析
+        <button id="mainBtn" class="main-btn" onclick="startAnalyze()" disabled>
+            ✨ 立即 Scan！
         </button>
 
-        <!-- Phase 2: Traits (Hidden) -->
-        <div id="section-traits" class="section-card">
-            <h3 style="margin:0;">🐶 AI 發現品種：<span id="breed-name" style="color:var(--primary);">...</span></h3>
-            <p style="font-size:0.9rem; color:#666; margin-top:5px;">你覺得你哋性格似唔似？(全中有加乘!)</p>
-            <div class="tags-container" id="traits-list">
-                <!-- Tags generated by JS -->
+        <!-- Phase 2: Traits -->
+        <div id="personality-check">
+            <h3 style="margin:0;">🐶 AI 發現：<span id="breed-name" style="color:var(--brand);">...</span></h3>
+            <p style="color:#888; font-size:0.9rem;">你哋有無以下 <b>共同特徵</b>？(全中加分!)</p>
+            
+            <div class="trait-grid" id="trait-container">
+                <!-- JS will fill this -->
             </div>
-            <button class="action-btn" style="margin-top:20px; background:var(--accent);" onclick="showResult()">
-                📊 生成詳細報告
+
+            <button class="main-btn" style="background:var(--accent); color:#333; margin-top:15px; box-shadow:0 8px 0 #d49a02;" onclick="showResult()">
+                🔥 睇最終結果！
             </button>
         </div>
 
-        <!-- Phase 3: Result (Hidden) -->
-        <div id="section-result" class="section-card" style="text-align:center;">
-            <p style="font-size:0.8rem; font-weight:bold; color:#aaa; letter-spacing:1px; margin-bottom:10px;">MATCHING SCORE</p>
-            
-            <div class="score-display">
-                <div class="score-val" id="final-score">0%</div>
-                <div class="score-label" id="final-comment">...</div>
+        <!-- Phase 3: Result -->
+        <div id="result-card">
+            <p style="letter-spacing:2px; font-weight:bold; color:#ccc; margin:0;">MATCH RATE</p>
+            <div class="score-circle">
+                <span id="score">0</span><span style="font-size:1.5rem; margin-top:20px;">%</span>
+            </div>
+            <div class="verdict" id="comment">...</div>
+
+            <div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:15px;">
+                <p>📊 <b>分析細節：</b></p>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>👀 五官神韻</span><span id="val1">0%</span>
+                </div>
+                <div style="width:100%; background:#eee; height:8px; border-radius:4px; margin-bottom:10px;"><div id="bar1" style="width:0%; height:100%; background:var(--brand); border-radius:4px; transition:1s;"></div></div>
+
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>🎨 氣場顏色</span><span id="val2">0%</span>
+                </div>
+                <div style="width:100%; background:#eee; height:8px; border-radius:4px; margin-bottom:10px;"><div id="bar2" style="width:0%; height:100%; background:var(--accent); border-radius:4px; transition:1s;"></div></div>
             </div>
 
-            <div style="text-align:left; background:#f9f9f9; padding:20px; border-radius:15px; margin-bottom:20px;">
-                <div class="stat-item">
-                    <span style="width:70px; font-weight:bold;">五官</span>
-                    <div class="stat-bar"><div class="stat-fill" id="bar-face"></div></div>
-                    <span id="val-face">0%</span>
-                </div>
-                <div class="stat-item">
-                    <span style="width:70px; font-weight:bold;">色系</span>
-                    <div class="stat-bar"><div class="stat-fill" id="bar-color"></div></div>
-                    <span id="val-color">0%</span>
-                </div>
-                <div class="stat-item">
-                    <span style="width:70px; font-weight:bold;">默契</span>
-                    <div class="stat-bar"><div class="stat-fill" id="bar-bond" style="background:var(--accent);"></div></div>
-                    <span id="val-bond">0%</span>
-                </div>
-            </div>
-
-            <!-- Data Collection Form (UI Only for now) -->
-            <div class="data-form">
-                <h4 style="margin:0 0 15px 0;">📥 登記領取電子證書</h4>
-                <div class="form-group">
-                    <label>居住地區 (用作全港人寵排名)</label>
-                    <select class="form-input" id="input-district">
+            <!-- Data Collection Form -->
+            <div class="data-box">
+                <h4 style="margin:0 0 15px 0;">📥 領取配對證書 (Data 收集)</h4>
+                <div class="form-row">
+                    <label>📍 居住地區 (用作全港人寵排名)</label>
+                    <select id="input-district">
                         <option value="">請選擇...</option>
-                        <option value="central">中西區</option>
-                        <option value="eastern">東區</option>
-                        <option value="southern">南區</option>
-                        <option value="wan_chai">灣仔區</option>
-                        <option value="kowloon_city">九龍城區</option>
-                        <option value="kwun_tong">觀塘區</option>
-                        <option value="sham_shu_po">深水埗區</option>
-                        <option value="wong_tai_sin">黃大仙區</option>
-                        <option value="yau_tsim_mong">油尖旺區</option>
-                        <option value="islands">離島區</option>
-                        <option value="kwai_tsing">葵青區</option>
-                        <option value="north">北區</option>
-                        <option value="sai_kung">西貢區</option>
-                        <option value="sha_tin">沙田區</option>
-                        <option value="tai_po">大埔區</option>
-                        <option value="tsuen_wan">荃灣區</option>
-                        <option value="tuen_mun">屯門區</option>
-                        <option value="yuen_long">元朗區</option>
+                        <option value="hk">香港島</option>
+                        <option value="kln">九龍</option>
+                        <option value="nt">新界</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Email (接收報告)</label>
-                    <input type="email" class="form-input" placeholder="example@gmail.com">
+                <div class="form-row">
+                    <label>📧 Email (發送高清證書)</label>
+                    <input type="email" placeholder="example@gmail.com">
                 </div>
-                <button class="action-btn" onclick="alert('多謝登記！Data 收集功能將於下一階段啟動！')" style="font-size:1rem; padding:12px;">
-                    📜 登記並下載證書
+                <button class="main-btn" onclick="alert('多謝！Data 已記錄！(模擬)')" style="font-size:1rem; padding:12px; margin-top:0;">
+                    📜 下載證書 & 加入會員
                 </button>
             </div>
-            
-            <p style="margin-top:20px; font-size:0.8rem; color:#999; cursor:pointer; text-decoration:underline;" onclick="location.reload()">🔄 再玩一次</p>
+
+            <button onclick="window.location.reload()" style="background:transparent; border:none; color:#aaa; margin-top:20px; text-decoration:underline;">🔄 再玩一次</button>
         </div>
 
     </div>
 
-    <!-- Logic Script -->
     <script>
-        // Data & Models
+        // --- 1. CONFIG & TEXT (Restored) ---
+        const i18n = {
+            loading: "正在喚醒 AI 狗狗...",
+            // Bubbles (Pet Slang Restored)
+            bubbleDogErr: "🐶 人類？呢邊放汪星人架！",
+            bubbleHumanOk: "✅ 型喎人類！",
+            bubbleDogHumanErr: "🐶 人類？呢邊放汪星人架！", 
+            bubbleDogOk: "✅ 收到！確認係汪星人！",
+            bubbleSusDog: "🐶 究竟是人是狗？當是狗先～",
+            bubbleOtherAnimal: "🐱 你的寵物不是狗？快叫動物之心做其他動物AI啦",
+            bubbleNoObj: "👀 狗狗呢？ where is 狗狗？？",
+            
+            // Traits
+            traitsDefault: ['大家都好貪玩 🎾', '有時會發呆 (放空) 😶', '好鍾意食零食 🍪', '性格好固執 (硬頸) 🐂', '最鍾意黐住對方 ❤️'],
+            traitsRetriever: ['大家都咁為食 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗'], 
+            traitsPoodle: ['兩個都有潔癖 (唔污糟得) ✨', '極度聰明 (識聽人話) 🧠']
+        };
+
+        const commentsData = [
+            { min: 90, text: "😱 99%係失散咗既親人！感恩天上安排你哋重遇返！🩷" },
+            { min: 80, text: "❤️ 勁！似過同一個祖宗！" },
+            { min: 60, text: "😎 可能上世住隔離村！" },
+            { min: 40, text: "🤔 可能上世冤家今世變摯友" },
+            { min: 25, text: "😂 你地係異樣相吸。不過相愛先最重要！" },
+            { min: 0, text: "😂 sor 真係唔係好似樣，但感覺你哋眉目有愛！" }
+        ];
+
+        // --- 2. LOGIC ---
         let modelMobileNet, modelCoco;
+        let isModelLoaded = false;
         const colorThief = new ColorThief();
-        let images = { human: null, dog: null };
-        let currentBreed = 'Unknown';
-        let traitScore = 0;
+        let currentBreed = "";
+        let personalityScore = 0;
+        let imgData = { human: null, dog: null };
+        let isLocked = false;
+
+        async function initAI() {
+            try {
+                modelCoco = await cocoSsd.load();
+                modelMobileNet = await mobilenet.load();
+                isModelLoaded = true;
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(()=> document.getElementById('loader').style.display = 'none', 500);
+            } catch(e) {
+                alert("AI Load Error: " + e);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', initAI);
+
+        function uploadImg(id) { if(!isLocked) document.getElementById(id).click(); }
 
         const dogKeywords = ['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita'];
-        
-        const comments = [
-            { min: 90, text: "😍 99% 失散親人！" },
-            { min: 80, text: "❤️ 餅印一樣！" },
-            { min: 60, text: "😎 氣場好合拍！" },
-            { min: 40, text: "🤔 互補型拍檔" },
-            { min: 0, text: "😂 唔似樣但有愛" }
-        ];
 
-        const traitsData = [
-            "大家都好為食 🍖", "對人超級熱情 🤗", "有潔癖/貪靚 ✨", 
-            "極度聰明 🧠", "性格好固執 🐂", "鍾意黐住對方 ❤️", "經常一齊發呆 😶"
-        ];
+        async function handleUpload(event, imgId, bubbleId, role) {
+            const file = event.target.files[0];
+            if(!file) return;
 
-        // Init Models
-        async function loadModels() {
-            document.getElementById('loader').style.display = 'flex';
-            try {
-                modelMobileNet = await mobilenet.load();
-                modelCoco = await cocoSsd.load();
-                document.getElementById('loader').style.display = 'none';
-            } catch (e) {
-                alert("AI 模型載入失敗，請確保網絡暢通");
-                console.error(e);
-            }
-        }
-        // Load on start
-        window.addEventListener('DOMContentLoaded', loadModels);
-
-        function triggerUpload(id) { document.getElementById(id).click(); }
-
-        async function handleFile(input, imgId, boxId, type) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById(imgId);
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                    img.onload = () => validateImage(img, boxId, type);
-                    document.getElementById(boxId).classList.add('has-img');
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        async function validateImage(img, boxId, type) {
-            if (!modelCoco) return;
-            const statusEl = document.querySelector(`#${boxId} .status-bubble`);
-            statusEl.className = 'status-bubble'; // reset
+            const imgEl = document.getElementById(imgId);
+            imgEl.src = URL.createObjectURL(file);
+            imgEl.style.display = 'block';
+            imgEl.previousElementSibling.style.display = 'none'; // hide emoji
             
-            // Show scanning text
-            statusEl.textContent = '🔍 分析中...';
-            statusEl.classList.add('show');
+            // Show Scanner
+            imgEl.parentElement.classList.add('scanning');
+            const bubble = document.getElementById(bubbleId);
+            bubble.style.display = 'none';
 
-            const predictions = await modelCoco.detect(img);
-            let valid = false;
-            let msg = '';
+            // Wait for image load
+            await new Promise(r => imgEl.onload = r);
 
-            if (type === 'human') {
-                const hasPerson = predictions.some(p => p.class === 'person');
-                if (hasPerson) { valid = true; msg = '✅ 收到人類'; statusEl.classList.add('success'); }
-                else { msg = '❓ 搵唔到人樣'; statusEl.classList.add('error'); }
-            } else {
-                // For pet, check MobileNet for specific breeds if Coco isn't sure
-                const hasDog = predictions.some(p => p.class === 'dog' || p.class === 'cat' || p.class === 'bird' || p.class === 'horse' || p.class === 'sheep'); // Expanded animals
-                if (hasDog) { 
-                    valid = true; msg = '✅ 收到萌寵'; statusEl.classList.add('success'); 
+            // Analyze
+            if(isModelLoaded) {
+                const predictions = await modelCoco.detect(imgEl);
+                let msg = "";
+                let type = "ok"; // ok, warn, err
+
+                if(role === 'human') {
+                    const hasPerson = predictions.some(p => p.class === 'person');
+                    if(hasPerson) { msg = i18n.bubbleHumanOk; }
+                    else { msg = "❓ 搵唔到人樣喎"; type = "err"; }
                 } else {
-                    // Fallback check
-                    const mobs = await modelMobileNet.classify(img);
-                    const isMobDog = mobs.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k)));
-                    if(isMobDog) { valid = true; msg = '✅ 收到汪星人'; statusEl.classList.add('success'); }
-                    else { msg = '❓ 唔似動物喎'; statusEl.classList.add('error'); }
-                }
-            }
+                    // Dog Check
+                    const hasDog = predictions.some(p => p.class === 'dog');
+                    const mobCheck = await modelMobileNet.classify(imgEl);
+                    const isMobDog = mobCheck.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k)));
+                    const hasPerson = predictions.some(p => p.class === 'person' && p.score > 0.6);
 
-            statusEl.textContent = msg;
-            images[type] = valid ? img : null;
-            checkReady();
+                    if(hasDog || isMobDog) {
+                        msg = i18n.bubbleDogOk;
+                        if(hasPerson) { msg = i18n.bubbleSusDog; type = "warn"; }
+                    } else if(hasPerson) {
+                         msg = i18n.bubbleDogHumanErr; type = "err";
+                    } else {
+                        msg = i18n.bubbleOtherAnimal; type = "warn";
+                    }
+                }
+
+                // Stop Scan & Show Bubble
+                imgEl.parentElement.classList.remove('scanning');
+                showBubble(bubble, msg, type);
+                
+                if(type !== 'err') imgData[role] = imgEl;
+                checkReady();
+            }
+        }
+
+        function showBubble(el, text, type) {
+            el.innerText = text;
+            el.className = `bubble ${type}`;
+            el.style.display = 'block';
+            el.style.animation = 'bounceInDown 0.5s';
         }
 
         function checkReady() {
-            const btn = document.getElementById('btn-analyze');
-            if (images.human && images.dog) {
+            if(imgData.human && imgData.dog) {
+                const btn = document.getElementById('mainBtn');
                 btn.disabled = false;
-                btn.innerHTML = "✨ 開始分析";
-            } else {
-                btn.disabled = true;
+                btn.innerText = "⚡️ 準備好... Scan！";
+                btn.style.animation = "pulse 1s infinite";
             }
         }
 
-        async function startAnalysis() {
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').textContent = "🧠 AI 正在對比五官數據...";
-            
-            const btn = document.getElementById('btn-analyze');
-            btn.style.display = 'none'; // Hide button
+        // --- 3. ANALYSIS FLOW ---
+        async function startAnalyze() {
+            isLocked = true;
+            document.getElementById('mainBtn').style.display = 'none';
+            document.getElementById('card1').classList.add('locked');
+            document.getElementById('card2').classList.add('locked');
 
-            // Identify Breed
-            const predictions = await modelMobileNet.classify(images.dog);
-            currentBreed = predictions[0].className.split(',')[0];
-            document.getElementById('breed-name').textContent = currentBreed;
+            // 1. Identify Breed
+            const preds = await modelMobileNet.classify(imgData.dog);
+            currentBreed = preds[0].className.split(',')[0];
+            document.getElementById('breed-name').innerText = currentBreed;
 
-            // Generate Traits
-            const list = document.getElementById('traits-list');
-            list.innerHTML = '';
-            // Pick 4 random traits + ensure generic ones
-            traitsData.forEach((t, i) => {
-                if (i < 5) {
-                    list.innerHTML += `<div class="tag" onclick="toggleTag(this)">${t}</div>`;
-                }
+            // 2. Setup Traits
+            const container = document.getElementById('trait-container');
+            container.innerHTML = "";
+            let traits = i18n.traitsDefault;
+            if(currentBreed.toLowerCase().includes('retriever')) traits = i18n.traitsRetriever;
+            if(currentBreed.toLowerCase().includes('poodle')) traits = i18n.traitsPoodle;
+
+            traits.forEach(t => {
+                const btn = document.createElement('div');
+                btn.className = 'trait-btn';
+                btn.innerText = t;
+                btn.onclick = () => { 
+                    btn.classList.toggle('active'); 
+                    personalityScore = document.querySelectorAll('.trait-btn.active').length * 5; 
+                };
+                container.appendChild(btn);
             });
 
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('section-traits').style.display = 'block';
+            document.getElementById('personality-check').style.display = 'block';
+        }
+
+        function showResult() {
+            document.getElementById('personality-check').style.display = 'none';
+            document.getElementById('result-card').style.display = 'block';
             
-            // Scroll to traits
-            document.getElementById('section-traits').scrollIntoView({ behavior: 'smooth' });
+            // Calc Score (Mock Logic for demo)
+            // Color Similarity
+            const c1 = colorThief.getColor(imgData.human);
+            const c2 = colorThief.getColor(imgData.dog);
+            const diff = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2));
+            const colorScore = Math.max(10, 100 - (diff/2));
+
+            // Face (Randomized based on image hash for consistency)
+            const seed = (imgData.human.width + imgData.dog.width) % 50; 
+            const faceScore = 40 + seed;
+
+            let final = Math.round((faceScore * 0.5) + (colorScore * 0.3) + personalityScore);
+            if(final > 99) final = 99; if(final < 10) final = 10;
+
+            // Animations
+            animateValue('score', 0, final, 1500);
+            animateBar('bar1', 'val1', faceScore);
+            animateBar('bar2', 'val2', colorScore);
+
+            // Comment
+            const comm = commentsData.find(c => final >= c.min);
+            document.getElementById('comment').innerText = comm.text;
+
+            // Confetti!
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#54b97c', '#FFD93D', '#FF6B6B']
+            });
         }
 
-        function toggleTag(el) {
-            el.classList.toggle('selected');
-            calculateTraitScore();
+        function animateValue(id, start, end, duration) {
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let obj = document.getElementById(id);
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) clearInterval(timer);
+            }, stepTime);
         }
 
-        function calculateTraitScore() {
-            const count = document.querySelectorAll('.tag.selected').length;
-            traitScore = count * 5; // 5% per trait
-        }
-
-        async function showResult() {
-            document.getElementById('section-traits').style.display = 'none';
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').textContent = "📊 生成最終報告...";
-
-            // Logic Simulation (Advanced logic placeholder)
-            // 1. Color Analysis
-            const c1 = colorThief.getColor(images.human);
-            const c2 = colorThief.getColor(images.dog);
-            const colorDist = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
-            let scoreColor = Math.max(20, 100 - Math.round(colorDist / 2));
-
-            // 2. Feature Analysis (Pseudo - based on tensor activation simulation)
-            // Real facial sim is heavy, we use random seed based on image size as placeholder logic for demo
-            let seed = (images.human.width + images.dog.width) % 40; 
-            let scoreFace = 50 + seed; // Base 50-90
-
-            // 3. Final Calc
-            let total = Math.round((scoreFace * 0.4) + (scoreColor * 0.3) + (traitScore) + 10);
-            if (total > 99) total = 99;
-            if (total < 10) total = 10;
-
+        function animateBar(barId, valId, val) {
             setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('section-result').style.display = 'block';
-
-                // Animate Numbers
-                document.getElementById('final-score').textContent = total + "%";
-                const comm = comments.find(c => total >= c.min);
-                document.getElementById('final-comment').textContent = comm ? comm.text : "";
-
-                // Animate Bars
-                document.getElementById('bar-face').style.width = scoreFace + "%";
-                document.getElementById('val-face').textContent = scoreFace + "%";
-                
-                document.getElementById('bar-color').style.width = scoreColor + "%";
-                document.getElementById('val-color').textContent = scoreColor + "%";
-
-                let bond = traitScore + 10;
-                document.getElementById('bar-bond').style.width = bond + "%";
-                document.getElementById('val-bond').textContent = bond + "%";
-                
-                document.getElementById('section-result').scrollIntoView({ behavior: 'smooth' });
-
-            }, 800);
+                document.getElementById(barId).style.width = val + "%";
+                document.getElementById(valId).innerText = Math.round(val) + "%";
+            }, 500);
         }
     </script>
 </body>
