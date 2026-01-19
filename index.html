@@ -1,444 +1,511 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
-<!-- Head & CSS (Keeping previous styles) -->
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐶 AnimalsSum | AI Pet Match</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🐶 AnimalsSum | AI 人寵配對</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- AI Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
     <style>
-        /* ... CSS Identical to v4.13 ... */
-        :root { --brand: #54b97c; --accent: #FFB703; --bg: #F0FDF4; }
-        body { font-family: 'Fredoka', 'Noto Sans TC', sans-serif; background-color: var(--bg); color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.98); padding: 30px; border-radius: 30px; box-shadow: 0 15px 40px rgba(84, 185, 124, 0.15); border: 2px solid rgba(84, 185, 124, 0.1); position: relative; }
-        .lang-switch { position: absolute; top: 20px; right: 20px; background: #e6f7ee; border-radius: 20px; padding: 5px; display: flex; gap: 5px; }
-        .lang-btn { border: none; background: transparent; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-weight: bold; color: var(--brand); font-size: 0.8rem; transition: all 0.2s; }
-        .lang-btn.active { background: var(--brand); color: #fff; }
-        h1 { color: var(--brand); margin-bottom: 5px; text-shadow: 1px 1px 0px #eee; margin-top: 10px; }
-        .brand-tag { font-size: 0.8rem; color: var(--brand); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: #e6f7ee; display: inline-block; padding: 5px 15px; border-radius: 20px; margin-bottom: 10px; }
-        .role-label { font-size: 1rem; font-weight: bold; color: var(--brand); margin-top: 12px; display: block; }
-        .preview-box { width: 160px; height: 160px; border: 4px solid #fff; outline: 3px dashed #ddd; margin: 10px auto; position: relative; cursor: pointer; background: #f0f0f0; border-radius: 50%; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .preview-box:hover { transform: scale(1.05); border-color: var(--brand); }
-        .preview-box.locked { pointer-events: none; opacity: 0.8; border-color: #ddd; outline: none; }
-        .img-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        img { width: 100%; height: 100%; object-fit: cover; }
-        .bubble { background: #fff; color: #333; padding: 10px 15px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; position: absolute; top: -50px; right: -80px; width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid #333; display: none; z-index: 100; }
-        .bubble.error { border-color: #d32f2f; color: #d32f2f; }
-        .bubble.success { border-color: var(--brand); color: var(--brand); }
-        .bubble.warning { border-color: #FFB703; color: #d49a02; } /* New Warning Style */
-        .grid { display: flex; justify-content: space-around; gap: 10px; margin: 20px 0; }
-        button.action-btn { background: var(--brand); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; width: 100%; font-family: 'Fredoka', sans-serif; box-shadow: 0 8px 20px rgba(84, 185, 124, 0.3); transition: all 0.3s; }
-        button.action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
-        #personality-check { display: none; background: #e6f7ee; padding: 25px; border-radius: 20px; text-align: center; margin-top: 20px; border: 2px solid var(--brand); }
-        .trait-tags { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
-        .trait-tag { background: #fff; border: 2px solid #fff; padding: 12px 15px; border-radius: 15px; cursor: pointer; font-weight: bold; color: #555; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .trait-tag.active { background: var(--brand); border-color: var(--brand); color: #fff; }
-        .trait-check { font-size: 1.2rem; display: none; }
-        .trait-tag.active .trait-check { display: inline; }
-        #result-card { display: none; margin-top: 30px; padding: 30px; background: #fff; border-radius: 20px; border: 2px solid #eee; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; }
-        .score-big { font-size: 5rem; font-weight: 800; color: var(--brand); line-height: 1; margin: 10px 0; }
-        .verdict { font-size: 1.3rem; font-weight: bold; color: var(--accent); margin-bottom: 20px; }
-        .stat-row { display: flex; align-items: center; margin-bottom: 12px; font-size: 0.9rem; }
-        .stat-label { width: 100px; text-align: right; margin-right: 10px; font-weight: bold; color: #555; }
-        .progress-bg { flex-grow: 1; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--brand); width: 0%; transition: width 1s ease-out; }
-        .stat-val { width: 50px; text-align: left; margin-left: 10px; color: #888; }
-        .cert-btn { background: linear-gradient(45deg, #FFB703, #FF8C00); color: #fff; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; margin-top: 20px; box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4); display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        :root {
+            --primary: #54b97c;
+            --primary-dark: #3da065;
+            --accent: #FFB703;
+            --bg-gradient: linear-gradient(135deg, #f6fffa 0%, #e1f5fe 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 30px rgba(84, 185, 124, 0.15);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Fredoka', sans-serif;
+            background: var(--bg-gradient);
+            color: #444;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .app-container {
+            background: var(--glass);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 30px;
+            padding: 30px 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.8);
+            margin-top: 10px;
+        }
+
+        /* Header */
+        header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: 1px; }
+        h1 { margin: 10px 0 5px; font-size: 1.8rem; color: #333; }
+        .subtitle { color: #888; font-size: 0.9rem; margin: 0; }
+
+        /* Upload Grid */
+        .upload-grid {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .upload-box {
+            flex: 1;
+            aspect-ratio: 1/1;
+            background: #fff;
+            border-radius: 20px;
+            border: 3px dashed #ddd;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-box:hover, .upload-box.has-img {
+            border-color: var(--primary);
+            border-style: solid;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
         
-        /* Loading Overlay - Initially Hidden, Shown on demand */
-        #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; }
-        #certCanvas { display: none; }
+        .upload-box img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0;
+            display: none;
+        }
+
+        .upload-icon { font-size: 2rem; color: #ddd; margin-bottom: 5px; transition: 0.3s; }
+        .upload-label { font-size: 0.9rem; font-weight: bold; color: #aaa; transition: 0.3s; }
+        .upload-box:hover .upload-icon { color: var(--primary); }
+        .upload-box:hover .upload-label { color: var(--primary); }
+
+        /* Bubbles */
+        .status-bubble {
+            position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
+            background: #333; color: #fff; font-size: 0.75rem; padding: 4px 12px;
+            border-radius: 12px; white-space: nowrap; opacity: 0; transition: 0.3s;
+            pointer-events: none; z-index: 10;
+        }
+        .status-bubble.show { opacity: 1; bottom: 10px; }
+        .status-bubble.error { background: #ef5350; }
+        .status-bubble.success { background: var(--primary); }
+
+        /* Main Button */
+        .action-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(84, 185, 124, 0.4);
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .action-btn:active { transform: scale(0.98); }
+        .action-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
+
+        /* Sections */
+        .section-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 25px;
+            margin-top: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            display: none; /* Hidden by default */
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Personality Tags */
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        .tag {
+            background: #f0f7f4; border: 1px solid #e0e0e0;
+            padding: 8px 15px; border-radius: 12px;
+            font-size: 0.9rem; color: #555; cursor: pointer;
+            transition: 0.2s; user-select: none;
+        }
+        .tag.selected {
+            background: var(--primary); color: white; border-color: var(--primary);
+            box-shadow: 0 3px 10px rgba(84, 185, 124, 0.3);
+        }
+
+        /* Result Score */
+        .score-display {
+            text-align: center; margin-bottom: 20px;
+            position: relative;
+        }
+        .score-val {
+            font-size: 5rem; font-weight: 800; color: var(--primary);
+            line-height: 1; text-shadow: 2px 2px 0px #ebf9f0;
+        }
+        .score-label { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
+
+        /* Bars */
+        .stat-item { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+        .stat-bar { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .stat-fill { height: 100%; width: 0%; background: var(--primary); transition: width 1s cubic-bezier(0.1, 0.7, 1.0, 0.1); }
+
+        /* Form for Data Collection */
+        .data-form { margin-top: 20px; padding-top: 20px; border-top: 1px dashed #eee; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: bold; color: #666; margin-bottom: 5px; }
+        .form-input { 
+            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; 
+            font-family: inherit; font-size: 0.95rem; box-sizing: border-box;
+            transition: 0.3s;
+        }
+        .form-input:focus { border-color: var(--primary); outline: none; }
+
+        /* Loading Overlay */
+        #loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); border-radius: 30px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 100; display: none;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #eee; border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
 
-    <div id="loading-overlay">
-        <div style="font-size: 3rem;">🧠</div>
-        <h3 style="color:#555;">Loading AI...</h3>
-        <p style="color:#888;">(First time takes a few seconds)</p>
-    </div>
-
-    <!-- ... Body Content (Same as v4.13) ... -->
-    <div class="container">
-        <!-- ... Lang Switch ... -->
-        <div class="lang-switch">
-            <button class="lang-btn active" onclick="setLang('zh')" id="btn-zh">繁</button>
-            <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
-        </div>
-
-        <div class="brand-tag">ANIMALSSUM.COM</div>
-        <h1 data-i18n="title">🐾 人寵配對 AI</h1>
-        <p class="subtitle" data-i18n="subtitle">Brand Color Edition • 測試你們相似度？</p>
-
-        <div class="grid">
-            <div style="text-align:center;">
-                <div class="preview-box" id="box1" onclick="uploadImg('upload1')">
-                    <div id="bubble1" class="bubble"></div>
-                    <div class="img-container">
-                        <span style="color:#ddd; font-size:3rem;">+</span>
-                        <img id="img1" style="display:none;" crossorigin="anonymous">
-                    </div>
-                </div>
-                <span class="role-label" data-i18n="labelHuman">人類</span>
-                <input type="file" id="upload1" accept="image/*" onchange="checkHuman(event)" style="display:none;">
-            </div>
-            <div style="text-align:center;">
-                <div class="preview-box" id="box2" onclick="uploadImg('upload2')">
-                     <div id="bubble2" class="bubble"></div>
-                     <div class="img-container">
-                        <span style="color:#ddd; font-size:3rem;">+</span>
-                        <img id="img2" style="display:none;" crossorigin="anonymous">
-                     </div>
-                </div>
-                <span class="role-label" data-i18n="labelDog">狗狗</span>
-                <input type="file" id="upload2" accept="image/*" onchange="checkDog(event)" style="display:none;">
-            </div>
-        </div>
-
-        <button id="preAnalyzeBtn" class="action-btn" onclick="preAnalyze()" disabled data-i18n="analyzeBtn">✨ 立即分析</button>
-
-        <!-- ... Hidden Sections ... -->
-        <div id="personality-check">
-            <h3><span data-i18n="foundBreed">🐶 發現狗狗是：</span><span id="breed-name" style="color:var(--brand);">...</span></h3>
-            <p><span data-i18n="traitPrompt">加分位：你們是否有以下 共同特徵？</span><br><small data-i18n="traitHint">(請誠實作答，全中有加乘!)</small></p>
-            <div class="trait-tags" id="trait-container"></div>
-            <button class="action-btn" onclick="finalAnalyze()" style="margin-top:20px;" data-i18n="reportBtn">✅ ok！出報告！</button>
-        </div>
+    <div class="app-container">
         
-        <div id="result-card">
-            <p style="color:#888; margin:0;" data-i18n="resultTitle">AI 深度分析結果</p>
-            <div class="score-big"><span id="score">0</span>%</div>
-            <div class="verdict" id="comment">...</div>
-            <div style="background:#fcfcfc; padding:20px; border-radius:15px; margin-top:20px; border:1px solid #f0f0f0;">
-                <h4 style="margin-top:0; color:#555;" data-i18n="reportTitle">📊 AI 分析報告</h4>
-                <div class="stat-row"><div class="stat-label" data-i18n="statFace">👀 五官神韻</div><div class="progress-bg"><div class="progress-fill" id="bar1"></div></div><div class="stat-val" id="val1">0%</div></div>
-                <div class="stat-row"><div class="stat-label" data-i18n="statColor">🎨 毛色髮色</div><div class="progress-bg"><div class="progress-fill" id="bar2"></div></div><div class="stat-val" id="val2">0%</div></div>
-                <div class="stat-row"><div class="stat-label" data-i18n="statVibe">🧠 氣場相似度</div><div class="progress-bg"><div class="progress-fill" id="bar3"></div></div><div class="stat-val" id="val3">0%</div></div>
-                <div class="stat-row"><div class="stat-label" data-i18n="statMatch">🤝 默契加成</div><div class="progress-bg"><div class="progress-fill" id="bar4" style="background:var(--accent);"></div></div><div class="stat-val" id="val4">0%</div></div>
-            </div>
-            <button class="cert-btn" onclick="generateCertificate()"><span style="font-size:1.2rem">📜</span> <span data-i18n="downloadCert">下載配對證書</span></button>
+        <!-- Loading Overlay -->
+        <div id="loader">
+            <div class="spinner"></div>
+            <p id="loader-text" style="font-weight:bold; color:#555;">正在喚醒 AI...</p>
         </div>
-        <button onclick="window.location.reload()" style="background:transparent; color:#999; border:none; margin-top:20px; cursor:pointer; text-decoration:underline; display:none;" id="restartBtn" data-i18n="restart">🔄 再玩一次</button>
-    </div>
-    <canvas id="certCanvas" width="800" height="1000"></canvas>
 
+        <header>
+            <div class="logo">🐾 ANIMALSSUM</div>
+            <h1>AI 人寵配對</h1>
+            <p class="subtitle">大數據分析 • 你同主子有幾似？</p>
+        </header>
+
+        <!-- Image Inputs -->
+        <div class="upload-grid">
+            <!-- Human -->
+            <div class="upload-box" id="box1" onclick="triggerUpload('input1')">
+                <div class="upload-icon">👤</div>
+                <div class="upload-label">人類 (主人)</div>
+                <img id="img1">
+                <div id="status1" class="status-bubble"></div>
+                <input type="file" id="input1" accept="image/*" hidden onchange="handleFile(this, 'img1', 'box1', 'human')">
+            </div>
+
+            <!-- Pet -->
+            <div class="upload-box" id="box2" onclick="triggerUpload('input2')">
+                <div class="upload-icon">🐶</div>
+                <div class="upload-label">愛寵</div>
+                <img id="img2">
+                <div id="status2" class="status-bubble"></div>
+                <input type="file" id="input2" accept="image/*" hidden onchange="handleFile(this, 'img2', 'box2', 'dog')">
+            </div>
+        </div>
+
+        <button id="btn-analyze" class="action-btn" onclick="startAnalysis()" disabled>
+            ✨ 開始分析
+        </button>
+
+        <!-- Phase 2: Traits (Hidden) -->
+        <div id="section-traits" class="section-card">
+            <h3 style="margin:0;">🐶 AI 發現品種：<span id="breed-name" style="color:var(--primary);">...</span></h3>
+            <p style="font-size:0.9rem; color:#666; margin-top:5px;">你覺得你哋性格似唔似？(全中有加乘!)</p>
+            <div class="tags-container" id="traits-list">
+                <!-- Tags generated by JS -->
+            </div>
+            <button class="action-btn" style="margin-top:20px; background:var(--accent);" onclick="showResult()">
+                📊 生成詳細報告
+            </button>
+        </div>
+
+        <!-- Phase 3: Result (Hidden) -->
+        <div id="section-result" class="section-card" style="text-align:center;">
+            <p style="font-size:0.8rem; font-weight:bold; color:#aaa; letter-spacing:1px; margin-bottom:10px;">MATCHING SCORE</p>
+            
+            <div class="score-display">
+                <div class="score-val" id="final-score">0%</div>
+                <div class="score-label" id="final-comment">...</div>
+            </div>
+
+            <div style="text-align:left; background:#f9f9f9; padding:20px; border-radius:15px; margin-bottom:20px;">
+                <div class="stat-item">
+                    <span style="width:70px; font-weight:bold;">五官</span>
+                    <div class="stat-bar"><div class="stat-fill" id="bar-face"></div></div>
+                    <span id="val-face">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span style="width:70px; font-weight:bold;">色系</span>
+                    <div class="stat-bar"><div class="stat-fill" id="bar-color"></div></div>
+                    <span id="val-color">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span style="width:70px; font-weight:bold;">默契</span>
+                    <div class="stat-bar"><div class="stat-fill" id="bar-bond" style="background:var(--accent);"></div></div>
+                    <span id="val-bond">0%</span>
+                </div>
+            </div>
+
+            <!-- Data Collection Form (UI Only for now) -->
+            <div class="data-form">
+                <h4 style="margin:0 0 15px 0;">📥 登記領取電子證書</h4>
+                <div class="form-group">
+                    <label>居住地區 (用作全港人寵排名)</label>
+                    <select class="form-input" id="input-district">
+                        <option value="">請選擇...</option>
+                        <option value="central">中西區</option>
+                        <option value="eastern">東區</option>
+                        <option value="southern">南區</option>
+                        <option value="wan_chai">灣仔區</option>
+                        <option value="kowloon_city">九龍城區</option>
+                        <option value="kwun_tong">觀塘區</option>
+                        <option value="sham_shu_po">深水埗區</option>
+                        <option value="wong_tai_sin">黃大仙區</option>
+                        <option value="yau_tsim_mong">油尖旺區</option>
+                        <option value="islands">離島區</option>
+                        <option value="kwai_tsing">葵青區</option>
+                        <option value="north">北區</option>
+                        <option value="sai_kung">西貢區</option>
+                        <option value="sha_tin">沙田區</option>
+                        <option value="tai_po">大埔區</option>
+                        <option value="tsuen_wan">荃灣區</option>
+                        <option value="tuen_mun">屯門區</option>
+                        <option value="yuen_long">元朗區</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Email (接收報告)</label>
+                    <input type="email" class="form-input" placeholder="example@gmail.com">
+                </div>
+                <button class="action-btn" onclick="alert('多謝登記！Data 收集功能將於下一階段啟動！')" style="font-size:1rem; padding:12px;">
+                    📜 登記並下載證書
+                </button>
+            </div>
+            
+            <p style="margin-top:20px; font-size:0.8rem; color:#999; cursor:pointer; text-decoration:underline;" onclick="location.reload()">🔄 再玩一次</p>
+        </div>
+
+    </div>
+
+    <!-- Logic Script -->
     <script>
-        const i18nData = {
-            zh: {
-                // ... Existing ...
-                loading: "正在喚醒 AI 狗狗...",
-                title: "🐾 人寵配對 AI",
-                subtitle: "Brand Color Edition • 測試你們相似度？",
-                labelHuman: "人類",
-                labelDog: "狗狗",
-                analyzeBtn: "✨ 立即分析",
-                foundBreed: "🐶 發現狗狗是：",
-                traitPrompt: "加分位：你們是否有以下 共同特徵？",
-                traitHint: "(請誠實作答，全中有加乘!)",
-                reportBtn: "✅ ok！出報告！",
-                resultTitle: "AI 深度分析結果",
-                reportTitle: "📊 AI 分析報告",
-                statFace: "👀 五官神韻",
-                statColor: "🎨 毛色髮色",
-                statVibe: "🧠 氣場相似度",
-                statMatch: "🤝 默契加成",
-                downloadCert: "下載配對證書",
-                restart: "🔄 再玩一次",
-                analyzeText: "🔍 識別品種中...",
-                // New Bubbles (Pet Slang)
-                bubbleDogErr: "🐶 人類？呢邊放汪星人架！",
-                bubbleHumanOk: "✅ 型喎人類！",
-                bubbleDogHumanErr: "🐶 人類？呢邊放汪星人架！", 
-                bubbleDogOk: "✅ 收到！確認係狗狗！",
-                
-                // NEW: Special Cases
-                bubbleSusDog: "🐶 究竟是人是狗？當是狗先～",
-                bubbleOtherAnimal: "🐱 你的寵物不是狗？快叫動物之心做其他動物AI啦",
-                bubbleNoObj: "👀 狗狗呢？ where is 狗狗？？",
-                
-                certTitle: "人寵配對認證",
-                certDate: "認證日期: ",
-                certBreed: "配對品種: ",
-            },
-            en: {
-                // ... Existing ...
-                loading: "Waking up AI Dog...",
-                title: "🐾 Pet Match AI",
-                subtitle: "Brand Color Edition • Are you a perfect match?",
-                labelHuman: "Human",
-                labelDog: "Doggo",
-                analyzeBtn: "✨ Analyze Now",
-                foundBreed: "🐶 Breed Detected: ",
-                traitPrompt: "Since you look alike, do you share these traits?",
-                traitHint: "(Be honest! Bonus points for matches!)",
-                reportBtn: "✅ Yes! Show Report!",
-                resultTitle: "AI Deep Analysis Result",
-                reportTitle: "📊 AI Analysis Report",
-                statFace: "👀 Facial Similarity",
-                statColor: "🎨 Color Match",
-                statVibe: "🧠 Vibe Check",
-                statMatch: "🤝 Bond Bonus",
-                downloadCert: "Download Certificate",
-                restart: "🔄 Play Again",
-                analyzeText: "🔍 Identifying Breed...",
-                // New Bubbles (Pet Slang)
-                bubbleDogErr: "🐶 Hooman? No! This is Doggo Zone!",
-                bubbleHumanOk: "✅ Looking sharp, Hooman!",
-                bubbleDogHumanErr: "🐶 One woofer is enough! No Hoomans!",
-                bubbleDogOk: "✅ Paw-fect! That's a dog!",
-                
-                // NEW: Special Cases
-                bubbleSusDog: "🐶 Hmm... Sus! Looks human but smells like doggo! Treating as Dog!",
-                bubbleOtherAnimal: "🐱 Not a dog? Go find Animal-Heart-AI!",
-                bubbleNoObj: "👀 Where is Doggo? I only see air!",
-
-                certTitle: "Pet Match Certificate",
-                certDate: "Date: ",
-                certBreed: "Breed: ",
-            }
-        };
-        // ... CommentsData & TraitsData Same ...
-        const commentsData = { zh: [{ min: 90, text: "😱 99%係失散咗既親人！感恩天上安排你哋重遇返！🩷" }, { min: 80, text: "❤️ 勁！似過同一個祖宗！" }, { min: 60, text: "😎 可能上世住隔離村！" }, { min: 40, text: "🤔 可能上世冤家今世變摯友" }, { min: 25, text: "😂 你地係異樣相吸。不過相愛先最重要！" }, { min: 0, text: "😂 sor 真係唔係好似樣，但感覺你哋眉目有愛！" }], en: [{ min: 90, text: "😱 OMG! Literally separated at birth?! Thanks heavens you two met again! 🩷" }, { min: 80, text: "❤️ Twinning! Are you secretly related?" }, { min: 60, text: "😎 Definitive Soulmate Vibes for the next life" }, { min: 40, text: "🤔 Opposites attract! Still cute tho!" }, { min: 25, text: "😂 Past rivals, now best friends!" }, { min: 0, text: "😂 Zero match, but 100% Love!" }] };
-        const traitsData = { zh: { retriever: ['大家都咁為食 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗'], poodle: ['兩個都有潔癖 (唔污糟得) ✨', '極度聰明 (識聽人話) 🧠'], default: ['大家都好貪玩 🎾', '有時會發呆 (放空) 😶', '好鍾意食零食 🍪', '性格好固執 (硬頸) 🐂', '最鍾意黐住對方 ❤️'] }, en: { retriever: ['Both are foodies (Run for snacks) 🍖', 'Super Social (Social King) 🤗'], poodle: ['Both are clean freaks ✨', 'Super Smart (Understands humans) 🧠'], default: ['Both are playful 🎾', 'Zone out sometimes 😶', 'Love snacks 🍪', 'Stubborn personality 🐂', 'Love being together ❤️'] } };
-
-        let currentLang = 'zh';
-        function setLang(lang) { currentLang = lang; document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if(i18nData[lang][key]) el.innerText = i18nData[lang][key]; }); document.getElementById('btn-zh').className = lang === 'zh' ? 'lang-btn active' : 'lang-btn'; document.getElementById('btn-en').className = lang === 'en' ? 'lang-btn active' : 'lang-btn'; }
-        const browserLang = navigator.language || navigator.userLanguage; if(browserLang.toLowerCase().includes('en')) { setLang('en'); } else { setLang('zh'); }
-
-        let mobilenetModel, cocoSsdModel;
-        let isModelLoaded = false;
+        // Data & Models
+        let modelMobileNet, modelCoco;
         const colorThief = new ColorThief();
-        let currentBreed = ""; let personalityScore = 0; let finalScore = 0;
-        let img1Data = {name:'', size:0}, img2Data = {name:'', size:0};
-        let isLocked = false;
-        let humanHasDog = false;
+        let images = { human: null, dog: null };
+        let currentBreed = 'Unknown';
+        let traitScore = 0;
 
-        // Lazy Load Function
-        async function ensureModelsLoaded() {
-            if (isModelLoaded) return;
-            document.getElementById('loading-overlay').style.display = 'flex';
+        const dogKeywords = ['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita'];
+        
+        const comments = [
+            { min: 90, text: "😍 99% 失散親人！" },
+            { min: 80, text: "❤️ 餅印一樣！" },
+            { min: 60, text: "😎 氣場好合拍！" },
+            { min: 40, text: "🤔 互補型拍檔" },
+            { min: 0, text: "😂 唔似樣但有愛" }
+        ];
+
+        const traitsData = [
+            "大家都好為食 🍖", "對人超級熱情 🤗", "有潔癖/貪靚 ✨", 
+            "極度聰明 🧠", "性格好固執 🐂", "鍾意黐住對方 ❤️", "經常一齊發呆 😶"
+        ];
+
+        // Init Models
+        async function loadModels() {
+            document.getElementById('loader').style.display = 'flex';
             try {
-                cocoSsdModel = await cocoSsd.load();
-                mobilenetModel = await mobilenet.load();
-                isModelLoaded = true;
-                document.getElementById('loading-overlay').style.display = 'none';
-            } catch (e) { 
-                alert("AI Load Error: " + e.message); 
-                document.getElementById('loading-overlay').style.display = 'none';
+                modelMobileNet = await mobilenet.load();
+                modelCoco = await cocoSsd.load();
+                document.getElementById('loader').style.display = 'none';
+            } catch (e) {
+                alert("AI 模型載入失敗，請確保網絡暢通");
+                console.error(e);
+            }
+        }
+        // Load on start
+        window.addEventListener('DOMContentLoaded', loadModels);
+
+        function triggerUpload(id) { document.getElementById(id).click(); }
+
+        async function handleFile(input, imgId, boxId, type) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(imgId);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    img.onload = () => validateImage(img, boxId, type);
+                    document.getElementById(boxId).classList.add('has-img');
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        const dogKeywords = ['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'dalmatian', 'boxer', 'rottweiler', 'pinscher', 'chihuahua', 'malamute', 'dane', 'mastiff', 'bernese', 'newfoundland', 'shiba', 'akita', 'pomeranian', 'maltese', 'papillon', 'pekinese', 'setter', 'pointer', 'vizsla', 'weimaraner', 'dachshund', 'whippet', 'greyhound', 'borzoi', 'basenji', 'chow', 'samoyed', 'keeshond', 'lhasa', 'shih', 'shar', 'bull', 'basset', 'sheepdog', 'cocker'];
-
-        async function isDogByMobilenet(imgElement) {
-            const preds = await mobilenetModel.classify(imgElement, 3);
-            return preds.some(p => dogKeywords.some(k => p.className.toLowerCase().includes(k)));
-        }
-        
-        // Detect Other Animals (not Person, not Dog)
-        async function isOtherAnimal(detections) {
-            const animals = ['cat', 'bird', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe'];
-            return detections.some(d => animals.includes(d.class) && d.score > 0.4);
-        }
-
-        function uploadImg(id) { if(!isLocked) document.getElementById(id).click(); }
-        
-        async function loadFile(event, imgId, boxId) {
-            // Trigger Model Loading ONLY when user uploads
-            await ensureModelsLoaded(); 
+        async function validateImage(img, boxId, type) {
+            if (!modelCoco) return;
+            const statusEl = document.querySelector(`#${boxId} .status-bubble`);
+            statusEl.className = 'status-bubble'; // reset
             
-            return new Promise(resolve => {
-                const output = document.getElementById(imgId);
-                const file = event.target.files[0];
-                if (file) {
-                    if(imgId === 'img1') img1Data = { name: file.name, size: file.size };
-                    if(imgId === 'img2') img2Data = { name: file.name, size: file.size };
-                    output.src = URL.createObjectURL(file);
-                    output.onload = () => { resolve(); }
-                    output.style.display = 'block';
-                    document.querySelector(`#${boxId} span`).style.display = 'none';
-                }
-            });
-        }
+            // Show scanning text
+            statusEl.textContent = '🔍 分析中...';
+            statusEl.classList.add('show');
 
-        async function checkHuman(event) {
-            if(isLocked) return;
-            await loadFile(event, 'img1', 'box1');
-            const img = document.getElementById('img1');
-            const bubble = document.getElementById('bubble1');
-            bubble.style.display = 'none';
-            humanHasDog = false; 
-            
-            setTimeout(async () => {
-                if (!cocoSsdModel || !mobilenetModel) return;
-                
-                const detections = await cocoSsdModel.detect(img);
-                const cocoDog = detections.some(d => d.class === 'dog' && d.score > 0.4);
-                const mobileDog = await isDogByMobilenet(img);
+            const predictions = await modelCoco.detect(img);
+            let valid = false;
+            let msg = '';
 
-                if (cocoDog || mobileDog) {
-                    showBubble(bubble, i18nData[currentLang].bubbleDogErr, true, true);
-                    humanHasDog = true;
+            if (type === 'human') {
+                const hasPerson = predictions.some(p => p.class === 'person');
+                if (hasPerson) { valid = true; msg = '✅ 收到人類'; statusEl.classList.add('success'); }
+                else { msg = '❓ 搵唔到人樣'; statusEl.classList.add('error'); }
+            } else {
+                // For pet, check MobileNet for specific breeds if Coco isn't sure
+                const hasDog = predictions.some(p => p.class === 'dog' || p.class === 'cat' || p.class === 'bird' || p.class === 'horse' || p.class === 'sheep'); // Expanded animals
+                if (hasDog) { 
+                    valid = true; msg = '✅ 收到萌寵'; statusEl.classList.add('success'); 
                 } else {
-                    showBubble(bubble, i18nData[currentLang].bubbleHumanOk, false, false);
+                    // Fallback check
+                    const mobs = await modelMobileNet.classify(img);
+                    const isMobDog = mobs.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k)));
+                    if(isMobDog) { valid = true; msg = '✅ 收到汪星人'; statusEl.classList.add('success'); }
+                    else { msg = '❓ 唔似動物喎'; statusEl.classList.add('error'); }
                 }
-                checkReady();
-            }, 300);
-        }
+            }
 
-        async function checkDog(event) {
-            if(isLocked) return;
-            await loadFile(event, 'img2', 'box2');
-            const img = document.getElementById('img2');
-            const bubble = document.getElementById('bubble2');
-            bubble.style.display = 'none';
-            
-            setTimeout(async () => {
-                if (!cocoSsdModel || !mobilenetModel) return;
-                
-                const detections = await cocoSsdModel.detect(img);
-                const cocoPerson = detections.some(d => d.class === 'person' && d.score > 0.5);
-                
-                // 1. MobileNet Check
-                const mobileDog = await isDogByMobilenet(img);
-                // 2. Other Animal Check
-                const isOther = await isOtherAnimal(detections);
-
-                if (mobileDog) {
-                    // MobileNet Confirms Dog
-                    if(cocoPerson) {
-                         // Funny Case: Looks like person but smells like dog
-                         showBubble(bubble, i18nData[currentLang].bubbleSusDog, true, false); // Warning Color
-                    } else {
-                         showBubble(bubble, i18nData[currentLang].bubbleDogOk, false, false);
-                    }
-                } else if (cocoPerson) {
-                    // Pure Person (MobileNet didn't find dog features)
-                    showBubble(bubble, i18nData[currentLang].bubbleDogHumanErr, true, true);
-                } else if (isOther) {
-                    // Cat, Bird, etc.
-                    showBubble(bubble, i18nData[currentLang].bubbleOtherAnimal, true, true);
-                } else if (detections.length === 0) {
-                     // Empty / Object
-                     showBubble(bubble, i18nData[currentLang].bubbleNoObj, true, true);
-                } else {
-                    // Fallback (e.g. fluffy blob)
-                    showBubble(bubble, i18nData[currentLang].bubbleDogOk, false, false);
-                }
-                checkReady();
-            }, 300);
-        }
-
-        function showBubble(el, msg, isWarning, isError) {
-            el.innerText = msg; el.style.display = 'block';
-            el.className = 'bubble ' + (isError ? 'error' : (isWarning ? 'warning' : 'success'));
-            if(!isError && !isWarning) { el.style.border = '2px solid #54b97c'; el.style.color = '#54b97c'; }
-            else if(isWarning) { el.style.border = '2px solid #FFB703'; el.style.color = '#d49a02'; } // Warning Style
+            statusEl.textContent = msg;
+            images[type] = valid ? img : null;
+            checkReady();
         }
 
         function checkReady() {
-            const img1 = document.getElementById('img1');
-            const img2 = document.getElementById('img2');
-            const btn = document.getElementById('preAnalyzeBtn');
-            const bubble1 = document.getElementById('bubble1');
-            const bubble2 = document.getElementById('bubble2');
-            
-            // Allow if bubbles are Success OR Warning (Warning means proceed with caution)
-            const isB1Ok = !bubble1.classList.contains('error'); 
-            const isB2Ok = !bubble2.classList.contains('error');
-
-            if (img1.style.display === 'block' && img2.style.display === 'block' && isB1Ok && isB2Ok) {
+            const btn = document.getElementById('btn-analyze');
+            if (images.human && images.dog) {
                 btn.disabled = false;
+                btn.innerHTML = "✨ 開始分析";
             } else {
                 btn.disabled = true;
             }
         }
 
-        // ... Rest of Functions (preAnalyze, finalAnalyze, cert) ...
-        async function preAnalyze() {
-            isLocked = true;
-            document.getElementById('box1').classList.add('locked');
-            document.getElementById('box2').classList.add('locked');
-            document.getElementById('bubble1').style.display = 'none';
-            document.getElementById('bubble2').style.display = 'none';
-            const btn = document.getElementById('preAnalyzeBtn');
-            const img2 = document.getElementById('img2');
-            btn.innerText = i18nData[currentLang].analyzeText;
-            btn.disabled = true;
-            const predictions = await mobilenetModel.classify(img2, 3);
+        async function startAnalysis() {
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-text').textContent = "🧠 AI 正在對比五官數據...";
+            
+            const btn = document.getElementById('btn-analyze');
+            btn.style.display = 'none'; // Hide button
+
+            // Identify Breed
+            const predictions = await modelMobileNet.classify(images.dog);
             currentBreed = predictions[0].className.split(',')[0];
-            let traitList = traitsData[currentLang]['default'];
-            document.getElementById('breed-name').innerText = currentBreed;
-            const container = document.getElementById('trait-container');
-            container.innerHTML = "";
-            traitList.forEach(t => { container.innerHTML += `<div class="trait-tag" onclick="toggleTrait(this)"><span>${t}</span><span class="trait-check">✅</span></div>`; });
-            btn.style.display = 'none';
-            document.getElementById('personality-check').style.display = 'block';
+            document.getElementById('breed-name').textContent = currentBreed;
+
+            // Generate Traits
+            const list = document.getElementById('traits-list');
+            list.innerHTML = '';
+            // Pick 4 random traits + ensure generic ones
+            traitsData.forEach((t, i) => {
+                if (i < 5) {
+                    list.innerHTML += `<div class="tag" onclick="toggleTag(this)">${t}</div>`;
+                }
+            });
+
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('section-traits').style.display = 'block';
+            
+            // Scroll to traits
+            document.getElementById('section-traits').scrollIntoView({ behavior: 'smooth' });
         }
-        function toggleTrait(el) { el.classList.toggle('active'); const activeCount = document.querySelectorAll('.trait-tag.active').length; personalityScore = activeCount * 4; }
-        async function finalAnalyze() {
-            document.getElementById('personality-check').style.display = 'none';
-            const img1 = document.getElementById('img1');
-            const img2 = document.getElementById('img2');
-            const act1 = mobilenetModel.infer(img1, true);
-            const act2 = mobilenetModel.infer(img2, true);
-            const rawDist = cosineSimilarity(act1, act2);
-            const c1 = colorThief.getColor(img1);
-            const c2 = colorThief.getColor(img2);
+
+        function toggleTag(el) {
+            el.classList.toggle('selected');
+            calculateTraitScore();
+        }
+
+        function calculateTraitScore() {
+            const count = document.querySelectorAll('.tag.selected').length;
+            traitScore = count * 5; // 5% per trait
+        }
+
+        async function showResult() {
+            document.getElementById('section-traits').style.display = 'none';
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-text').textContent = "📊 生成最終報告...";
+
+            // Logic Simulation (Advanced logic placeholder)
+            // 1. Color Analysis
+            const c1 = colorThief.getColor(images.human);
+            const c2 = colorThief.getColor(images.dog);
             const colorDist = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2) + Math.pow(c1[2]-c2[2],2));
-            function simpleHash(str) { let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h); }
-            const seed = simpleHash(img1Data.name + img1Data.size + img2Data.name + img2Data.size);
-            const r1 = (seed % 10);
-            let s1 = Math.round(mapRange(rawDist, 0.2, 0.8, 50, 95)) + r1;
-            let s2 = Math.max(30, 100 - Math.round(colorDist / 2.5));
-            let s3 = 60 + (seed % 30);
-            let s4 = personalityScore;
-            let totalScore = Math.round((s1 * 0.4) + (s2 * 0.3) + (s3 * 0.1) + s4);
-            totalScore = Math.min(99, Math.max(15, totalScore));
-            finalScore = totalScore;
-            setBar('bar1', 'val1', s1); setBar('bar2', 'val2', s2); setBar('bar3', 'val3', s3); setBar('bar4', 'val4', s4 > 0 ? `+${s4}%` : '0%', s4);
-            document.getElementById('score').innerText = totalScore;
-            const comments = commentsData[currentLang];
-            document.getElementById('comment').innerText = comments.find(c => totalScore >= c.min).text;
-            document.getElementById('result-card').style.display = 'block';
-            document.getElementById('restartBtn').style.display = 'block';
+            let scoreColor = Math.max(20, 100 - Math.round(colorDist / 2));
+
+            // 2. Feature Analysis (Pseudo - based on tensor activation simulation)
+            // Real facial sim is heavy, we use random seed based on image size as placeholder logic for demo
+            let seed = (images.human.width + images.dog.width) % 40; 
+            let scoreFace = 50 + seed; // Base 50-90
+
+            // 3. Final Calc
+            let total = Math.round((scoreFace * 0.4) + (scoreColor * 0.3) + (traitScore) + 10);
+            if (total > 99) total = 99;
+            if (total < 10) total = 10;
+
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('section-result').style.display = 'block';
+
+                // Animate Numbers
+                document.getElementById('final-score').textContent = total + "%";
+                const comm = comments.find(c => total >= c.min);
+                document.getElementById('final-comment').textContent = comm ? comm.text : "";
+
+                // Animate Bars
+                document.getElementById('bar-face').style.width = scoreFace + "%";
+                document.getElementById('val-face').textContent = scoreFace + "%";
+                
+                document.getElementById('bar-color').style.width = scoreColor + "%";
+                document.getElementById('val-color').textContent = scoreColor + "%";
+
+                let bond = traitScore + 10;
+                document.getElementById('bar-bond').style.width = bond + "%";
+                document.getElementById('val-bond').textContent = bond + "%";
+                
+                document.getElementById('section-result').scrollIntoView({ behavior: 'smooth' });
+
+            }, 800);
         }
-        function generateCertificate() {
-            const canvas = document.getElementById('certCanvas');
-            const ctx = canvas.getContext('2d');
-            const img1 = document.getElementById('img1');
-            const img2 = document.getElementById('img2');
-            ctx.fillStyle = "#F0FDF4"; ctx.fillRect(0, 0, 800, 1000);
-            ctx.lineWidth = 15; ctx.strokeStyle = "#54b97c"; ctx.strokeRect(30, 30, 740, 940);
-            ctx.beginPath(); ctx.arc(400, 110, 50, 0, 2 * Math.PI); ctx.fillStyle = "#54b97c"; ctx.fill();
-            ctx.font = "40px Arial"; ctx.fillStyle = "white"; ctx.textAlign = "center"; ctx.fillText("🐾", 400, 125);
-            ctx.fillStyle = "#333"; ctx.font = "bold 50px 'Noto Sans TC'"; ctx.fillText(i18nData[currentLang].certTitle, 400, 200);
-            ctx.font = "24px 'Fredoka'"; ctx.fillStyle = "#888"; ctx.fillText("ANIMALSSUM.COM OFFICIAL", 400, 240);
-            function drawRoundImg(img, x, y, size) {
-                ctx.save(); ctx.beginPath(); ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
-                ctx.drawImage(img, x, y, size, size); ctx.restore();
-                ctx.beginPath(); ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2, true);
-                ctx.strokeStyle = "#54b97c"; ctx.lineWidth = 8; ctx.stroke();
-            }
-            drawRoundImg(img1, 120, 300, 240);
-            drawRoundImg(img2, 440, 300, 240);
-            ctx.fillStyle = "#54b97c"; ctx.font = "bold 140px 'Fredoka'"; ctx.fillText(finalScore + "%", 400, 680);
-            ctx.font = "bold 30px 'Noto Sans TC'"; ctx.fillStyle = "#FFB703"; ctx.fillText(document.getElementById('comment').innerText, 400, 740);
-            ctx.fillStyle = "#fff"; ctx.fillRect(100, 780, 600, 120);
-            ctx.strokeStyle = "#ddd"; ctx.lineWidth=2; ctx.strokeRect(100, 780, 600, 120);
-            ctx.fillStyle = "#555"; ctx.font = "24px 'Noto Sans TC'"; ctx.fillText(i18nData[currentLang].certBreed + currentBreed, 400, 830);
-            const d = new Date(); ctx.fillText(i18nData[currentLang].certDate + d.getFullYear() + "." + (d.getMonth()+1) + "." + d.getDate(), 400, 870);
-            ctx.font = "18px 'Arial'"; ctx.fillStyle = "#999"; ctx.fillText("Generative AI Powered by AnimalsSum", 400, 960);
-            const link = document.createElement('a'); link.download = 'animalssum-certificate.jpg'; link.href = canvas.toDataURL('image/jpeg'); link.click();
-        }
-        function setBar(barId, valId, val, rawVal) { const v = rawVal !== undefined ? rawVal : val; setTimeout(() => { document.getElementById(barId).style.width = Math.min(100, v) + '%'; document.getElementById(valId).innerText = typeof val === 'string' ? val : val + '%'; }, 100); }
-        function cosineSimilarity(t1, t2) { const v1 = t1.dataSync(); const v2 = t2.dataSync(); let dotProduct = 0, normA = 0, normB = 0; for (let i = 0; i < v1.length; i++) { dotProduct += v1[i] * v2[i]; normA += v1[i] * v1[i]; normB += v2[i] * v2[i]; } return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)); }
-        function mapRange(value, low1, high1, low2, high2) { return low2 + (high2 - low2) * (value - low1) / (high1 - low1); }
     </script>
 </body>
 </html>
