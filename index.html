@@ -160,36 +160,36 @@
 
         /* Fun Bubbles (Speech) - 方法1 更新版 */
         .bubble {
-            position: absolute;
-            bottom: 100%;                 /* 由 card 頂邊往上 */
-            left: 50%;
-            transform: translate(-50%, -8px);
-            background: #333;
-            color: #fff;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            display: none;
-            z-index: 50;                   /* 高過 image / scanner */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .bubble::after {
-            content: ''; 
-            position: absolute; 
-            top: 100%; 
-            left: 50%; 
-            transform: translateX(-50%);
-            border-width: 6px 6px 0; 
-            border-style: solid; 
-            border-color: #333 transparent transparent transparent;
-        }
-        .bubble.warn { background: var(--accent); color: var(--dark); }
-        .bubble.warn::after { border-top-color: var(--accent); }
-        .bubble.err { background: var(--danger); color: white; }
-        .bubble.err::after { border-top-color: var(--danger); }
-        .bubble.ok { background: var(--brand); color: white; }
-        .bubble.ok::after { border-top-color: var(--brand); }
+    position: absolute;
+    top: 6px;                 /* card 入面稍為向下 6px */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    display: none;
+    z-index: 6;               /* 比 scanner-line (z-index:5) 高過少少 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+.bubble.warn { background: var(--accent); color: var(--dark); }
+.bubble.warn::after { border-top-color: var(--accent); }
+.bubble.err { background: var(--danger); color: #fff; }
+.bubble.err::after { border-top-color: var(--danger); }
+.bubble.ok { background: var(--brand); color: #fff; }
+.bubble.ok::after { border-top-color: var(--brand); }
 
 
         /* Big Action Button */
