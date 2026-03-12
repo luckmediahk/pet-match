@@ -3,659 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🐶 AnimalsSum | 人寵配對大作戰</title>
+    <title>🐶 AnimalsSum | 人寵配對大作戰 (Live Event)</title>
     
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
-    <!-- Confetti for celebration -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
 
     <style>
         :root {
-            --brand: #54b97c;
-            --brand-dark: #3da065;
-            --accent: #FFD93D; /* Yellow Pop */
-            --danger: #FF6B6B;
-            --dark: #2d3436;
-            --light: #f6fffa;
+            --brand: #54b97c; --brand-dark: #3da065;
+            --accent: #FFD93D; --danger: #FF6B6B;
+            --dark: #2d3436; --light: #f6fffa;
         }
-
 
         body {
             font-family: 'Noto Sans TC', 'Fredoka', sans-serif;
-            background-color: #e0f7fa;
-            /* Fun abstract background */
-            background-image: radial-gradient(circle at 10% 20%, rgb(255, 252, 213) 0%, rgb(200, 247, 197) 90%);
-            margin: 0;
-            padding: 10px;
-            min-height: 100vh;
-            color: var(--dark);
-            overflow-x: hidden;
+            background: linear-gradient(135deg, #e0f7fa 0%, #d4f0df 100%);
+            margin: 0; padding: 20px; min-height: 100vh; color: var(--dark);
         }
 
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-            padding-bottom: 50px;
-        }
-
-
-        /* Fun Header */
-        header {
-            text-align: center;
-            padding: 20px 0;
-            animation: bounceInDown 0.8s;
-        }
-
-
-        .logo-tag {
-            background: var(--dark); color: var(--accent);
-            padding: 5px 15px; border-radius: 20px;
-            font-weight: 800; font-size: 0.8rem; letter-spacing: 2px;
-            display: inline-block; transform: rotate(-3deg);
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
-        }
-
-
-        h1 {
-            font-size: 2.2rem; margin: 10px 0 5px; color: var(--brand);
-            text-shadow: 2px 2px 0px #fff; font-weight: 900;
-        }
+        .container { max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 30px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
         
-        /* The Match Area */
-        .match-arena {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-            position: relative;
-        }
+        header { text-align: center; margin-bottom: 20px; }
+        .logo-tag { background: var(--dark); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 1rem; }
+        h1 { font-size: 2.5rem; margin: 10px 0 5px; color: var(--brand); text-shadow: 2px 2px 0px #eee; font-weight: 900; }
 
+        /* View Controllers */
+        .view { display: none; animation: fadeIn 0.5s; }
+        .view.active { display: block; }
 
-        .photo-card {
-            flex: 1;
-            background: #fff;
-            border-radius: 20px;
-            padding: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            position: relative;
-            transition: transform 0.2s;
-            cursor: pointer;
-            border: 3px solid #fff;
-            overflow: hidden;
-        }
-
-
-        .photo-card:active { transform: scale(0.95); }
-        .photo-card.locked { cursor: default; transform: none; }
-
-
-        .img-box {
-            width: 100%; aspect-ratio: 1/1;
-            background: #f0f2f5; border-radius: 15px;
-            overflow: hidden; position: relative;
-            display: flex; align-items: center; justify-content: center;
-        }
+        /* Inputs & Buttons */
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1.1rem; }
+        .form-input { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #ddd; font-size: 1.2rem; box-sizing: border-box; }
         
-        .img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        
-        .placeholder {
-            font-size: 3rem; color: #cbd5e0;
-            transition: 0.3s;
-        }
-        .photo-card:hover .placeholder { transform: scale(1.2); color: var(--brand); }
-
-
-        .role-badge {
-            text-align: center; font-weight: bold; margin-top: 8px;
-            font-size: 0.9rem; color: #888;
-        }
-
-
-        /* VS Lightning Bolt */
-        .vs-badge {
-            position: absolute; left: 50%; top: 40%;
-            transform: translate(-50%, -50%) rotate(10deg);
-            background: var(--accent);
-            color: var(--dark);
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-style: italic; font-size: 1.2rem;
-            border: 4px solid #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            z-index: 10;
-        }
-
-
-        /* Scanner Animation */
-        .scanner-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--brand);
-            box-shadow: 0 0 10px var(--brand);
-            display: none;
-            z-index: 5;
-        }
-        .scanning .scanner-line {
-            display: block;
-            animation: scan 1.5s infinite linear;
-        }
-        @keyframes scan {
-            0% { top: 0; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-
-
-        /* Fun Bubbles (Speech) - 方法1 更新版 */
-        .bubble {
-    position: absolute;
-    top: 6px;                 /* card 入面稍為向下 6px */
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: #fff;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    white-space: nowrap;
-    display: none;
-    z-index: 6;               /* 比 scanner-line (z-index:5) 高過少少 */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.bubble::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 6px 6px 0;
-    border-style: solid;
-    border-color: #333 transparent transparent transparent;
-}
-.bubble.warn { background: var(--accent); color: var(--dark); }
-.bubble.warn::after { border-top-color: var(--accent); }
-.bubble.err { background: var(--danger); color: #fff; }
-.bubble.err::after { border-top-color: var(--danger); }
-.bubble.ok { background: var(--brand); color: #fff; }
-.bubble.ok::after { border-top-color: var(--brand); }
-
-
-        /* Big Action Button */
         .main-btn {
-            background: var(--brand); color: white;
-            border: none; width: 100%; padding: 18px;
-            border-radius: 25px; font-size: 1.3rem; font-weight: 800;
-            margin-top: 30px; cursor: pointer;
-            box-shadow: 0 8px 0 #3da065, 0 15px 20px rgba(0,0,0,0.1);
-            transition: all 0.1s;
-            position: relative; overflow: hidden;
+            background: var(--brand); color: white; border: none; width: 100%; padding: 18px;
+            border-radius: 25px; font-size: 1.5rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 8px 0 #3da065; transition: all 0.1s; margin-top: 10px;
         }
-        .main-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 #3da065, 0 5px 10px rgba(0,0,0,0.1);
-        }
-        .main-btn:disabled {
-            background: #ccc; box-shadow: none; cursor: not-allowed; transform: none;
-        }
+        .main-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #3da065; }
+        .main-btn:disabled { background: #ccc; box-shadow: 0 8px 0 #999; cursor: not-allowed; }
+        .sec-btn { background: #fff; color: var(--brand); border: 2px solid var(--brand); box-shadow: 0 5px 0 var(--brand); }
 
+        /* Match Grid (3 Rows) */
+        .round-box { background: #f8f9fa; border-radius: 20px; padding: 15px; margin-bottom: 20px; border: 2px dashed #ccc; }
+        .round-title { text-align: center; font-weight: 900; color: #555; margin-bottom: 15px; font-size: 1.2rem; background: var(--accent); display: inline-block; padding: 5px 20px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); }
+        .match-row { display: flex; gap: 15px; justify-content: center; align-items: center; }
+        
+        .photo-card { flex: 1; background: #fff; border-radius: 15px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; cursor: pointer; text-align: center; }
+        .img-box { width: 100%; aspect-ratio: 4/3; background: #eee; border-radius: 10px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .placeholder { font-size: 2.5rem; color: #ccc; }
+        
+        /* Bubble */
+        .bubble { position: absolute; top: 5px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 5px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; white-space: nowrap; }
+        .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* Trait Check Section */
-        #personality-check {
-            background: #fff; padding: 25px; border-radius: 25px;
-            margin-top: 25px; text-align: center; display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        /* Results Screen */
+        .score-board { display: flex; justify-content: space-around; background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .score-item { text-align: center; }
+        .score-item h4 { margin: 0; color: #888; font-size: 1rem; }
+        .score-item .val { font-size: 1.8rem; font-weight: 900; color: var(--brand); }
+        .score-item.final .val { font-size: 3.5rem; color: var(--accent); text-shadow: 2px 2px 0 #333; }
 
+        .detail-bars { background: #f9f9f9; padding: 20px; border-radius: 20px; }
+        .bar-row { display: flex; align-items: center; margin-bottom: 12px; }
+        .bar-label { width: 120px; font-weight: bold; color: #555; }
+        .bar-bg { flex: 1; height: 12px; background: #ddd; border-radius: 6px; overflow: hidden; margin: 0 10px; }
+        .bar-fill { height: 100%; background: var(--brand); width: 0%; transition: 1.5s ease-out; }
+        .bar-val { width: 60px; font-weight: bold; text-align: right; }
 
-        .trait-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content:center; margin: 15px 0; }
-        .trait-btn {
-            background: #f7f9fc; border: 2px solid #eee;
-            padding: 10px 15px; border-radius: 15px; font-weight: bold;
-            color: #555; cursor: pointer; transition: 0.2s;
-        }
-        .trait-btn.active {
-            background: var(--brand); color: white; border-color: var(--brand);
-            transform: scale(1.05);
-        }
+        /* Modal Overlay */
+        #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
 
-
-        /* Result Card */
-        #result-card {
-            background: #fff; border-radius: 30px; margin-top: 20px;
-            padding: 30px 20px; text-align: center; display: none;
-            box-shadow: 0 20px 50px rgba(84, 185, 124, 0.2);
-            animation: slideUp 0.6s ease;
-        }
-        .score-circle {
-            width: 150px; height: 150px; background: var(--brand);
-            border-radius: 50%; color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 4rem; font-weight: 900;
-            margin: 0 auto 15px; border: 8px solid #dcfce7;
-        }
-        .verdict { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin-bottom: 20px; text-shadow: 1px 1px 0 #eee; }
-
-
-        /* Data Form */
-        .data-box {
-            background: #f8f9fa; padding: 20px; border-radius: 20px;
-            margin-top: 25px; text-align: left;
-            border: 2px dashed #ddd;
-        }
-        .form-row { margin-bottom: 15px; }
-        .form-row label { display: block; font-size: 0.8rem; font-weight: bold; color: #888; margin-bottom: 5px; }
-        .form-row select, .form-row input {
-            width: 100%; padding: 12px; border-radius: 12px;
-            border: 2px solid #eee; background: white; font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-
-        /* Utils */
-        @keyframes bounceInDown {
-            from { opacity: 0; transform: translate3d(0, -3000px, 0); }
-            60% { opacity: 1; transform: translate3d(0, 25px, 0); }
-            75% { transform: translate3d(0, -10px, 0); }
-            90% { transform: translate3d(0, 5px, 0); }
-            to { transform: none; }
-        }
-        @keyframes popUp { from { transform: scale(0.5); opacity:0; } to { transform: scale(1); opacity:1; } }
-        @keyframes slideUp { from { transform: translateY(50px); opacity:0; } to { transform: translateY(0); opacity:1; } }
-
-
-        /* Loading Overlay */
-        #loader {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(255,255,255,0.95); z-index: 999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s;
-        }
-        .loader-dog { font-size: 4rem; animation: shake 2s infinite; }
-        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
-
-
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Loader */
+        #loader { position: fixed; inset:0; background: rgba(255,255,255,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-
-    <!-- Loading Screen -->
     <div id="loader">
-        <div class="loader-dog">🐶</div>
-        <h3 style="color:#555;">喚醒 AI 狗狗中...</h3>
-        <p style="color:#999; font-size:0.8rem;">首次載入需要幾秒鐘</p>
+        <div class="spinner">⚙️</div>
+        <h2>AI 引擎啟動中...</h2>
     </div>
-
 
     <div class="container">
-        
         <header>
             <div class="logo-tag">ANIMALSSUM.COM</div>
-            <h1>人寵配對 V6.0</h1>
-            <p style="color:#777; font-weight:500;">AI 睇相 • 測出靈魂伴侶</p>
+            <h1>🐾 人寵配對挑戰賽</h1>
         </header>
 
+        <!-- VIEW 1: HOME (Input Names) -->
+        <div id="view-home" class="view active">
+            <h3 style="text-align:center; color:#666;">📝 參賽者登記</h3>
+            <div class="input-group">
+                <label>👤 人類名字 (主人)</label>
+                <input type="text" id="human-name" class="form-input" placeholder="例如: 陳大文">
+            </div>
+            <div class="input-group">
+                <label>🐶 狗狗名字</label>
+                <input type="text" id="dog-name" class="form-input" placeholder="例如: 旺財">
+            </div>
+            <button class="main-btn" onclick="startUpload()">➡️ 開始挑戰</button>
+            <button class="main-btn sec-btn" style="margin-top:20px;" onclick="showRetrieve()">🔍 搵番我張 Cert</button>
+        </div>
 
-        <!-- Match Arena -->
-        <div class="match-arena">
+        <!-- VIEW 2: UPLOAD (3 Rounds) -->
+        <div id="view-upload" class="view">
+            <h3 style="text-align:center;">📸 上傳 3 組對決相片</h3>
             
-            <!-- Human Card -->
-            <div class="photo-card" id="card1" onclick="uploadImg('upload1')">
-                <div id="bubble1" class="bubble"></div>
-                <div class="img-box">
-                    <div class="scanner-line"></div>
-                    <span class="placeholder">👤</span>
-                    <img id="img1">
+            <!-- Round 1: Front -->
+            <div class="round-box">
+                <div class="round-title">Round 1: 正面大頭照</div>
+                <div class="match-row">
+                    <div class="photo-card" onclick="document.getElementById('u-h-1').click()">
+                        <div class="bubble" id="b-h-1"></div>
+                        <div class="img-box"><span class="placeholder">👤</span><img id="img-h-1"></div>
+                        <div style="margin-top:5px; font-weight:bold;">人類</div>
+                        <input type="file" id="u-h-1" hidden accept="image/*" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person', 'front')">
+                    </div>
+                    <div style="font-weight:900; color:var(--accent); font-size:1.5rem; font-style:italic;">VS</div>
+                    <div class="photo-card" onclick="document.getElementById('u-d-1').click()">
+                        <div class="bubble" id="b-d-1"></div>
+                        <div class="img-box"><span class="placeholder">🐾</span><img id="img-d-1"></div>
+                        <div style="margin-top:5px; font-weight:bold;">狗狗</div>
+                        <input type="file" id="u-d-1" hidden accept="image/*" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog', 'front')">
+                    </div>
                 </div>
-                <div class="role-badge">人類代表</div>
-                <input type="file" id="upload1" accept="image/*" style="display:none;" onchange="handleUpload(event, 'img1', 'bubble1', 'human')">
             </div>
 
-
-            <!-- VS Badge -->
-            <div class="vs-badge">VS</div>
-
-
-            <!-- Dog Card -->
-            <div class="photo-card" id="card2" onclick="uploadImg('upload2')">
-                <div id="bubble2" class="bubble"></div>
-                <div class="img-box">
-                    <div class="scanner-line"></div>
-                    <span class="placeholder">🐾</span>
-                    <img id="img2">
+            <!-- Round 2: Side -->
+            <div class="round-box">
+                <div class="round-title" style="background:#ff9ff3;">Round 2: 側面神韻照</div>
+                <div class="match-row">
+                    <div class="photo-card" onclick="document.getElementById('u-h-2').click()">
+                        <div class="bubble" id="b-h-2"></div>
+                        <div class="img-box"><span class="placeholder">👤</span><img id="img-h-2"></div>
+                        <input type="file" id="u-h-2" hidden accept="image/*" onchange="checkImg(event, 'img-h-2', 'b-h-2', 'person', 'side')">
+                    </div>
+                    <div style="font-weight:900; color:var(--accent); font-size:1.5rem; font-style:italic;">VS</div>
+                    <div class="photo-card" onclick="document.getElementById('u-d-2').click()">
+                        <div class="bubble" id="b-d-2"></div>
+                        <div class="img-box"><span class="placeholder">🐾</span><img id="img-d-2"></div>
+                        <input type="file" id="u-d-2" hidden accept="image/*" onchange="checkImg(event, 'img-d-2', 'b-d-2', 'dog', 'side')">
+                    </div>
                 </div>
-                <div class="role-badge">汪星人</div>
-                <input type="file" id="upload2" accept="image/*" style="display:none;" onchange="handleUpload(event, 'img2', 'bubble2', 'dog')">
             </div>
 
+            <!-- Round 3: Body/Action -->
+            <div class="round-box">
+                <div class="round-title" style="background:#54a0ff; color:white;">Round 3: 全身/動作照</div>
+                <div class="match-row">
+                    <div class="photo-card" onclick="document.getElementById('u-h-3').click()">
+                        <div class="bubble" id="b-h-3"></div>
+                        <div class="img-box"><span class="placeholder">🧍‍♂️</span><img id="img-h-3"></div>
+                        <input type="file" id="u-h-3" hidden accept="image/*" onchange="checkImg(event, 'img-h-3', 'b-h-3', 'person', 'body')">
+                    </div>
+                    <div style="font-weight:900; color:var(--accent); font-size:1.5rem; font-style:italic;">VS</div>
+                    <div class="photo-card" onclick="document.getElementById('u-d-3').click()">
+                        <div class="bubble" id="b-d-3"></div>
+                        <div class="img-box"><span class="placeholder">🐕</span><img id="img-d-3"></div>
+                        <input type="file" id="u-d-3" hidden accept="image/*" onchange="checkImg(event, 'img-d-3', 'b-d-3', 'dog', 'body')">
+                    </div>
+                </div>
+            </div>
 
+            <button id="btn-calc" class="main-btn" onclick="generateResults()" disabled>⚡ 開始 AI 運算</button>
+            <button class="main-btn sec-btn" onclick="switchView('view-home')">返回</button>
         </div>
 
-
-        <button id="mainBtn" class="main-btn" onclick="startAnalyze()" disabled>
-            ✨ 立即 Scan！
-        </button>
-
-
-        <!-- Phase 2: Traits -->
-        <div id="personality-check">
-            <h3 style="margin:0;">🐶 AI 發現：<span id="breed-name" style="color:var(--brand);">...</span></h3>
-            <p style="color:#888; font-size:0.9rem;">你哋有無以下 <b>共同特徵</b>？(全中加分!)</p>
+        <!-- VIEW 3: RESULTS -->
+        <div id="view-result" class="view">
+            <h2 style="text-align:center; margin-bottom:5px;">🏆 <span id="res-names"></span> 嘅配對報告</h2>
             
-            <div class="trait-grid" id="trait-container">
-                <!-- JS will fill this -->
+            <div class="score-board">
+                <div class="score-item"><h4>正面</h4><div class="val" id="s-1">0%</div></div>
+                <div class="score-item final"><h4>綜合總分 (拉Curve)</h4><div class="val" id="s-final">0%</div></div>
+                <div class="score-item"><h4>全身</h4><div class="val" id="s-3">0%</div></div>
             </div>
 
+            <div class="detail-bars">
+                <h3 style="margin-top:0;">📊 深度分析數據</h3>
+                <div class="bar-row"><div class="bar-label">🎨 毛色/髮色</div><div class="bar-bg"><div class="bar-fill" id="bar-color" style="background:#f1c40f;"></div></div><div class="bar-val" id="val-color">0%</div></div>
+                <div class="bar-row"><div class="bar-label">👀 眼神交流</div><div class="bar-bg"><div class="bar-fill" id="bar-eye" style="background:#3498db;"></div></div><div class="bar-val" id="val-eye">0%</div></div>
+                <div class="bar-row"><div class="bar-label">🎭 神態氣場</div><div class="bar-bg"><div class="bar-fill" id="bar-vibe" style="background:#9b59b6;"></div></div><div class="bar-val" id="val-vibe">0%</div></div>
+                <div class="bar-row"><div class="bar-label">🏃 動作同步率</div><div class="bar-bg"><div class="bar-fill" id="bar-action" style="background:#e74c3c;"></div></div><div class="bar-val" id="val-action">0%</div></div>
+            </div>
 
-            <button class="main-btn" style="background:var(--accent); color:#333; margin-top:15px; box-shadow:0 8px 0 #d49a02;" onclick="showResult()">
-                🔥 睇最終結果！
-            </button>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="main-btn" style="flex:1; background:#000;" onclick="shareResult()">📱 Share</button>
+                <button class="main-btn" style="flex:2;" onclick="showMemberModal()">📜 領取大會 Cert</button>
+            </div>
+            <button class="main-btn sec-btn" onclick="switchView('view-upload')">🔄 保留相片重新計分</button>
         </div>
 
-
-        <!-- Phase 3: Result -->
-        <div id="result-card">
-            <p style="letter-spacing:2px; font-weight:bold; color:#ccc; margin:0;">MATCH RATE</p>
-            <div class="score-circle">
-                <span id="score">0</span><span style="font-size:1.5rem; margin-top:20px;">%</span>
-            </div>
-            <div class="verdict" id="comment">...</div>
-
-
-            <div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:15px;">
-                <p>📊 <b>分析細節：</b></p>
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span>👀 五官神韻</span><span id="val1">0%</span>
-                </div>
-                <div style="width:100%; background:#eee; height:8px; border-radius:4px; margin-bottom:10px;"><div id="bar1" style="width:0%; height:100%; background:var(--brand); border-radius:4px; transition:1s;"></div></div>
-
-
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span>🎨 氣場顏色</span><span id="val2">0%</span>
-                </div>
-                <div style="width:100%; background:#eee; height:8px; border-radius:4px; margin-bottom:10px;"><div id="bar2" style="width:0%; height:100%; background:var(--accent); border-radius:4px; transition:1s;"></div></div>
-            </div>
-
-
-            <!-- Data Collection Form -->
-            <div class="data-box">
-                <h4 style="margin:0 0 15px 0;">📥 領取配對證書 (Data 收集)</h4>
-                <div class="form-row">
-                    <label>📍 居住地區 (用作全港人寵排名)</label>
-                    <select id="input-district">
-                        <option value="">請選擇...</option>
-                        <option value="hk">香港島</option>
-                        <option value="kln">九龍</option>
-                        <option value="nt">新界</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <label>📧 Email (發送高清證書)</label>
-                    <input type="email" placeholder="example@gmail.com">
-                </div>
-                <button class="main-btn" onclick="alert('多謝！Data 已記錄！(模擬)')" style="font-size:1rem; padding:12px; margin-top:0;">
-                    📜 下載證書 & 加入會員
-                </button>
-            </div>
-
-
-            <button onclick="window.location.reload()" style="background:transparent; border:none; color:#aaa; margin-top:20px; text-decoration:underline;">🔄 再玩一次</button>
+        <!-- VIEW 4: RETRIEVE -->
+        <div id="view-retrieve" class="view">
+            <h3 style="text-align:center;">🔍 尋找大會證書</h3>
+            <div class="input-group"><label>🔢 領取碼 (Code)</label><input type="text" id="ret-code" class="form-input" placeholder="例如: X7Y8Z"></div>
+            <div class="input-group"><label>🐶 狗狗名字</label><input type="text" id="ret-dog" class="form-input" placeholder="核對用"></div>
+            <button class="main-btn" onclick="fetchCert()">📥 下載</button>
+            <button class="main-btn sec-btn" onclick="switchView('view-home')">返回</button>
         </div>
-
 
     </div>
 
+    <!-- MODAL: Join Member & Generate Code -->
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color:var(--brand);">🎉 恭喜完成！</h2>
+            <p>請登記成為 AnimalsSum 會員，系統會為你生成證書及領取碼！</p>
+            <input type="email" id="mem-email" class="form-input" placeholder="你的 Email" style="margin-bottom:15px;">
+            <input type="text" id="mem-phone" class="form-input" placeholder="聯絡電話" style="margin-bottom:15px;">
+            <button class="main-btn" onclick="generateCertAndCode()">✅ 確定登記並領取</button>
+            <button class="main-btn sec-btn" onclick="document.getElementById('modal-overlay').style.display='none'">取消</button>
+        </div>
+    </div>
+
+    <!-- Hidden Canvas for Certificate Generation -->
+    <canvas id="certCanvas" width="800" height="1000" style="display:none;"></canvas>
 
     <script>
-        // --- 1. CONFIG & TEXT (Restored) ---
-        const i18n = {
-            loading: "正在喚醒 AI 狗狗...",
-            // Bubbles (Pet Slang Restored)
-            bubbleDogErr: "🐶 人類？呢邊放汪星人架！",
-            bubbleHumanOk: "✅ 型喎人類！",
-            bubbleDogHumanErr: "🐶 人類？呢邊放汪星人架！", 
-            bubbleDogOk: "✅ 收到！確認係汪星人！",
-            bubbleSusDog: "🐶 究竟是人是狗？當是狗先～",
-            bubbleOtherAnimal: "🐱 你的寵物不是狗？快叫動物之心做其他動物AI啦",
-            bubbleNoObj: "👀 狗狗呢？ where is 狗狗？？",
-            
-            // Traits
-            traitsDefault: ['大家都好貪玩 🎾', '有時會發呆 (放空) 😶', '好鍾意食零食 🍪', '性格好固執 (硬頸) 🐂', '最鍾意黐住對方 ❤️'],
-            traitsRetriever: ['大家都咁為食 (見野食就衝) 🍖', '對人超級熱情 (Social King) 🤗'], 
-            traitsPoodle: ['兩個都有潔癖 (唔污糟得) ✨', '極度聰明 (識聽人話) 🧠']
+        // --- System State ---
+        let models = { coco: null, mobile: null };
+        let state = {
+            hName: '', dName: '',
+            imgs: { h1:null, d1:null, h2:null, d2:null, h3:null, d3:null },
+            scores: {}
         };
 
-
-        const commentsData = [
-            { min: 90, text: "😱 99%係失散咗既親人！感恩天上安排你哋重遇返！🩷" },
-            { min: 80, text: "❤️ 勁！似過同一個祖宗！" },
-            { min: 60, text: "😎 可能上世住隔離村！" },
-            { min: 40, text: "🤔 可能上世冤家今世變摯友" },
-            { min: 25, text: "😂 你地係異樣相吸。不過相愛先最重要！" },
-            { min: 0, text: "😂 sor 真係唔係好似樣，但感覺你哋眉目有愛！" }
-        ];
-
-
-        // --- 2. LOGIC ---
-        let modelMobileNet, modelCoco;
-        let isModelLoaded = false;
-        const colorThief = new ColorThief();
-        let currentBreed = "";
-        let personalityScore = 0;
-        let imgData = { human: null, dog: null };
-        let isLocked = false;
-
-
-        async function initAI() {
-            try {
-                modelCoco = await cocoSsd.load();
-                modelMobileNet = await mobilenet.load();
-                isModelLoaded = true;
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(()=> document.getElementById('loader').style.display = 'none', 500);
-            } catch(e) {
-                alert("AI Load Error: " + e);
-            }
+        // --- Init ---
+        async function init() {
+            models.coco = await cocoSsd.load();
+            models.mobile = await mobilenet.load();
+            document.getElementById('loader').style.display = 'none';
         }
-        window.addEventListener('DOMContentLoaded', initAI);
+        window.onload = init;
 
+        // --- Navigation ---
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0,0);
+        }
 
-        function uploadImg(id) { if(!isLocked) document.getElementById(id).click(); }
+        function startUpload() {
+            const hn = document.getElementById('human-name').value.trim();
+            const dn = document.getElementById('dog-name').value.trim();
+            if(!hn || !dn) return alert("請輸入人類同狗狗名！");
+            state.hName = hn; state.dName = dn;
+            switchView('view-upload');
+        }
 
+        function showRetrieve() { switchView('view-retrieve'); }
 
-        const dogKeywords = ['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita'];
-
-
-        async function handleUpload(event, imgId, bubbleId, role) {
-            const file = event.target.files[0];
+        // --- Image Upload & AI Validation (Focus/Blur Check) ---
+        async function checkImg(e, imgId, bubbleId, targetClass, round) {
+            const file = e.target.files[0];
             if(!file) return;
 
-
-            const imgEl = document.getElementById(imgId);
-            imgEl.src = URL.createObjectURL(file);
-            imgEl.style.display = 'block';
-            imgEl.previousElementSibling.style.display = 'none'; // hide emoji
-            
-            // Show Scanner
-            imgEl.parentElement.classList.add('scanning');
+            const img = document.getElementById(imgId);
             const bubble = document.getElementById(bubbleId);
-            bubble.style.display = 'none';
+            img.src = URL.createObjectURL(file);
+            img.style.display = 'block';
+            img.previousElementSibling.style.display = 'none';
+            bubble.style.display = 'block'; bubble.innerText = "🔍 分析中..."; bubble.className = "bubble warn";
 
+            await new Promise(r => img.onload = r);
 
-            // Wait for image load
-            await new Promise(r => imgEl.onload = r);
+            // Predict
+            const preds = await models.coco.detect(img);
+            // Find target (person or dog/cat/animal)
+            let match = null;
+            if (targetClass === 'person') {
+                match = preds.find(p => p.class === 'person');
+            } else {
+                match = preds.find(p => ['dog','cat','bird','horse'].includes(p.class));
+            }
 
-
-            // Analyze
-            if(isModelLoaded) {
-                const predictions = await modelCoco.detect(imgEl);
-                let msg = "";
-                let type = "ok"; // ok, warn, err
-
-
-                if(role === 'human') {
-                    const hasPerson = predictions.some(p => p.class === 'person');
-                    if(hasPerson) { msg = i18n.bubbleHumanOk; }
-                    else { msg = "❓ 搵唔到人樣喎"; type = "err"; }
+            // Focus / Blur Logic (using Confidence Score)
+            if (match) {
+                if (match.score < 0.45) { // Low confidence = blurry / weird angle
+                    bubble.innerText = "❌ 太濛/Out Focus！請重新影過"; bubble.className = "bubble err";
+                    state.imgs[imgId.replace('img-','').replace('-','')] = null;
                 } else {
-                    // Dog Check
-                    const hasDog = predictions.some(p => p.class === 'dog');
-                    const mobCheck = await modelMobileNet.classify(imgEl);
-                    const isMobDog = mobCheck.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k)));
-                    const hasPerson = predictions.some(p => p.class === 'person' && p.score > 0.6);
-
-
-                    if(hasDog || isMobDog) {
-                        msg = i18n.bubbleDogOk;
-                        if(hasPerson) { msg = i18n.bubbleSusDog; type = "warn"; }
-                    } else if(hasPerson) {
-                         msg = i18n.bubbleDogHumanErr; type = "err";
-                    } else {
-                        msg = i18n.bubbleOtherAnimal; type = "warn";
-                    }
+                    bubble.innerText = "✅ 照片清晰！"; bubble.className = "bubble ok";
+                    state.imgs[imgId.replace('img-','').replace('-','')] = img;
                 }
-
-
-                // Stop Scan & Show Bubble
-                imgEl.parentElement.classList.remove('scanning');
-                showBubble(bubble, msg, type);
-                
-                if(type !== 'err') imgData[role] = imgEl;
-                checkReady();
+            } else {
+                bubble.innerText = `❌ 搵唔到${targetClass==='person'?'人':'動物'}！`; bubble.className = "bubble err";
+                state.imgs[imgId.replace('img-','').replace('-','')] = null;
             }
+
+            setTimeout(() => bubble.style.display = 'none', 3000);
+            checkAllReady();
         }
 
-
-        function showBubble(el, text, type) {
-            el.innerText = text;
-            el.className = `bubble ${type}`;
-            el.style.display = 'block';
-            el.style.animation = 'bounceInDown 0.5s';
-        }
-
-
-        function checkReady() {
-            if(imgData.human && imgData.dog) {
-                const btn = document.getElementById('mainBtn');
+        function checkAllReady() {
+            const btn = document.getElementById('btn-calc');
+            // Check if all 6 images are valid
+            if(state.imgs.h1 && state.imgs.d1 && state.imgs.h2 && state.imgs.d2 && state.imgs.h3 && state.imgs.d3) {
                 btn.disabled = false;
-                btn.innerText = "⚡️ 準備好... Scan！";
-                btn.style.animation = "pulse 1s infinite";
+            } else {
+                btn.disabled = true;
             }
         }
 
-
-        // --- 3. ANALYSIS FLOW ---
-        async function startAnalyze() {
-            isLocked = true;
-            document.getElementById('mainBtn').style.display = 'none';
-            document.getElementById('card1').classList.add('locked');
-            document.getElementById('card2').classList.add('locked');
-
-
-            // 1. Identify Breed
-            const preds = await modelMobileNet.classify(imgData.dog);
-            currentBreed = preds[0].className.split(',')[0];
-            document.getElementById('breed-name').innerText = currentBreed;
-
-
-            // 2. Setup Traits
-            const container = document.getElementById('trait-container');
-            container.innerHTML = "";
-            let traits = i18n.traitsDefault;
-            if(currentBreed.toLowerCase().includes('retriever')) traits = i18n.traitsRetriever;
-            if(currentBreed.toLowerCase().includes('poodle')) traits = i18n.traitsPoodle;
-
-
-            traits.forEach(t => {
-                const btn = document.createElement('div');
-                btn.className = 'trait-btn';
-                btn.innerText = t;
-                btn.onclick = () => { 
-                    btn.classList.toggle('active'); 
-                    personalityScore = document.querySelectorAll('.trait-btn.active').length * 5; 
-                };
-                container.appendChild(btn);
-            });
-
-
-            document.getElementById('personality-check').style.display = 'block';
+        // --- Core Scoring Logic (Live Event Format) ---
+        function genRandomScore(min) {
+            // Generates a score between min and 99.999 with 3 decimal places
+            let val = (Math.random() * (99.999 - min)) + min;
+            return parseFloat(val.toFixed(3));
         }
 
+        function generateResults() {
+            document.getElementById('loader').style.display = 'flex';
+            document.querySelector('#loader h2').innerText = "大數據運算中...";
 
-        function showResult() {
-            document.getElementById('personality-check').style.display = 'none';
-            document.getElementById('result-card').style.display = 'block';
-            
-            // Calc Score (Mock Logic for demo)
-            // Color Similarity
-            const c1 = colorThief.getColor(imgData.human);
-            const c2 = colorThief.getColor(imgData.dog);
-            const diff = Math.sqrt(Math.pow(c1[0]-c2[0],2) + Math.pow(c1[1]-c2[1],2));
-            const colorScore = Math.max(10, 100 - (diff/2));
-
-
-            // Face (Randomized based on image hash for consistency)
-            const seed = (imgData.human.width + imgData.dog.width) % 50; 
-            const faceScore = 40 + seed;
-
-
-            let final = Math.round((faceScore * 0.5) + (colorScore * 0.3) + personalityScore);
-            if(final > 99) final = 99; if(final < 10) final = 10;
-
-
-            // Animations
-            animateValue('score', 0, final, 1500);
-            animateBar('bar1', 'val1', faceScore);
-            animateBar('bar2', 'val2', colorScore);
-
-
-            // Comment
-            const comm = commentsData.find(c => final >= c.min);
-            document.getElementById('comment').innerText = comm.text;
-
-
-            // Confetti!
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#54b97c', '#FFD93D', '#FF6B6B']
-            });
-        }
-
-
-        function animateValue(id, start, end, duration) {
-            let range = end - start;
-            let current = start;
-            let increment = end > start ? 1 : -1;
-            let stepTime = Math.abs(Math.floor(duration / range));
-            let obj = document.getElementById(id);
-            let timer = setInterval(function() {
-                current += increment;
-                obj.innerHTML = current;
-                if (current == end) clearInterval(timer);
-            }, stepTime);
-        }
-
-
-        function animateBar(barId, valId, val) {
             setTimeout(() => {
-                document.getElementById(barId).style.width = val + "%";
-                document.getElementById(valId).innerText = Math.round(val) + "%";
-            }, 500);
+                // Generate 3 round scores (Minimum 80% as requested)
+                let s1 = genRandomScore(80);
+                let s2 = genRandomScore(80);
+                let s3 = genRandomScore(80);
+                
+                // Final Average
+                let finalAvg = parseFloat(((s1 + s2 + s3) / 3).toFixed(3));
+                
+                // Sub-categories
+                let colorS = genRandomScore(75);
+                let eyeS = genRandomScore(80);
+                let vibeS = genRandomScore(82);
+                let actionS = genRandomScore(70);
+
+                state.scores = { final: finalAvg, r1: s1, r2: s2, r3: s3, c: colorS, e: eyeS, v: vibeS, a: actionS };
+
+                // Update UI
+                document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
+                animateValue('s-1', s1);
+                animateValue('s-final', finalAvg);
+                animateValue('s-3', s3);
+
+                setTimeout(()=> {
+                    document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%';
+                    document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%';
+                    document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%';
+                    document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%';
+                }, 500);
+
+                document.getElementById('loader').style.display = 'none';
+                switchView('view-result');
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+
+            }, 2000);
+        }
+
+        function animateValue(id, endVal) {
+            let el = document.getElementById(id);
+            let start = endVal - 2.000; // start slightly below
+            let timer = setInterval(() => {
+                start += 0.051;
+                if(start >= endVal) { start = endVal; clearInterval(timer); }
+                el.innerText = start.toFixed(3) + "%";
+            }, 30);
+        }
+
+        // --- Social Share ---
+        function shareResult() {
+            const text = `我同 ${state.dName} 參加咗 AnimalsSum 人寵配對挑戰！\n我地嘅相似度高達 ${state.scores.final}%！\n你都快啲嚟挑戰啦！`;
+            if (navigator.share) {
+                navigator.share({ title: 'AnimalsSum 挑戰賽', text: text, url: window.location.href })
+                .catch(console.error);
+            } else {
+                alert("已複製文字！\n" + text); // Fallback
+            }
+        }
+
+        // --- Certificate & Storage System ---
+        function showMemberModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
+
+        function generateCertAndCode() {
+            const email = document.getElementById('mem-email').value;
+            if(!email) return alert("請填寫 Email！");
+
+            // 1. Generate Unique Code
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for(let i=0; i<5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            
+            // 2. Draw Canvas Certificate
+            const canvas = document.getElementById('certCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#f6fffa'; ctx.fillRect(0,0,800,1000);
+            ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 20; ctx.strokeRect(40,40,720,920);
+            
+            ctx.fillStyle = '#333'; ctx.font = 'bold 50px Arial'; ctx.textAlign = 'center';
+            ctx.fillText('🏆 AnimalsSum 大會證書', 400, 150);
+            
+            ctx.font = '30px Arial'; ctx.fillStyle = '#666';
+            ctx.fillText(`${state.hName} & ${state.dName}`, 400, 220);
+            
+            // Draw Main Photos
+            try {
+                ctx.drawImage(state.imgs.h1, 150, 280, 200, 200);
+                ctx.drawImage(state.imgs.d1, 450, 280, 200, 200);
+            } catch(e) {} // Ignore if image drawing fails
+
+            ctx.fillStyle = '#FFD93D'; ctx.font = 'bold 100px Arial';
+            ctx.fillText(`${state.scores.final}%`, 400, 600);
+            
+            ctx.fillStyle = '#555'; ctx.font = '24px Arial';
+            ctx.fillText(`發出日期: ${new Date().toLocaleDateString()}`, 400, 700);
+            ctx.fillText(`專屬領取碼: ${code}`, 400, 750);
+
+            // 3. Save to LocalStorage (as DataURL to save space, ignore raw images to prevent quota error)
+            const certDataURL = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Store Object
+            const record = {
+                code: code, dogName: state.dName,
+                humanName: state.hName, score: state.scores.final,
+                certImg: certDataURL
+            };
+            localStorage.setItem('cert_' + code, JSON.stringify(record));
+
+            document.getElementById('modal-overlay').style.display = 'none';
+            
+            // Alert user their code
+            alert(`✅ 登記成功！\n\n大會領取碼：【 ${code} 】\n狗狗名字：【 ${state.dName} 】\n\n請截圖保存此代碼！可在首頁取回證書！`);
+            
+            // Trigger Download
+            let link = document.createElement('a');
+            link.download = `AnimalsSum_Cert_${code}.jpg`;
+            link.href = certDataURL;
+            link.click();
+        }
+
+        // --- Fetch Certificate ---
+        function fetchCert() {
+            const inputCode = document.getElementById('ret-code').value.trim().toUpperCase();
+            const inputDog = document.getElementById('ret-dog').value.trim();
+            
+            if(!inputCode || !inputDog) return alert("請輸入完整資料！");
+
+            const dataStr = localStorage.getItem('cert_' + inputCode);
+            if(dataStr) {
+                const data = JSON.parse(dataStr);
+                if(data.dogName === inputDog) {
+                    // Match found! Download it.
+                    let link = document.createElement('a');
+                    link.download = `Retrieved_Cert_${inputCode}.jpg`;
+                    link.href = data.certImg;
+                    link.click();
+                    alert(`✅ 成功搵番！\n人類: ${data.humanName}\n分數: ${data.score}%\n已經開始下載證書！`);
+                } else {
+                    alert("❌ 狗狗名字不符合！");
+                }
+            } else {
+                alert("❌ 搵唔到呢個領取碼 (Code)！請核對。");
+            }
         }
     </script>
 </body>
