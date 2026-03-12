@@ -427,10 +427,76 @@
             }, 30);
         }
 
-        function shareResult() {
-            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中，相似度高達 ${state.scores.final}%！評語係：「${document.getElementById('res-comment').innerText}」\n快啲嚟玩啦！`;
-            if (navigator.share) navigator.share({ title: 'AnimalsSum 挑戰賽', text: text, url: window.location.href }).catch(e=>{});
-            else alert("已複製文字！\n\n" + text);
+        async function shareResult() {
+            const btn = document.querySelector('button[onclick="shareResult()"]');
+            const oldText = btn.innerText;
+            btn.innerText = "⏳ 準備緊靚相...";
+            btn.disabled = true;
+
+            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中，相似度高達 ${state.scores.final}%！評語係：「${document.getElementById('res-comment').innerText}」\n快啲嚟挑戰啦！`;
+
+            try {
+                // 喺背景快速生成一張正方型/長方型圖片用嚟 Share
+                const canvas = document.createElement('canvas');
+                canvas.width = 800; canvas.height = 800;
+                const ctx = canvas.getContext('2d');
+                
+                // 畫背景
+                ctx.fillStyle = '#F0FDF4'; ctx.fillRect(0,0,800,800);
+                ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 15; ctx.strokeRect(30,30,740,740);
+                
+                // 畫標題
+                ctx.fillStyle = '#333'; ctx.font = 'bold 45px Arial'; ctx.textAlign = 'center'; 
+                ctx.fillText('🐾 AnimalsSum 人寵配對挑戰', 400, 100);
+                ctx.font = '30px Arial'; ctx.fillStyle = '#666'; 
+                ctx.fillText(`${state.hName} & ${state.dName}`, 400, 160);
+                
+                // 畫兩張大頭相
+                try {
+                    ctx.drawImage(state.imgs.h1, 150, 200, 200, 200);
+                    ctx.drawImage(state.imgs.d1, 450, 200, 200, 200);
+                    ctx.fillStyle = '#FFD93D'; ctx.font = 'italic 900 40px Arial';
+                    ctx.fillText('VS', 400, 320);
+                } catch(e) {}
+                
+                // 畫分數同金句
+                ctx.fillStyle = '#54b97c'; ctx.font = 'bold 100px Arial'; 
+                ctx.fillText(`${state.scores.final}%`, 400, 520);
+                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 45px Arial'; 
+                ctx.fillText(document.getElementById('res-comment').innerText, 400, 620);
+                ctx.fillStyle = '#888'; ctx.font = '24px Arial'; 
+                ctx.fillText('🔍 嚟 animalssum.com 試玩啦！', 400, 720);
+
+                // 將 Canvas 變做圖片 File
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], "AnimalsSum_Result.jpg", { type: "image/jpeg" });
+
+                    // 檢查手機支唔支援連埋圖片 Share (絕大部分新 iOS/Android 都支援)
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            title: 'AnimalsSum 挑戰賽',
+                            text: text,
+                            files: [file]
+                        });
+                    } else {
+                        // 如果係舊機或者電腦，就淨係 Share 文字同 Link
+                        await navigator.share({
+                            title: 'AnimalsSum 挑戰賽',
+                            text: text,
+                            url: window.location.href
+                        });
+                    }
+                    // 回復 Button 狀態
+                    btn.innerText = oldText;
+                    btn.disabled = false;
+                }, 'image/jpeg', 0.8);
+
+            } catch (error) {
+                console.log("Share failed:", error);
+                // 用家取消 Share 或者 出錯嘅備用方案
+                btn.innerText = oldText;
+                btn.disabled = false;
+            }
         }
 
         // ==========================================
