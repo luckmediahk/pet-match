@@ -7,30 +7,19 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- AI Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <!-- Firebase SDK (For Cloud Storage) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <style>
-        :root {
-            --brand: #54b97c; --brand-dark: #3da065;
-            --accent: #FFD93D; --danger: #FF6B6B;
-            --dark: #2d3436; --light: #f6fffa;
-        }
-
-        body {
-            font-family: 'Noto Sans TC', 'Fredoka', sans-serif;
-            background: linear-gradient(135deg, #e0f7fa 0%, #d4f0df 100%);
-            margin: 0; padding: 20px; min-height: 100vh; color: var(--dark);
-        }
-
+        :root { --brand: #54b97c; --brand-dark: #3da065; --accent: #FFD93D; --danger: #FF6B6B; --dark: #2d3436; --light: #f6fffa; }
+        body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: linear-gradient(135deg, #e0f7fa 0%, #d4f0df 100%); margin: 0; padding: 20px; min-height: 100vh; color: var(--dark); }
         .container { max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 30px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
         
         header { text-align: center; margin-bottom: 20px; position: relative; }
@@ -41,27 +30,29 @@
         .view { display: none; animation: fadeIn 0.5s; }
         .view.active { display: block; }
 
-        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1.1rem; }
         .form-input { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #ddd; font-size: 1.2rem; box-sizing: border-box; }
         
-        .main-btn {
-            background: var(--brand); color: white; border: none; width: 100%; padding: 18px;
-            border-radius: 25px; font-size: 1.5rem; font-weight: 800; cursor: pointer;
-            box-shadow: 0 8px 0 #3da065; transition: all 0.1s; margin-top: 10px;
-        }
+        .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 18px; border-radius: 25px; font-size: 1.5rem; font-weight: 800; cursor: pointer; box-shadow: 0 8px 0 #3da065; transition: all 0.1s; margin-top: 10px; }
         .main-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #3da065; }
         .main-btn:disabled { background: #ccc; box-shadow: 0 8px 0 #999; cursor: not-allowed; }
         .sec-btn { background: #fff; color: var(--brand); border: 2px solid var(--brand); box-shadow: 0 5px 0 var(--brand); }
+        .action-btn { background: var(--accent); color: var(--dark); box-shadow: 0 8px 0 #d4a000; }
+        .action-btn:active { box-shadow: 0 4px 0 #d4a000; }
+
+        .home-btns { display: flex; flex-direction: column; gap: 20px; margin-top: 40px; }
 
         .round-box { background: #f8f9fa; border-radius: 20px; padding: 15px; margin-bottom: 20px; border: 2px dashed #ccc; }
         .round-title { text-align: center; font-weight: 900; color: #555; margin-bottom: 15px; font-size: 1.2rem; background: var(--accent); display: inline-block; padding: 5px 20px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); }
         .match-row { display: flex; gap: 15px; justify-content: center; align-items: center; }
         
-        .photo-card { flex: 1; background: #fff; border-radius: 15px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; cursor: pointer; text-align: center; }
-        .img-box { width: 100%; aspect-ratio: 4/3; background: #eee; border-radius: 10px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+        .photo-card { flex: 1; background: #fff; border-radius: 15px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; cursor: pointer; text-align: center; transition: 0.2s; }
+        .photo-card:active { transform: scale(0.95); }
+        .img-box { width: 100%; aspect-ratio: 4/3; background: #eee; border-radius: 10px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .placeholder { font-size: 2.5rem; color: #ccc; }
+        .cam-icon { font-size: 1.2rem; color: #888; margin-top: 5px; font-weight: bold; }
         
         .bubble { position: absolute; top: 5px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; display: none; z-index: 10; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
@@ -72,21 +63,16 @@
         .score-item .val { font-size: 1.8rem; font-weight: 900; color: var(--brand); }
         .score-item.final .val { font-size: 3.5rem; color: var(--accent); text-shadow: 2px 2px 0 #333; }
 
-        /* 🔥 Result Photos Area (NEW) 🔥 */
         .result-photos { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 15px 0 25px 0; }
         .res-photo { width: 130px; height: 130px; border-radius: 50%; border: 6px solid #fff; box-shadow: 0 8px 25px rgba(0,0,0,0.15); overflow: hidden; background: #eee; }
         .res-photo img { width: 100%; height: 100%; object-fit: cover; }
         .res-vs { font-size: 2rem; font-weight: 900; color: var(--accent); font-style: italic; text-shadow: 2px 2px 0px #fff; }
 
-        /* Funny Comment Banner */
-        .funny-verdict-box {
-            background: linear-gradient(135deg, #FFD93D, #FF9F43);
-            padding: 20px; border-radius: 20px; margin-bottom: 20px;
-            text-align: center; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3);
-            animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .funny-verdict-box { background: linear-gradient(135deg, #FFD93D, #FF9F43); padding: 20px; border-radius: 20px; margin-bottom: 20px; text-align: center; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3); animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .funny-label { font-size: 1rem; color: rgba(255,255,255,0.9); font-weight: bold; margin-bottom: 5px; letter-spacing: 2px; }
         .funny-text { font-size: 2.2rem; font-weight: 900; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin: 0; }
+        
+        .code-box { background: #333; color: #fff; padding: 10px 20px; border-radius: 15px; display: inline-block; font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; margin-top: 10px; }
 
         .detail-bars { background: #f9f9f9; padding: 20px; border-radius: 20px; }
         .bar-row { display: flex; align-items: center; margin-bottom: 12px; }
@@ -94,9 +80,6 @@
         .bar-bg { flex: 1; height: 12px; background: #ddd; border-radius: 6px; overflow: hidden; margin: 0 10px; }
         .bar-fill { height: 100%; background: var(--brand); width: 0%; transition: 1.5s ease-out; }
         .bar-val { width: 60px; font-weight: bold; text-align: right; }
-
-        #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: none; justify-content: center; align-items: center; }
-        .modal-content { background: #fff; padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -110,96 +93,102 @@
 
     <div id="loader">
         <div class="spinner">⚙️</div>
-        <h2>AI 引擎啟動中...</h2>
+        <h2 id="loader-text">AI 引擎啟動中...</h2>
     </div>
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v11.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v12.0</span></div>
             <h1>🐾 人寵配對挑戰賽</h1>
         </header>
 
-        <!-- VIEW 1: HOME -->
+        <!-- VIEW 1: HOME (2 Buttons Only) -->
         <div id="view-home" class="view active">
-            <h3 style="text-align:center; color:#666;">📝 參賽者登記</h3>
-            <div class="input-group">
-                <label>👤 人類名字 (主人)</label>
-                <input type="text" id="human-name" class="form-input" placeholder="例如: 陳大文">
+            <div class="home-btns">
+                <button class="main-btn" style="padding: 30px; font-size: 2rem;" onclick="switchView('view-upload')">🎮 立即玩遊戲！</button>
+                <button class="main-btn sec-btn" style="padding: 20px; font-size: 1.5rem;" onclick="switchView('view-retrieve')">📜 登記及領取證書</button>
             </div>
-            <div class="input-group">
-                <label>🐶 狗狗名字</label>
-                <input type="text" id="dog-name" class="form-input" placeholder="例如: 旺財">
-            </div>
-            <button class="main-btn" onclick="startUpload()">➡️ 開始挑戰</button>
-            <button class="main-btn sec-btn" style="margin-top:20px;" onclick="showRetrieve()">🔍 搵番我張 Cert</button>
         </div>
 
-        <!-- VIEW 2: UPLOAD (3 Rounds) -->
+        <!-- VIEW 2: UPLOAD (Names + 2 Rounds) -->
         <div id="view-upload" class="view">
-            <h3 style="text-align:center;">📸 上傳 3 組對決相片</h3>
+            <div style="background: #eef2f5; padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+                <h3 style="margin-top:0; text-align:center; color:#555;">📝 輸入參賽者名字</h3>
+                <div class="input-group">
+                    <input type="text" id="human-name" class="form-input" placeholder="👤 人類名字 (例如: 陳大文)" oninput="checkAllReady()">
+                </div>
+                <div class="input-group" style="margin-bottom:0;">
+                    <input type="text" id="dog-name" class="form-input" placeholder="🐶 狗狗名字 (例如: 旺財)" oninput="checkAllReady()">
+                </div>
+            </div>
+
+            <h3 style="text-align:center;">📸 即場影相 或 上傳相片</h3>
             
+            <!-- Round 1: Front -->
             <div class="round-box">
                 <div class="round-title">Round 1: 正面大頭照</div>
                 <div class="match-row">
                     <div class="photo-card" onclick="document.getElementById('u-h-1').click()">
                         <div class="bubble" id="b-h-1"></div>
-                        <div class="img-box"><span class="placeholder">👤</span><img id="img-h-1"></div>
+                        <div class="img-box">
+                            <span class="placeholder">👤</span>
+                            <div class="cam-icon">📷 影相/相簿</div>
+                            <img id="img-h-1">
+                        </div>
                         <div style="margin-top:5px; font-weight:bold;">人類</div>
-                        <input type="file" id="u-h-1" hidden accept="image/*" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person', 'front')">
+                        <!-- capture="environment" 提示手機直接開相機 -->
+                        <input type="file" id="u-h-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person', 'front')">
                     </div>
                     <div style="font-weight:900; color:var(--accent); font-size:1.5rem; font-style:italic;">VS</div>
                     <div class="photo-card" onclick="document.getElementById('u-d-1').click()">
                         <div class="bubble" id="b-d-1"></div>
-                        <div class="img-box"><span class="placeholder">🐾</span><img id="img-d-1"></div>
+                        <div class="img-box">
+                            <span class="placeholder">🐾</span>
+                            <div class="cam-icon">📷 影相/相簿</div>
+                            <img id="img-d-1">
+                        </div>
                         <div style="margin-top:5px; font-weight:bold;">狗狗</div>
-                        <input type="file" id="u-d-1" hidden accept="image/*" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog', 'front')">
+                        <input type="file" id="u-d-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog', 'front')">
                     </div>
                 </div>
             </div>
 
+            <!-- Round 2: Action/Body -->
             <div class="round-box">
-                <div class="round-title" style="background:#ff9ff3;">Round 2: 側面神韻照</div>
+                <div class="round-title" style="background:#54a0ff; color:white;">Round 2: 搞笑動作/全身照</div>
                 <div class="match-row">
                     <div class="photo-card" onclick="document.getElementById('u-h-2').click()">
                         <div class="bubble" id="b-h-2"></div>
-                        <div class="img-box"><span class="placeholder">👤</span><img id="img-h-2"></div>
-                        <input type="file" id="u-h-2" hidden accept="image/*" onchange="checkImg(event, 'img-h-2', 'b-h-2', 'person', 'side')">
+                        <div class="img-box">
+                            <span class="placeholder">🧍‍♂️</span>
+                            <div class="cam-icon">📷 影相/相簿</div>
+                            <img id="img-h-2">
+                        </div>
+                        <div style="margin-top:5px; font-weight:bold;">人類 (擺Pose!)</div>
+                        <input type="file" id="u-h-2" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-h-2', 'b-h-2', 'person', 'body')">
                     </div>
                     <div style="font-weight:900; color:var(--accent); font-size:1.5rem; font-style:italic;">VS</div>
                     <div class="photo-card" onclick="document.getElementById('u-d-2').click()">
                         <div class="bubble" id="b-d-2"></div>
-                        <div class="img-box"><span class="placeholder">🐾</span><img id="img-d-2"></div>
-                        <input type="file" id="u-d-2" hidden accept="image/*" onchange="checkImg(event, 'img-d-2', 'b-d-2', 'dog', 'side')">
+                        <div class="img-box">
+                            <span class="placeholder">🐕</span>
+                            <div class="cam-icon">📷 影相/相簿</div>
+                            <img id="img-d-2">
+                        </div>
+                        <div style="margin-top:5px; font-weight:bold;">狗狗 (擺Pose!)</div>
+                        <input type="file" id="u-d-2" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-d-2', 'b-d-2', 'dog', 'body')">
                     </div>
                 </div>
             </div>
 
-            <div class="round-box">
-                <div class="round-title" style="background:#54a0ff; color:white;">Round 3: 全身/動作照</div>
-                <div class="match-row">
-                    <div class="photo-card" onclick="document.getElementById('u-h-3').click()">
-                        <div class="bubble" id="b-h-3"></div>
-                        <div class="img-box"><span class="placeholder">🧍‍♂️</span><img id="img-h-3"></div>
-                        <input type="file" id="u-h-3" hidden accept="image/*" onchange="checkImg(event, 'img-h-3', 'b-h-3', 'person', 'body')">
-                    </div>
-                    <div style="font-weight:900; color:var(--accent); font-size:1.5rem; font-style:italic;">VS</div>
-                    <div class="photo-card" onclick="document.getElementById('u-d-3').click()">
-                        <div class="bubble" id="b-d-3"></div>
-                        <div class="img-box"><span class="placeholder">🐕</span><img id="img-d-3"></div>
-                        <input type="file" id="u-d-3" hidden accept="image/*" onchange="checkImg(event, 'img-d-3', 'b-d-3', 'dog', 'body')">
-                    </div>
-                </div>
-            </div>
-
-            <button id="btn-calc" class="main-btn" onclick="generateResults()" disabled>⚡ 開始 AI 運算</button>
-            <button class="main-btn sec-btn" onclick="switchView('view-home')">返回</button>
+            <button id="btn-calc" class="main-btn action-btn" onclick="generateResults()" disabled>⚡ 開始 AI 運算</button>
+            <button class="main-btn sec-btn" onclick="switchView('view-home')">返回主頁</button>
         </div>
 
         <!-- VIEW 3: RESULTS -->
         <div id="view-result" class="view">
             <h2 style="text-align:center; margin-bottom:5px;">🏆 <span id="res-names"></span> 嘅配對報告</h2>
             
-            <!-- 🔥 新增: 顯示雙方合照 🔥 -->
             <div class="result-photos">
                 <div class="res-photo"><img id="res-img-h"></div>
                 <div class="res-vs">VS</div>
@@ -207,52 +196,48 @@
             </div>
 
             <div class="score-board">
-                <div class="score-item"><h4>正面</h4><div class="val" id="s-1">0%</div></div>
+                <div class="score-item"><h4>正面大頭</h4><div class="val" id="s-1">0%</div></div>
                 <div class="score-item final"><h4>綜合總分 (拉Curve)</h4><div class="val" id="s-final">0%</div></div>
-                <div class="score-item"><h4>全身</h4><div class="val" id="s-3">0%</div></div>
+                <div class="score-item"><h4>動作相似度</h4><div class="val" id="s-2">0%</div></div>
             </div>
 
             <div class="funny-verdict-box">
                 <div class="funny-label">AI 終極大會評語</div>
                 <div class="funny-text" id="res-comment">...</div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: #fff;">大會專屬領取碼：</div>
+                <div class="code-box" id="res-code">...</div>
             </div>
 
             <div class="detail-bars">
                 <h3 style="margin-top:0;">📊 深度分析數據</h3>
                 <div class="bar-row"><div class="bar-label">🎨 毛色/髮色</div><div class="bar-bg"><div class="bar-fill" id="bar-color" style="background:#f1c40f;"></div></div><div class="bar-val" id="val-color">0%</div></div>
                 <div class="bar-row"><div class="bar-label">👀 眼神交流</div><div class="bar-bg"><div class="bar-fill" id="bar-eye" style="background:#3498db;"></div></div><div class="bar-val" id="val-eye">0%</div></div>
-                <div class="bar-row"><div class="bar-label">🎭 神態氣場</div><div class="bar-bg"><div class="bar-fill" id="bar-vibe" style="background:#9b59b6;"></div></div><div class="bar-val" id="val-vibe">0%</div></div>
                 <div class="bar-row"><div class="bar-label">🏃 動作同步率</div><div class="bar-bg"><div class="bar-fill" id="bar-action" style="background:#e74c3c;"></div></div><div class="bar-val" id="val-action">0%</div></div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="main-btn" style="flex:1; background:#000;" onclick="shareResult()">📱 Share</button>
-                <button class="main-btn" style="flex:2;" onclick="showMemberModal()">📜 領取大會 Cert</button>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                <!-- 改變流程：直接過去 Retrieve 頁面 -->
+                <button class="main-btn" style="background:#000;" onclick="shareResult()">📱 Share 到 IG/FB</button>
+                <button class="main-btn action-btn" onclick="goToRetrieveWithCode()">📜 登記 Email 並領取證書</button>
+                <button class="main-btn sec-btn" onclick="switchView('view-upload')">🔄 保留相片重新計分</button>
+                <button class="main-btn sec-btn" style="border:none; color:#888; box-shadow:none;" onclick="location.reload()">🏠 回到主頁</button>
             </div>
-            <button class="main-btn sec-btn" onclick="switchView('view-upload')">🔄 保留相片重新計分</button>
         </div>
 
-        <!-- VIEW 4: RETRIEVE -->
+        <!-- VIEW 4: RETRIEVE & REGISTER (Simplified) -->
         <div id="view-retrieve" class="view">
-            <h3 style="text-align:center;">🔍 尋找大會證書</h3>
-            <div class="input-group"><label>🔢 領取碼 (Code)</label><input type="text" id="ret-code" class="form-input" placeholder="例如: X7Y8Z" style="text-transform: uppercase;"></div>
+            <h2 style="text-align:center; color:var(--brand); margin-bottom:5px;">📜 證書領取及登記</h2>
+            <p style="text-align:center; color:#666; margin-top:0;">輸入資料即可下載大會高清證書！</p>
+            
+            <div class="input-group"><label>🔢 大會領取碼 (Code)</label><input type="text" id="ret-code" class="form-input" placeholder="例如: X7Y8Z" style="text-transform: uppercase;"></div>
+            <div class="input-group"><label>👤 人類名字</label><input type="text" id="ret-human" class="form-input" placeholder="核對用"></div>
             <div class="input-group"><label>🐶 狗狗名字</label><input type="text" id="ret-dog" class="form-input" placeholder="核對用"></div>
-            <button id="btn-fetch-cert" class="main-btn" onclick="fetchCert()">📥 下載證書</button>
-            <button class="main-btn sec-btn" onclick="switchView('view-home')">返回</button>
+            <div class="input-group"><label>📧 你的 Email</label><input type="email" id="ret-email" class="form-input" placeholder="example@gmail.com (必填)"></div>
+            
+            <button id="btn-fetch-cert" class="main-btn action-btn" onclick="fetchAndRegisterCert()">✅ 確認登記並下載證書</button>
+            <button class="main-btn sec-btn" onclick="switchView('view-home')">返回主頁</button>
         </div>
 
-    </div>
-
-    <!-- MODAL: Join Member & Generate Code -->
-    <div id="modal-overlay">
-        <div class="modal-content">
-            <h2 style="margin-top:0; color:var(--brand);">🎉 恭喜完成！</h2>
-            <p>請登記成為 AnimalsSum 會員，系統會為你生成證書及領取碼！</p>
-            <input type="email" id="mem-email" class="form-input" placeholder="你的 Email" style="margin-bottom:15px;">
-            <input type="text" id="mem-phone" class="form-input" placeholder="聯絡電話" style="margin-bottom:15px;">
-            <button id="btn-submit-cert" class="main-btn" onclick="generateCertAndCode()">✅ 確定登記並領取</button>
-            <button class="main-btn sec-btn" onclick="document.getElementById('modal-overlay').style.display='none'">取消</button>
-        </div>
     </div>
 
     <!-- Hidden Canvas for Certificate Generation -->
@@ -276,15 +261,15 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
             console.log("✅ Firebase 連線成功");
-        } catch(e) {
-            console.warn("⚠️ Firebase 初始化發生錯誤:", e);
-        }
+        } catch(e) { console.warn("⚠️ Firebase 初始化發生錯誤:", e); }
 
         // ==========================================
         // 2. 系統變數 & AI 啟動
         // ==========================================
         let models = { coco: null, mobile: null };
-        let state = { hName: '', dName: '', imgs: {}, scores: {} };
+        let state = { hName: '', dName: '', code: '', imgs: { h1:null, d1:null, h2:null, d2:null }, scores: {} };
+
+        const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'doodle', 'cockapoo'];
 
         async function init() {
             models.coco = await cocoSsd.load();
@@ -299,18 +284,8 @@
             window.scrollTo(0,0);
         }
 
-        function startUpload() {
-            const hn = document.getElementById('human-name').value.trim();
-            const dn = document.getElementById('dog-name').value.trim();
-            if(!hn || !dn) return alert("請輸入人類同狗狗名！");
-            state.hName = hn; state.dName = dn;
-            switchView('view-upload');
-        }
-
-        function showRetrieve() { switchView('view-retrieve'); }
-
         // ==========================================
-        // 3. AI 嚴格相片驗證
+        // 3. AI 相片驗證 (2 Rounds)
         // ==========================================
         async function checkImg(e, imgId, bubbleId, targetRole, roundType) {
             const file = e.target.files[0];
@@ -320,7 +295,12 @@
             const bubble = document.getElementById(bubbleId);
             img.src = URL.createObjectURL(file);
             img.style.display = 'block';
-            img.previousElementSibling.style.display = 'none';
+            
+            // Hide placeholder icons
+            const box = img.parentElement;
+            box.querySelector('.placeholder').style.display = 'none';
+            if(box.querySelector('.cam-icon')) box.querySelector('.cam-icon').style.display = 'none';
+            
             bubble.style.display = 'block'; 
             bubble.innerText = "🔍 AI 掃描中..."; 
             bubble.className = "bubble warn";
@@ -329,73 +309,82 @@
 
             const preds = await models.coco.detect(img);
             let msg = "", status = "err";
-            const minScore = 0.40;
+            const minScore = 0.35; 
 
             if (targetRole === 'person') {
                 const hasPerson = preds.find(p => p.class === 'person' && p.score > minScore);
                 if (hasPerson) {
                     status = "ok";
                     if(roundType === 'front') msg = "📸 靚樣已鎖定！(正面)";
-                    else if(roundType === 'side') msg = "✨ 完美側顏！(側面)";
-                    else msg = "🏃‍♂️ 全身動作捕捉成功！";
+                    else msg = "🏃‍♂️ 搞笑Pose捕捉成功！";
                 } else {
-                    const isDog = preds.find(p => ['dog','cat'].includes(p.class));
-                    msg = isDog ? "❌ 呢度係人類專區！唔好放狗！" : "❌ 搵唔到人/太濛！請重影";
+                    msg = "❌ 搵唔到人/太濛！請重影";
                 }
             } else {
-                const hasDog = preds.find(p =>['dog','cat','bird','horse'].includes(p.class) && p.score > minScore);
-                if (hasDog) {
+                let isDog = preds.find(p =>['dog','cat','bird','horse','bear','sheep'].includes(p.class) && p.score > minScore);
+                if (!isDog && models.mobile) {
+                    const mobCheck = await models.mobile.classify(img);
+                    isDog = mobCheck.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k)));
+                }
+
+                if (isDog) {
                     status = "ok";
                     if(roundType === 'front') msg = "🐶 主子正面好萌！";
-                    else if(roundType === 'side') msg = "🐾 側面輪廓 Get！";
-                    else msg = "💃 主子全身動態 OK！";
+                    else msg = "💃 汪星人Pose OK！";
                 } else {
-                    const isPerson = preds.find(p => p.class === 'person');
-                    msg = isPerson ? "❌ 發現人類！請放主子張相！" : "❌ 搵唔到主子/太濛！請重影";
+                    msg = "❌ 認唔到主子！試下企定定？";
                 }
             }
 
             bubble.innerText = msg; 
             bubble.className = "bubble " + status;
             
-            if (status === "ok") {
-                state.imgs[imgId.replace('img-','').replace('-','')] = img;
-            } else {
-                state.imgs[imgId.replace('img-','').replace('-','')] = null;
-            }
+            if (status === "ok") state.imgs[imgId.replace('img-','').replace('-','')] = img;
+            else state.imgs[imgId.replace('img-','').replace('-','')] = null;
 
             checkAllReady();
         }
 
         function checkAllReady() {
             const btn = document.getElementById('btn-calc');
-            if(state.imgs.h1 && state.imgs.d1 && state.imgs.h2 && state.imgs.d2 && state.imgs.h3 && state.imgs.d3) {
+            const hn = document.getElementById('human-name').value.trim();
+            const dn = document.getElementById('dog-name').value.trim();
+            
+            // Check names AND 4 images (h1, d1, h2, d2)
+            if(hn && dn && state.imgs.h1 && state.imgs.d1 && state.imgs.h2 && state.imgs.d2) {
                 btn.disabled = false;
+                state.hName = hn; state.dName = dn;
             } else {
                 btn.disabled = true;
             }
         }
 
         // ==========================================
-        // 4. 計分與搞笑結果
+        // 4. 計分與雲端儲存 (2 Rounds 邏輯)
         // ==========================================
         function genRandomScore(min) {
             let val = (Math.random() * (99.999 - min)) + min;
             return parseFloat(val.toFixed(3));
         }
 
-        function generateResults() {
+        async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
-            document.querySelector('#loader h2').innerText = "大數據運算中...";
+            document.getElementById('loader-text').innerText = "大數據運算中...";
 
-            setTimeout(() => {
-                let s1 = genRandomScore(80); let s2 = genRandomScore(80); let s3 = genRandomScore(80);
-                let finalAvg = parseFloat(((s1 + s2 + s3) / 3).toFixed(3));
+            // Generate unique code now
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            state.code = '';
+            for(let i=0; i<5; i++) state.code += chars.charAt(Math.floor(Math.random() * chars.length));
+
+            setTimeout(async () => {
+                // Generate 2 round scores
+                let s1 = genRandomScore(80); // Front
+                let s2 = genRandomScore(80); // Action
+                let finalAvg = parseFloat(((s1 + s2) / 2).toFixed(3));
                 
-                let colorS = genRandomScore(75); let eyeS = genRandomScore(80);
-                let vibeS = genRandomScore(82); let actionS = genRandomScore(70);
+                let colorS = genRandomScore(75); let eyeS = genRandomScore(80); let actionS = s2;
 
-                state.scores = { final: finalAvg, r1: s1, r2: s2, r3: s3, c: colorS, e: eyeS, v: vibeS, a: actionS };
+                state.scores = { final: finalAvg, r1: s1, r2: s2, c: colorS, e: eyeS, a: actionS };
 
                 let comment = "";
                 if(finalAvg >= 95) comment = "👼 靈魂共振！前世係同一個人！";
@@ -405,24 +394,53 @@
 
                 document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
                 document.getElementById('res-comment').innerText = comment;
+                document.getElementById('res-code').innerText = state.code;
 
-                // 🔥 將上傳嘅正面大頭照，放落 Result 頁面 🔥
                 document.getElementById('res-img-h').src = state.imgs.h1.src;
                 document.getElementById('res-img-d').src = state.imgs.d1.src;
 
-                animateValue('s-1', s1); animateValue('s-final', finalAvg); animateValue('s-3', s3);
+                animateValue('s-1', s1); animateValue('s-final', finalAvg); animateValue('s-2', s2);
 
                 setTimeout(()=> {
                     document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%';
                     document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%';
-                    document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%';
                     document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%';
                 }, 500);
+
+                // --- GENERATE CERT AND SAVE TO FIREBASE SILENTLY ---
+                const canvas = document.getElementById('certCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#f6fffa'; ctx.fillRect(0,0,800,1000);
+                ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 20; ctx.strokeRect(40,40,720,920);
+                ctx.fillStyle = '#333'; ctx.font = 'bold 50px Arial'; ctx.textAlign = 'center'; ctx.fillText('🏆 AnimalsSum 大會證書', 400, 150);
+                ctx.font = '30px Arial'; ctx.fillStyle = '#666'; ctx.fillText(`${state.hName} & ${state.dName}`, 400, 220);
+                try {
+                    ctx.drawImage(state.imgs.h1, 150, 280, 200, 200);
+                    ctx.drawImage(state.imgs.d1, 450, 280, 200, 200);
+                } catch(e) {}
+                ctx.fillStyle = '#FFD93D'; ctx.font = 'bold 100px Arial'; ctx.fillText(`${state.scores.final}%`, 400, 600);
+                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 40px Arial'; ctx.fillText(comment, 400, 680);
+                ctx.fillStyle = '#555'; ctx.font = '24px Arial'; ctx.fillText(`發出日期: ${new Date().toLocaleDateString()} | 專屬領取碼: ${state.code}`, 400, 750);
+
+                const certDataURL = canvas.toDataURL('image/jpeg', 0.6);
+                const record = {
+                    code: state.code, dogName: state.dName, humanName: state.hName, 
+                    email: "", // Not filled yet
+                    score: state.scores.final, certImg: certDataURL, timestamp: new Date().getTime()
+                };
+
+                if (db) {
+                    try { await db.collection("certs").doc(state.code).set(record); } 
+                    catch(e) { localStorage.setItem('cert_' + state.code, JSON.stringify(record)); }
+                } else {
+                    localStorage.setItem('cert_' + state.code, JSON.stringify(record));
+                }
+                // ---------------------------------------------------
 
                 document.getElementById('loader').style.display = 'none';
                 switchView('view-result');
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
-            }, 2000);
+            }, 1000);
         }
 
         function animateValue(id, endVal) {
@@ -435,132 +453,59 @@
             }, 30);
         }
 
-        // ==========================================
-        // 新增：圖片連分數分享功能
-        // ==========================================
         async function shareResult() {
             const btn = document.querySelector('button[onclick="shareResult()"]');
             const oldText = btn.innerText;
-            btn.innerText = "⏳ 準備緊靚相...";
-            btn.disabled = true;
-
-            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中，相似度高達 ${state.scores.final}%！評語係：「${document.getElementById('res-comment').innerText}」\n快啲嚟挑戰啦！`;
+            btn.innerText = "⏳ 準備緊靚相..."; btn.disabled = true;
+            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中，相似度高達 ${state.scores.final}%！快啲嚟挑戰啦！`;
 
             try {
                 const canvas = document.createElement('canvas');
-                canvas.width = 800; canvas.height = 800;
-                const ctx = canvas.getContext('2d');
-                
-                ctx.fillStyle = '#F0FDF4'; ctx.fillRect(0,0,800,800);
-                ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 15; ctx.strokeRect(30,30,740,740);
-                
-                ctx.fillStyle = '#333'; ctx.font = 'bold 45px Arial'; ctx.textAlign = 'center'; 
-                ctx.fillText('🐾 AnimalsSum 人寵配對挑戰', 400, 100);
-                ctx.font = '30px Arial'; ctx.fillStyle = '#666'; 
-                ctx.fillText(`${state.hName} & ${state.dName}`, 400, 160);
-                
+                canvas.width = 800; canvas.height = 800; const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#F0FDF4'; ctx.fillRect(0,0,800,800); ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 15; ctx.strokeRect(30,30,740,740);
+                ctx.fillStyle = '#333'; ctx.font = 'bold 45px Arial'; ctx.textAlign = 'center'; ctx.fillText('🐾 AnimalsSum 人寵配對挑戰', 400, 100);
+                ctx.font = '30px Arial'; ctx.fillStyle = '#666'; ctx.fillText(`${state.hName} & ${state.dName}`, 400, 160);
                 try {
-                    // 畫大頭相做圓形
-                    ctx.save();
-                    ctx.beginPath(); ctx.arc(250, 300, 100, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
-                    ctx.drawImage(state.imgs.h1, 150, 200, 200, 200);
-                    ctx.restore();
-
-                    ctx.save();
-                    ctx.beginPath(); ctx.arc(550, 300, 100, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
-                    ctx.drawImage(state.imgs.d1, 450, 200, 200, 200);
-                    ctx.restore();
-
-                    ctx.fillStyle = '#FFD93D'; ctx.font = 'italic 900 40px Arial';
-                    ctx.fillText('VS', 400, 320);
+                    ctx.save(); ctx.beginPath(); ctx.arc(250, 300, 100, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip(); ctx.drawImage(state.imgs.h1, 150, 200, 200, 200); ctx.restore();
+                    ctx.save(); ctx.beginPath(); ctx.arc(550, 300, 100, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip(); ctx.drawImage(state.imgs.d1, 450, 200, 200, 200); ctx.restore();
+                    ctx.fillStyle = '#FFD93D'; ctx.font = 'italic 900 40px Arial'; ctx.fillText('VS', 400, 320);
                 } catch(e) {}
-                
-                ctx.fillStyle = '#54b97c'; ctx.font = 'bold 100px Arial'; 
-                ctx.fillText(`${state.scores.final}%`, 400, 520);
-                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 45px Arial'; 
-                ctx.fillText(document.getElementById('res-comment').innerText, 400, 620);
-                ctx.fillStyle = '#888'; ctx.font = '24px Arial'; 
-                ctx.fillText('🔍 嚟 animalssum.com 試玩啦！', 400, 720);
+                ctx.fillStyle = '#54b97c'; ctx.font = 'bold 100px Arial'; ctx.fillText(`${state.scores.final}%`, 400, 520);
+                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 45px Arial'; ctx.fillText(document.getElementById('res-comment').innerText, 400, 620);
+                ctx.fillStyle = '#888'; ctx.font = '24px Arial'; ctx.fillText('🔍 嚟 animalssum.com 試玩啦！', 400, 720);
 
                 canvas.toBlob(async (blob) => {
                     const file = new File([blob], "AnimalsSum_Result.jpg", { type: "image/jpeg" });
-
-                    if (navigator.canShare && navigator.canShare({ files:[file] })) {
-                        await navigator.share({ title: 'AnimalsSum 挑戰賽', text: text, files:[file] });
-                    } else {
-                        await navigator.share({ title: 'AnimalsSum 挑戰賽', text: text, url: window.location.href });
-                    }
+                    if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ title: 'AnimalsSum 挑戰賽', text: text, files:[file] }); } 
+                    else { await navigator.share({ title: 'AnimalsSum 挑戰賽', text: text, url: window.location.href }); }
                     btn.innerText = oldText; btn.disabled = false;
                 }, 'image/jpeg', 0.8);
-
-            } catch (error) {
-                console.log("Share failed:", error);
-                btn.innerText = oldText; btn.disabled = false;
-            }
+            } catch (error) { btn.innerText = oldText; btn.disabled = false; }
         }
 
         // ==========================================
-        // 5. 證書上傳雲端 & 領取系統
+        // 5. 簡化版登記與下載系統
         // ==========================================
-        function showMemberModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-
-        async function generateCertAndCode() {
-            const email = document.getElementById('mem-email').value;
-            if(!email) return alert("請填寫 Email！");
-
-            const btn = document.getElementById('btn-submit-cert');
-            btn.innerText = "⏳ 正在生成並上傳至雲端...";
-            btn.disabled = true;
-
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = '';
-            for(let i=0; i<5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-            
-            const canvas = document.getElementById('certCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#f6fffa'; ctx.fillRect(0,0,800,1000);
-            ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 20; ctx.strokeRect(40,40,720,920);
-            ctx.fillStyle = '#333'; ctx.font = 'bold 50px Arial'; ctx.textAlign = 'center'; ctx.fillText('🏆 AnimalsSum 大會證書', 400, 150);
-            ctx.font = '30px Arial'; ctx.fillStyle = '#666'; ctx.fillText(`${state.hName} & ${state.dName}`, 400, 220);
-            try {
-                ctx.drawImage(state.imgs.h1, 150, 280, 200, 200);
-                ctx.drawImage(state.imgs.d1, 450, 280, 200, 200);
-            } catch(e) {}
-            ctx.fillStyle = '#FFD93D'; ctx.font = 'bold 100px Arial'; ctx.fillText(`${state.scores.final}%`, 400, 600);
-            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 40px Arial'; ctx.fillText(document.getElementById('res-comment').innerText, 400, 680);
-            ctx.fillStyle = '#555'; ctx.font = '24px Arial'; ctx.fillText(`發出日期: ${new Date().toLocaleDateString()} | 專屬領取碼: ${code}`, 400, 750);
-
-            const certDataURL = canvas.toDataURL('image/jpeg', 0.6);
-            
-            const record = {
-                code: code, dogName: state.dName, humanName: state.hName, email: email,
-                score: state.scores.final, certImg: certDataURL, timestamp: new Date().getTime()
-            };
-
-            if (db) {
-                try {
-                    await db.collection("certs").doc(code).set(record);
-                } catch(e) {
-                    console.error("Firebase 儲存失敗:", e);
-                    localStorage.setItem('cert_' + code, JSON.stringify(record));
-                }
-            } else {
-                localStorage.setItem('cert_' + code, JSON.stringify(record));
-            }
-
-            document.getElementById('modal-overlay').style.display = 'none';
-            btn.innerText = "✅ 確定登記並領取"; btn.disabled = false;
-            
-            alert(`✅ 成功儲存！\n\n大會領取碼：【 ${code} 】\n狗狗名字：【 ${state.dName} 】\n\n如果用緊大會電腦，客人可以用自己手機去我地網站輸入呢個 Code 下載高清證書！`);
+        function goToRetrieveWithCode() {
+            // Auto fill the inputs if data exists
+            if(state.code) document.getElementById('ret-code').value = state.code;
+            if(state.hName) document.getElementById('ret-human').value = state.hName;
+            if(state.dName) document.getElementById('ret-dog').value = state.dName;
+            switchView('view-retrieve');
         }
 
-        async function fetchCert() {
+        async function fetchAndRegisterCert() {
             const inputCode = document.getElementById('ret-code').value.trim().toUpperCase();
+            const inputHuman = document.getElementById('ret-human').value.trim();
             const inputDog = document.getElementById('ret-dog').value.trim();
-            if(!inputCode || !inputDog) return alert("請輸入完整資料！");
+            const inputEmail = document.getElementById('ret-email').value.trim();
+            
+            // Basic Email Validation (Must have @ and .)
+            if(!inputCode || !inputHuman || !inputDog || !inputEmail) return alert("❌ 請填寫所有資料！");
+            if(!inputEmail.includes('@') || !inputEmail.includes('.')) return alert("❌ Email 格式不正確！");
 
             const btn = document.getElementById('btn-fetch-cert');
-            btn.innerText = "⏳ 雲端尋找中...";
+            btn.innerText = "⏳ 正在驗證及下載...";
             btn.disabled = true;
 
             let data = null;
@@ -568,30 +513,39 @@
             if (db) {
                 try {
                     const docRef = await db.collection("certs").doc(inputCode).get();
-                    if(docRef.exists) data = docRef.data();
-                } catch(e) { console.error("Firebase Fetch Error:", e); }
+                    if(docRef.exists) {
+                        data = docRef.data();
+                        // Update Firebase with the new Email
+                        await db.collection("certs").doc(inputCode).update({ email: inputEmail });
+                    }
+                } catch(e) { console.error("Firebase Error:", e); }
             }
             
             if(!data) {
                 const dataStr = localStorage.getItem('cert_' + inputCode);
-                if(dataStr) data = JSON.parse(dataStr);
+                if(dataStr) {
+                    data = JSON.parse(dataStr);
+                    data.email = inputEmail; // Update local storage
+                    localStorage.setItem('cert_' + inputCode, JSON.stringify(data));
+                }
             }
 
             if(data) {
-                if(data.dogName === inputDog) {
+                if(data.dogName === inputDog && data.humanName === inputHuman) {
                     let link = document.createElement('a');
                     link.download = `AnimalsSum_Cert_${inputCode}.jpg`;
                     link.href = data.certImg;
                     link.click();
-                    alert(`✅ 成功搵番！\n人類: ${data.humanName}\n分數: ${data.score}%\n已經開始下載證書！`);
+                    alert(`✅ 登記成功！\n證書已經開始下載，感謝參與！`);
+                    switchView('view-home'); // Reset back to home for next player
                 } else {
-                    alert("❌ 狗狗名字不符合，無法領取！");
+                    alert("❌ 名字核對不符合，無法領取！");
                 }
             } else {
-                alert("❌ 雲端/系統搵唔到呢個領取碼 (Code)！請確保已經設定好 Firebase Database！");
+                alert("❌ 搵唔到呢個領取碼 (Code)！請確保 Code 正確！");
             }
             
-            btn.innerText = "📥 下載證書";
+            btn.innerText = "✅ 確認登記並下載證書";
             btn.disabled = false;
         }
     </script>
