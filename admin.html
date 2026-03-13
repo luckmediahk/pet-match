@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ AnimalsSum | 大會後台列印系統</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        header { background: #2d3436; color: white; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 1.8rem; }
+        .status { background: #00b894; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; animation: pulse 2s infinite; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        
+        .cert-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border-top: 5px solid #54b97c; }
+        .cert-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        .cert-img-box { width: 100%; aspect-ratio: 4/5; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ddd; }
+        .cert-img-box img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .info p { margin: 5px 0; font-size: 1rem; color: #555; }
+        .info strong { color: #333; }
+        .code-tag { display: inline-block; background: #ffeaa7; color: #d63031; padding: 3px 10px; border-radius: 5px; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; }
+        
+        .print-btn { width: 100%; background: #0984e3; color: white; border: none; padding: 12px; font-size: 1.2rem; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+        .print-btn:hover { background: #74b9ff; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        /* 隱藏不想被 Print 的部分 */
+        @media print {
+            body { background: white; padding: 0; }
+            header, .print-btn { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚙️ 大會證書 Control Panel</h1>
+        <div class="status">🟢 系統即時連線中 (Live Sync)</div>
+    </header>
+
+    <div class="grid" id="cert-grid">
+        <!-- 證書會喺度出現 -->
+        <h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 等待參加者生成證書...</h2>
+    </div>
+
+    <script>
+        // ⚠️ 兄弟！記得將下面呢段換做你剛才申請嗰段 Firebase Config！ (同 index.html 嗰段一模一樣)
+        const firebaseConfig = {
+          apiKey: "AIzaSyAZNLy_ujHrFQQPmv5C_r2wlvptgXb2Enw",
+          authDomain: "pet-human-alike.firebaseapp.com",
+          projectId: "pet-human-alike",
+          storageBucket: "pet-human-alike.firebasestorage.app",
+          messagingSenderId: "285758735120",
+          appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const grid = document.getElementById('cert-grid');
+
+        // 🟢 最強功能：Real-time Listener (即時監聽 Firebase)
+        // 佢會自動攞最新嘅 50 張證書，一有新人玩完就會自動出現！
+        db.collection("certs")
+          .orderBy("timestamp", "desc")
+          .limit(50)
+          .onSnapshot((snapshot) => {
+              grid.innerHTML = ''; // 清空舊畫面
+              
+              if(snapshot.empty) {
+                  grid.innerHTML = '<h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 暫時未有證書記錄...</h2>';
+                  return;
+              }
+
+              snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  
+                  // 處理 Email (如果未填會顯示未登記)
+                  const emailText = data.email ? data.email : "<span style='color:red;'>未登記 Email</span>";
+                  
+                  // 建立卡片
+                  const card = document.createElement('div');
+                  card.className = 'cert-card';
+                  card.innerHTML = `
+                      <div class="cert-img-box">
+                          <img src="${data.certImg}" alt="Certificate">
+                      </div>
+                      <div class="info">
+                          <p>領取碼: <span class="code-tag">${data.code}</span></p>
+                          <p>人類: <strong>${data.humanName}</strong></p>
+                          <p>狗狗: <strong>${data.dogName}</strong></p>
+                          <p>分數: <strong style="color:#54b97c; font-size:1.2rem;">${data.score}%</strong></p>
+                          <p>Email: <strong>${emailText}</strong></p>
+                      </div>
+                      <button class="print-btn" onclick="printImage('${data.certImg}')">🖨️ 列印證書</button>
+                  `;
+                  grid.appendChild(card);
+              });
+          });
+
+        // 🖨️ 列印功能 (開新視窗並彈出 Print Dialog)
+        function printImage(base64Img) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print Certificate</title>
+                        <style>
+                            body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                            img { max-width: 100%; max-height: 100vh; }
+                            @media print {
+                                @page { margin: 0; size: auto; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${base64Img}" onload="window.print(); window.close();">
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+    </script>
+</body>
+</html>
