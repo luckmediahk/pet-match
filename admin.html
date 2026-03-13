@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ AnimalsSum | 大會後台列印系統</title>
+    <title>⚙️ AnimalsSum | 大會後台系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- Firebase SDK -->
@@ -12,32 +12,38 @@
 
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        header { background: #2d3436; color: white; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        header { background: #2d3436; color: white; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         header h1 { margin: 0; font-size: 1.8rem; }
         .status { background: #00b894; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; animation: pulse 2s infinite; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 25px; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; background: #ddd; color: #555; transition: 0.3s; }
+        .tab-btn.active { background: #54b97c; color: white; box-shadow: 0 5px 15px rgba(84, 185, 124, 0.3); }
         
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* Print Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
         .cert-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border-top: 5px solid #54b97c; }
         .cert-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        
-        .cert-img-box { width: 100%; aspect-ratio: 4/5; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ddd; }
-        .cert-img-box img { width: 100%; height: 100%; object-fit: contain; }
-        
+        .cert-img-box { width: 100%; aspect-ratio: 3/2; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ddd; }
+        .cert-img-box img { width: 100%; height: 100%; object-fit: cover; }
         .info p { margin: 5px 0; font-size: 1rem; color: #555; }
-        .info strong { color: #333; }
         .code-tag { display: inline-block; background: #ffeaa7; color: #d63031; padding: 3px 10px; border-radius: 5px; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; }
-        
         .print-btn { width: 100%; background: #0984e3; color: white; border: none; padding: 12px; font-size: 1.2rem; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
-        .print-btn:hover { background: #74b9ff; }
         
+        /* Data Table */
+        .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: bold; color: #333; position: sticky; top: 0; }
+        tr:hover { background: #f1f8f5; }
+        .dl-csv-btn { background: #FFD93D; color: #333; border: none; padding: 10px 20px; font-size: 1rem; font-weight: bold; border-radius: 10px; cursor: pointer; float: right; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(255, 217, 61, 0.3); }
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        
-        /* 隱藏不想被 Print 的部分 */
-        @media print {
-            body { background: white; padding: 0; }
-            header, .print-btn { display: none !important; }
-        }
+        @media print { body { background: white; padding: 0; } header, .tabs, .print-btn, .table-container { display: none !important; } }
     </style>
 </head>
 <body>
@@ -47,13 +53,42 @@
         <div class="status">🟢 系統即時連線中 (Live Sync)</div>
     </header>
 
-    <div class="grid" id="cert-grid">
-        <!-- 證書會喺度出現 -->
-        <h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 等待參加者生成證書...</h2>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('print-view', this)">🖨️ 現場列印中心</button>
+        <button class="tab-btn" onclick="switchTab('data-view', this)">📋 參加者數據表</button>
+    </div>
+
+    <!-- VIEW 1: PRINT GRID -->
+    <div id="print-view" class="view active">
+        <div class="grid" id="cert-grid">
+            <h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 等待參加者數據...</h2>
+        </div>
+    </div>
+
+    <!-- VIEW 2: DATA TABLE -->
+    <div id="data-view" class="view">
+        <div class="table-container">
+            <button class="dl-csv-btn" onclick="downloadCSV()">⬇️ 下載 Excel (CSV)</button>
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th>領取碼</th>
+                        <th>人類名字</th>
+                        <th>狗狗名字</th>
+                        <th>AI 分數</th>
+                        <th>聯絡 Email</th>
+                        <th>遊玩時間</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Data here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        // ⚠️ 兄弟！記得將下面呢段換做你剛才申請嗰段 Firebase Config！ (同 index.html 嗰段一模一樣)
+        // ⚠️ 記得放你個 Firebase Config 落去！
         const firebaseConfig = {
           apiKey: "AIzaSyAZNLy_ujHrFQQPmv5C_r2wlvptgXb2Enw",
           authDomain: "pet-human-alike.firebaseapp.com",
@@ -62,72 +97,20 @@
           messagingSenderId: "285758735120",
           appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const grid = document.getElementById('cert-grid');
+        
+        let allData =[]; // Store for CSV export
 
-        // 🟢 最強功能：Real-time Listener (即時監聽 Firebase)
-        // 佢會自動攞最新嘅 50 張證書，一有新人玩完就會自動出現！
-        db.collection("certs")
-          .orderBy("timestamp", "desc")
-          .limit(50)
-          .onSnapshot((snapshot) => {
-              grid.innerHTML = ''; // 清空舊畫面
-              
-              if(snapshot.empty) {
-                  grid.innerHTML = '<h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 暫時未有證書記錄...</h2>';
-                  return;
-              }
-
-              snapshot.forEach((doc) => {
-                  const data = doc.data();
-                  
-                  // 處理 Email (如果未填會顯示未登記)
-                  const emailText = data.email ? data.email : "<span style='color:red;'>未登記 Email</span>";
-                  
-                  // 建立卡片
-                  const card = document.createElement('div');
-                  card.className = 'cert-card';
-                  card.innerHTML = `
-                      <div class="cert-img-box">
-                          <img src="${data.certImg}" alt="Certificate">
-                      </div>
-                      <div class="info">
-                          <p>領取碼: <span class="code-tag">${data.code}</span></p>
-                          <p>人類: <strong>${data.humanName}</strong></p>
-                          <p>狗狗: <strong>${data.dogName}</strong></p>
-                          <p>分數: <strong style="color:#54b97c; font-size:1.2rem;">${data.score}%</strong></p>
-                          <p>Email: <strong>${emailText}</strong></p>
-                      </div>
-                      <button class="print-btn" onclick="printImage('${data.certImg}')">🖨️ 列印證書</button>
-                  `;
-                  grid.appendChild(card);
-              });
-          });
-
-        // 🖨️ 列印功能 (開新視窗並彈出 Print Dialog)
-        function printImage(base64Img) {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>Print Certificate</title>
-                        <style>
-                            body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                            img { max-width: 100%; max-height: 100vh; }
-                            @media print {
-                                @page { margin: 0; size: auto; }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <img src="${base64Img}" onload="window.print(); window.close();">
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
+        function switchTab(viewId, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            btn.classList.add('active');
         }
-    </script>
-</body>
-</html>
+
+        // 即時監聽資料庫
+        db.collection("certs").orderBy("timestamp", "desc").limit(100).onSnapshot((snapshot) => {
+            const grid = document.getElementById('cert-grid');
+            const tbody = document.getElementById('table-body');
+            grid.innerHTML = ''; tbody.innerHTML = ''; allData =
