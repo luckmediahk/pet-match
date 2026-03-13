@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🐶 AnimalsSum | 人寵配對大作戰</title>
     
-    <!-- 網頁主字體 (極速) -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
-    <!-- Share 圖專用搞笑卡通字體 (預先載入畀 Canvas 用) -->
-    <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- Firebase & AI Libraries -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -20,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* CSS 與 V13.0 一樣，保持極速順滑 */
         :root { --brand: #54b97c; --brand-dark: #3da065; --accent: #FFD93D; --danger: #FF6B6B; --dark: #2d3436; --light: #f6fffa; }
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: linear-gradient(135deg, #e0f7fa 0%, #d4f0df 100%); margin: 0; padding: 20px; min-height: 100vh; color: var(--dark); }
         .container { max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 30px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
@@ -100,9 +96,8 @@
 </head>
 <body>
 
-    <!-- ⚠️ 放你個 LOGO 喺度 (畀 Cert 吸圖用) ⚠️ -->
-    <!-- 請更換 src 入面條 link 做你地 AnimalsSum 嘅 Logo -->
-    <img id="brand-logo" src="https://via.placeholder.com/300x100.png?text=ANIMALS+SUM+LOGO" crossorigin="anonymous" style="display:none;">
+    <!-- ⚠️ 必須將你嘅 Logo 圖片放入 GitHub，然後改叫 logo.png ⚠️ -->
+    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.src='https://via.placeholder.com/300x100.png?text=ANIMALS+SUM+LOGO'">
 
     <div id="loader">
         <div class="spinner">⚙️</div>
@@ -112,7 +107,7 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v14.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v15.0</span></div>
             <h1>🐾 人寵配對挑戰賽</h1>
         </header>
 
@@ -224,9 +219,6 @@
         let state = { hName: '', dName: '', code: '', imgs: { h1:null, d1:null, h2:null, d2:null }, scores: {} };
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon'];
 
-        // Force font load for Canvas
-        document.fonts.ready.then(function() { console.log('Fonts loaded'); });
-
         async function loadAIinBackground() {
             try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true;
                 const statusEl = document.getElementById('ai-status'); statusEl.innerText = "✅ AI Ready"; statusEl.style.background = "rgba(84, 185, 124, 0.9)"; setTimeout(() => statusEl.style.display = 'none', 3000);
@@ -239,7 +231,7 @@
         function showRetrieve() { switchView('view-retrieve'); }
 
         // ==========================================
-        // 3. AI 相片驗證
+        // 3. AI 相片驗證 (修復咗後面有人都會踢狗嘅問題)
         // ==========================================
         async function checkImg(e, imgId, bubbleId, targetRole, roundType) {
             const file = e.target.files[0]; if(!file) return;
@@ -274,6 +266,34 @@
         }
 
         // ==========================================
+        // 工具：完美圓形無變形裁切 (Center Crop)
+        // ==========================================
+        function drawCroppedCircle(ctx, img, cx, cy, radius, borderColor, borderWidth) {
+            ctx.save();
+            ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
+            
+            // Calculate center crop
+            const size = Math.min(img.width, img.height);
+            const sx = (img.width - size) / 2;
+            const sy = (img.height - size) / 2;
+            ctx.drawImage(img, sx, sy, size, size, cx - radius, cy - radius, radius * 2, radius * 2);
+            ctx.restore();
+            
+            // Draw border
+            if(borderWidth > 0) {
+                ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.lineWidth = borderWidth; ctx.strokeStyle = borderColor; ctx.stroke();
+            }
+        }
+
+        // 工具：畫出有粗邊嘅綜藝字體
+        function drawStrokedText(ctx, text, x, y, font, fillColor, strokeColor, lineWidth) {
+            ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+            ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y);
+            ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
+        }
+
+        // ==========================================
         // 4. 計分與生成 橫向Cert & 搞笑Share圖
         // ==========================================
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
@@ -294,7 +314,7 @@
                 else if(finalAvg >= 90) comment = "🧬 親如手足！根本係孖生兄弟！";
                 else if(finalAvg >= 85) comment = "💕 前世情人！今世再續前緣！";
                 else comment = "😎 最佳拍檔！默契十足天生一對！";
-                state.comment = comment; // Save for share canvas
+                state.comment = comment; 
 
                 document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
                 document.getElementById('res-comment').innerText = comment;
@@ -304,58 +324,54 @@
                 animateValue('s-1', s1); animateValue('s-final', finalAvg); animateValue('s-2', s2);
                 setTimeout(()=> { document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%'; document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%'; document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%'; document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%'; document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; }, 500);
 
-                // --- 🔥 畫打橫嘅 CERT (1200 x 800) 🔥 ---
+                // --- 🔥 1. 畫打橫嘅 CERT (1200 x 800) 跟 Reference 風格 🔥 ---
                 const canvas = document.getElementById('certCanvas'); const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#FAFAF5'; ctx.fillRect(0,0,1200,800);
+                ctx.fillStyle = '#F8F3E6'; ctx.fillRect(0,0,1200,800); // 溫馨米黃底
                 
-                // Border
-                ctx.strokeStyle = '#F1C40F'; ctx.lineWidth = 20; ctx.strokeRect(30,30,1140,740);
-                ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 6; ctx.strokeRect(56,56,1088,688);
+                // 畫啲角落幾何圖形點綴
+                ctx.fillStyle = '#54b97c'; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(150,0); ctx.lineTo(0,150); ctx.fill();
+                ctx.fillStyle = '#E67E22'; ctx.beginPath(); ctx.moveTo(1200,800); ctx.lineTo(1050,800); ctx.lineTo(1200,650); ctx.fill();
 
                 // Logo (Top Right)
                 const logoImg = document.getElementById('brand-logo');
                 if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
-                    ctx.drawImage(logoImg, 850, 80, 250, 80); // Adjust size as needed
-                } else {
-                    // Fallback text if no logo
-                    ctx.fillStyle = '#54b97c'; ctx.font = 'bold 30px Arial'; ctx.textAlign = 'right'; ctx.fillText('ANIMALS SUM', 1100, 120);
+                    ctx.drawImage(logoImg, 950, 40, 200, 80); 
                 }
 
-                // Title
-                ctx.fillStyle = '#54b97c'; ctx.font = 'bold 55px Noto Sans TC, Arial'; ctx.textAlign = 'left'; ctx.fillText('🏆 最佳人寵拍檔認證', 80, 140);
+                // Title Area
+                ctx.fillStyle = '#D35400'; ctx.font = 'bold 45px "Fredoka", Arial'; ctx.textAlign = 'center'; ctx.fillText('CERTIFICATE OF PARTICIPATE', 600, 150);
+                ctx.fillStyle = '#4A4036'; ctx.font = 'bold 30px "Noto Sans TC", Arial'; ctx.fillText('This certificate is proudly presented to', 600, 210);
                 
-                // Content Left (Photos)
+                // Names (Center)
+                ctx.fillStyle = '#4A4036'; ctx.font = '900 80px "Fredoka", Arial'; ctx.fillText(state.dName.toUpperCase(), 600, 310);
+                ctx.fillStyle = '#D35400'; ctx.font = 'bold 40px "Fredoka", Arial'; ctx.fillText(`DOG PARENTS: ${state.hName.toUpperCase()}`, 600, 370);
+                
+                // Text
+                ctx.fillStyle = '#333'; ctx.font = '26px "Noto Sans TC", Arial'; 
+                ctx.fillText('We are thrilled to have you and your incredible dog participate in our game!', 600, 440);
+                ctx.fillText(`Your AI Match Score is ${state.scores.final}%.`, 600, 480);
+
+                // Right Side Photos (完美圓形不變形)
                 try {
-                    ctx.save(); ctx.beginPath(); ctx.arc(230, 380, 150, 0, Math.PI*2); ctx.closePath(); ctx.clip();
-                    ctx.drawImage(state.imgs.h1, 80, 230, 300, 300); ctx.restore();
-                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(230, 380, 150, 0, Math.PI*2); ctx.stroke();
-
-                    ctx.save(); ctx.beginPath(); ctx.arc(580, 380, 150, 0, Math.PI*2); ctx.closePath(); ctx.clip();
-                    ctx.drawImage(state.imgs.d1, 430, 230, 300, 300); ctx.restore();
-                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(580, 380, 150, 0, Math.PI*2); ctx.stroke();
-
-                    ctx.fillStyle = '#FF6B6B'; ctx.font = 'bold 60px Arial'; ctx.textAlign = 'center'; ctx.fillText('❤️', 405, 400);
+                    drawCroppedCircle(ctx, state.imgs.h1, 950, 450, 100, '#fff', 8);
+                    drawCroppedCircle(ctx, state.imgs.d1, 1050, 580, 100, '#fff', 8);
                 } catch(e) {}
 
-                // Content Right (Text)
-                ctx.textAlign = 'left';
-                ctx.fillStyle = '#333'; ctx.font = 'bold 45px Arial'; ctx.fillText(`人類: ${state.hName}`, 800, 280);
-                ctx.fillText(`愛寵: ${state.dName}`, 800, 350);
-                ctx.fillStyle = '#666'; ctx.font = '28px Arial'; ctx.fillText('AI 綜合契合度', 800, 440);
-                ctx.fillStyle = '#54b97c'; ctx.font = 'bold 110px Arial'; ctx.fillText(`${state.scores.final}%`, 800, 540);
+                // Left Side Golden Ribbon / Score
+                ctx.fillStyle = '#F1C40F'; ctx.beginPath(); ctx.arc(200, 500, 110, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#D35400'; ctx.font = '900 55px "Fredoka", Arial'; ctx.fillText(`${state.scores.final}%`, 200, 520);
                 
                 // Footer
-                ctx.textAlign = 'center'; ctx.fillStyle = '#FF9F43'; ctx.font = 'bold 40px Arial'; ctx.fillText(`「${comment}」`, 600, 640);
-                ctx.fillStyle = '#888'; ctx.font = '22px Arial'; ctx.textAlign = 'left'; ctx.fillText(`發出日期: ${new Date().toLocaleDateString()}   |   大會領取碼: ${state.code}`, 80, 710);
+                ctx.fillStyle = '#888'; ctx.font = '22px Arial'; ctx.textAlign = 'left'; 
+                ctx.fillText(`Date: ${new Date().toLocaleDateString()}  |  Code: ${state.code}`, 50, 750);
                 
-                // Seal
-                ctx.fillStyle = '#F39C12'; ctx.beginPath(); ctx.arc(1030, 670, 70, 0, Math.PI*2); ctx.fill();
-                ctx.strokeStyle = '#fff'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(1030, 670, 60, 0, Math.PI*2); ctx.stroke();
-                ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial'; ctx.textAlign = 'center'; ctx.fillText('OFFICIAL', 1030, 665); ctx.fillText('CERTIFIED', 1030, 695);
+                // Signature
+                ctx.textAlign = 'center'; ctx.fillStyle = '#333'; ctx.font = 'italic 30px Arial'; ctx.fillText('AnimalsSum', 600, 680);
+                ctx.fillRect(480, 700, 240, 2); ctx.font = '20px Arial'; ctx.fillText('AnimalsSum CEO', 600, 730);
 
-                const certDataURL = canvas.toDataURL('image/jpeg', 0.6);
+                // Save to Firebase
+                const certDataURL = canvas.toDataURL('image/jpeg', 0.8);
                 const record = { code: state.code, dogName: state.dName, humanName: state.hName, email: "", score: state.scores.final, certImg: certDataURL, timestamp: new Date().getTime() };
-
                 if (db) { try { await db.collection("certs").doc(state.code).set(record); } catch(e) { localStorage.setItem('cert_' + state.code, JSON.stringify(record)); }
                 } else { localStorage.setItem('cert_' + state.code, JSON.stringify(record)); }
 
@@ -368,7 +384,7 @@
         function animateValue(id, endVal) { let el = document.getElementById(id); let start = endVal - 2.000; let timer = setInterval(() => { start += 0.051; if(start >= endVal) { start = endVal; clearInterval(timer); } el.innerText = start.toFixed(3) + "%"; }, 30); }
 
         // ==========================================
-        // 5. 搞笑 IG/FB Share 圖 (專用 Canvas)
+        // 5. 搞笑 IG/FB Share 圖 (高階描邊字體技術)
         // ==========================================
         async function shareResult() {
             const btn = document.querySelector('button[onclick="shareResult()"]');
@@ -376,57 +392,47 @@
             const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中攞到 ${state.scores.final}%！\n快啲嚟挑戰啦！`;
 
             try {
-                // 🔥 畫獨立嘅 Share 正方形圖 (1080 x 1080) 用搞笑字體 🔥
                 const canvas = document.getElementById('shareCanvas'); const ctx = canvas.getContext('2d');
                 
-                // 開心黃色漸變底
-                let grd = ctx.createLinearGradient(0, 0, 1080, 1080);
-                grd.addColorStop(0, "#FFD93D"); grd.addColorStop(1, "#FF9F43");
-                ctx.fillStyle = grd; ctx.fillRect(0,0,1080,1080);
+                // 鮮黃色綜藝底
+                ctx.fillStyle = '#FFC312'; ctx.fillRect(0,0,1080,1080);
                 
-                // 白框
-                ctx.strokeStyle = '#fff'; ctx.lineWidth = 20; ctx.strokeRect(40,40,1000,1000);
+                // 白框 + 橙框
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 40; ctx.strokeRect(20,20,1040,1040);
+                ctx.strokeStyle = '#F39C12'; ctx.lineWidth = 10; ctx.strokeRect(40,40,1000,1000);
                 
-                // 標題 (使用 Mochiy Pop One 搞笑字體)
-                ctx.fillStyle = '#fff'; ctx.font = '60px "Mochiy Pop One", sans-serif'; ctx.textAlign = 'center'; 
-                ctx.fillText('🐾 人寵前世測試 🐾', 540, 130);
-                
-                // 畫兩張圓相
+                // 畫兩張圓相 (完美不變形)
                 try {
-                    ctx.save(); ctx.beginPath(); ctx.arc(320, 360, 180, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip(); ctx.drawImage(state.imgs.h1, 140, 180, 360, 360); ctx.restore();
-                    ctx.lineWidth = 15; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(320, 360, 180, 0, Math.PI * 2); ctx.stroke();
+                    drawCroppedCircle(ctx, state.imgs.h1, 300, 360, 200, '#fff', 18);
+                    drawCroppedCircle(ctx, state.imgs.d1, 780, 360, 200, '#fff', 18);
 
-                    ctx.save(); ctx.beginPath(); ctx.arc(760, 360, 180, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip(); ctx.drawImage(state.imgs.d1, 580, 180, 360, 360); ctx.restore();
-                    ctx.lineWidth = 15; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(760, 360, 180, 0, Math.PI * 2); ctx.stroke();
-
-                    // VS
-                    ctx.fillStyle = '#FF6B6B'; ctx.font = '100px "Mochiy Pop One", sans-serif';
-                    ctx.shadowColor = "rgba(0,0,0,0.2)"; ctx.shadowBlur = 10; ctx.shadowOffsetX = 5; ctx.shadowOffsetY = 5;
-                    ctx.fillText('VS', 540, 400);
-                    ctx.shadowColor = "transparent"; // reset shadow
+                    // 閃電 VS (綜藝感)
+                    drawStrokedText(ctx, 'VS', 540, 400, 'italic 900 130px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
                 } catch(e) {}
                 
-                // 分數 Box
-                ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.beginPath(); ctx.roundRect(100, 600, 880, 380, 40); ctx.fill();
+                // 標題 (粗邊字體)
+                drawStrokedText(ctx, '🐾 人寵前世測試 🐾', 540, 130, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
                 
-                ctx.fillStyle = '#e74c3c'; ctx.font = '50px "Mochiy Pop One", sans-serif'; 
-                ctx.fillText(state.comment, 540, 680);
+                // 分數 Box (圓角白色底)
+                ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.beginPath(); ctx.roundRect(80, 600, 920, 400, 40); ctx.fill();
+                
+                // 評語 (粗邊)
+                drawStrokedText(ctx, state.comment, 540, 690, '900 55px "Noto Sans TC", sans-serif', '#e74c3c', '#fff', 12);
 
-                ctx.fillStyle = '#54b97c'; ctx.font = '120px "Mochiy Pop One", sans-serif'; 
-                ctx.fillText(`${state.scores.final}%`, 540, 800);
+                // 分數 (極大粗邊)
+                drawStrokedText(ctx, `${state.scores.final}%`, 540, 830, '900 140px "Fredoka", sans-serif', '#54b97c', '#fff', 20);
 
-                // 5 個 Stats
-                ctx.fillStyle = '#555'; ctx.font = '35px "Mochiy Pop One", sans-serif';
-                ctx.textAlign = 'left';
-                ctx.fillText(`🎨 顏色: ${state.scores.c}%   👀 眼神: ${state.scores.e}%`, 180, 880);
-                ctx.fillText(`🏃 動作: ${state.scores.a}%   🍖 貪食: ${state.scores.f}%`, 180, 940);
+                // 細節
+                ctx.fillStyle = '#555'; ctx.font = 'bold 35px "Noto Sans TC", sans-serif'; ctx.textAlign = 'left';
+                ctx.fillText(`🎨 顏色: ${state.scores.c}%     👀 眼神: ${state.scores.e}%`, 150, 920);
+                ctx.fillText(`🏃 動作: ${state.scores.a}%     🍖 貪食: ${state.scores.f}%`, 150, 970);
 
                 canvas.toBlob(async (blob) => {
-                    const file = new File([blob], "AnimalsSum_Result.jpg", { type: "image/jpeg" });
+                    const file = new File([blob], "AnimalsSum_Share.jpg", { type: "image/jpeg" });
                     if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ title: 'AnimalsSum', text: text, files:[file] }); } 
                     else { await navigator.share({ title: 'AnimalsSum', text: text, url: window.location.href }); }
                     btn.innerText = oldText; btn.disabled = false;
-                }, 'image/jpeg', 0.8);
+                }, 'image/jpeg', 0.9);
             } catch (error) { btn.innerText = oldText; btn.disabled = false; }
         }
 
