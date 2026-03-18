@@ -29,7 +29,6 @@
         .cert-img-box { width: 100%; aspect-ratio: 3/2; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ddd; }
         .cert-img-box img { width: 100%; height: 100%; object-fit: cover; }
         .info p { margin: 5px 0; font-size: 1rem; color: #555; }
-        .code-tag { display: inline-block; background: #ffeaa7; color: #d63031; padding: 3px 10px; border-radius: 5px; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; }
         .print-btn { width: 100%; background: #0984e3; color: white; border: none; padding: 12px; font-size: 1.2rem; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
         
         .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow-x: auto; }
@@ -55,21 +54,18 @@
         <button class="tab-btn" onclick="switchTab('data-view', this)">📋 參加者數據表</button>
     </div>
 
-    <!-- VIEW 1: PRINT GRID -->
     <div id="print-view" class="view active">
         <div class="grid" id="cert-grid">
             <h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 等待參加者數據...</h2>
         </div>
     </div>
 
-    <!-- VIEW 2: DATA TABLE -->
     <div id="data-view" class="view">
         <div class="table-container">
             <button class="dl-csv-btn" onclick="downloadCSV()">⬇️ 下載 Excel (CSV)</button>
             <table id="data-table">
                 <thead>
                     <tr>
-                        <th>領取碼</th>
                         <th>人類名字</th>
                         <th>狗狗名字</th>
                         <th>AI 分數</th>
@@ -78,7 +74,6 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    <!-- Data here -->
                 </tbody>
             </table>
         </div>
@@ -108,13 +103,11 @@
         db.collection("certs").orderBy("timestamp", "desc").limit(100).onSnapshot((snapshot) => {
             const grid = document.getElementById('cert-grid');
             const tbody = document.getElementById('table-body');
-            grid.innerHTML = ''; 
-            tbody.innerHTML = ''; 
-            allData =[]; 
+            grid.innerHTML = ''; tbody.innerHTML = ''; allData =[]; 
 
             if(snapshot.empty) {
                 grid.innerHTML = '<h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 暫時未有證書記錄...</h2>';
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">暫無數據</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">暫無數據</td></tr>';
                 return;
             }
 
@@ -131,9 +124,8 @@
                 card.innerHTML = `
                     <div class="cert-img-box"><img src="${data.certImg}" alt="Certificate"></div>
                     <div class="info">
-                        <p>領取碼: <span class="code-tag">${data.code}</span></p>
-                        <p>人類: <strong>${data.humanName}</strong></p>
-                        <p>狗狗: <strong>${data.dogName}</strong></p>
+                        <p>人類: <strong style="font-size:1.2rem;">${data.humanName}</strong></p>
+                        <p>狗狗: <strong style="font-size:1.2rem;">${data.dogName}</strong></p>
                         <p>分數: <strong style="color:#54b97c; font-size:1.2rem;">${data.score}%</strong></p>
                     </div>
                     <button class="print-btn" onclick="printImage('${data.certImg}')">🖨️ 列印證書</button>
@@ -142,9 +134,8 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${data.code}</strong></td>
-                    <td>${data.humanName}</td>
-                    <td>${data.dogName}</td>
+                    <td><strong>${data.humanName}</strong></td>
+                    <td><strong>${data.dogName}</strong></td>
                     <td style="color:#54b97c; font-weight:bold;">${data.score}%</td>
                     <td>${emailText}</td>
                     <td style="color:#888; font-size:0.9rem;">${timeStr}</td>
@@ -157,17 +148,8 @@
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
-                    <head>
-                        <title>Print Certificate</title>
-                        <style>
-                            body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #fff; }
-                            img { max-width: 100%; max-height: 100vh; object-fit: contain; }
-                            @media print { @page { margin: 0; size: landscape; } }
-                        </style>
-                    </head>
-                    <body>
-                        <img src="${base64Img}" onload="window.print(); window.close();">
-                    </body>
+                    <head><title>Print Certificate</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#fff;}img{max-width:100%;max-height:100vh;object-fit:contain;}@media print{@page{margin:0;size:landscape;}}</style></head>
+                    <body><img src="${base64Img}" onload="window.print(); window.close();"></body>
                 </html>
             `);
             printWindow.document.close();
@@ -175,21 +157,16 @@
 
         function downloadCSV() {
             if(allData.length === 0) return alert("無數據可供下載！");
-            let csvContent = "\uFEFF領取碼,人類名字,狗狗名字,分數(%),聯絡Email,遊玩時間\n";
+            let csvContent = "\uFEFF人類名字,狗狗名字,分數(%),聯絡Email,遊玩時間\n";
             allData.forEach(row => {
                 const dateObj = row.timestamp ? new Date(row.timestamp) : new Date();
                 const timeStr = dateObj.toLocaleString('zh-HK').replace(/,/g, ''); 
                 const email = row.email ? row.email : "未登記";
-                csvContent += `${row.code},${row.humanName},${row.dogName},${row.score},${email},${timeStr}\n`;
+                csvContent += `${row.humanName},${row.dogName},${row.score},${email},${timeStr}\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `AnimalsSum_Data_${new Date().getTime()}.csv`;
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `AnimalsSum_Data_${new Date().getTime()}.csv`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
 </body>
