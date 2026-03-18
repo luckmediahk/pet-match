@@ -111,6 +111,7 @@
 </head>
 <body>
 
+    <!-- ⚠️ 必須將你嘅 Logo 圖片放入 GitHub，然後改叫 logo.png ⚠️ -->
     <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.src='https://via.placeholder.com/300x100.png?text=ANIMALS+SUM'">
 
     <div id="loader">
@@ -121,7 +122,7 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v18.3</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v19.0</span></div>
             <h1>🐾 人寵配對挑戰賽</h1>
         </header>
 
@@ -276,6 +277,7 @@
             if(hn && dn && state.imgs.h1 && state.imgs.d1 && state.imgs.h2 && state.imgs.d2) { btn.disabled = false; state.hName = hn; state.dName = dn; } else { btn.disabled = true; }
         }
 
+        // 🔥 完美比例圓形裁切 🔥
         function drawCroppedCircle(ctx, img, cx, cy, radius, borderColor, borderWidth) {
             ctx.save();
             ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
@@ -286,6 +288,7 @@
             if(borderWidth > 0) { ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.lineWidth = borderWidth; ctx.strokeStyle = borderColor; ctx.stroke(); }
         }
 
+        // 🔥 高階外框字體繪圖 🔥
         function drawStrokedText(ctx, text, x, y, font, fillColor, strokeColor, lineWidth) {
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
             ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y);
@@ -296,6 +299,9 @@
 
         async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
+            
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; state.code = '';
+            for(let i=0; i<5; i++) state.code += chars.charAt(Math.floor(Math.random() * chars.length));
 
             setTimeout(async () => {
                 let s1 = genRandomScore(80); let s2 = genRandomScore(80); let finalAvg = parseFloat(((s1 + s2) / 2).toFixed(3));
@@ -309,69 +315,99 @@
                 else comment = "😎 最佳拍檔！默契十足天生一對！";
                 state.comment = comment; 
 
-                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; state.code = '';
-                for(let i=0; i<5; i++) state.code += chars.charAt(Math.floor(Math.random() * chars.length));
-
                 document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
                 document.getElementById('res-comment').innerText = comment;
+                document.getElementById('res-code').innerText = state.code;
                 document.getElementById('res-img-h').src = state.imgs.h1.src; document.getElementById('res-img-d').src = state.imgs.d1.src;
 
                 animateValue('s-1', s1); animateValue('s-final', finalAvg); animateValue('s-2', s2);
                 setTimeout(()=> { document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%'; document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%'; document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%'; document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%'; document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; }, 500);
 
+                // ==========================================
+                // 🔥 V19.0 彩色兒童/遊樂場風 大會證書 🔥
+                // ==========================================
                 const canvas = document.getElementById('certCanvas'); const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#F8F3E6'; ctx.fillRect(0,0,1200,800); 
                 
-                ctx.fillStyle = '#54b97c'; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(150,0); ctx.lineTo(0,150); ctx.fill();
-                ctx.fillStyle = '#E67E22'; ctx.beginPath(); ctx.moveTo(1200,800); ctx.lineTo(1050,800); ctx.lineTo(1200,650); ctx.fill();
+                // 清新粉藍色背景
+                ctx.fillStyle = '#E0F7FA'; ctx.fillRect(0,0,1200,800); 
+                
+                // 畫隱藏可愛點綴 (腳印)
+                ctx.fillStyle = 'rgba(0,0,0,0.03)'; ctx.font = '60px Arial';
+                for(let i=0; i<15; i++) { ctx.fillText('🐾', Math.random()*1200, Math.random()*800); ctx.fillText('🦴', Math.random()*1200, Math.random()*800); }
 
-                ctx.strokeStyle = '#F1C40F'; ctx.lineWidth = 20; ctx.strokeRect(30,30,1140,740);
-                ctx.strokeStyle = '#54b97c'; ctx.lineWidth = 6; ctx.strokeRect(56,56,1088,688);
+                // 畫上方彩色三角碎旗 (Bunting)
+                const buntingColors =['#FF6B6B', '#FFD93D', '#54b97c', '#9b59b6', '#3498db'];
+                for(let i=0; i<12; i++) {
+                    ctx.fillStyle = buntingColors[i % buntingColors.length];
+                    ctx.beginPath(); ctx.moveTo(i*100, 0); ctx.lineTo(i*100 + 100, 0); ctx.lineTo(i*100 + 50, 80); ctx.fill();
+                }
 
+                // 中心白色大卡片
+                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(50, 100, 1100, 650, 30); ctx.fill();
+                
+                // 雙重框線 (粗黃框 + 紅色虛線內框)
+                ctx.strokeStyle = '#F1C40F'; ctx.lineWidth = 15; ctx.beginPath(); ctx.roundRect(50, 100, 1100, 650, 30); ctx.stroke();
+                ctx.strokeStyle = '#FF6B6B'; ctx.lineWidth = 4; ctx.setLineDash([15, 10]); ctx.beginPath(); ctx.roundRect(75, 125, 1050, 600, 20); ctx.stroke();
+                ctx.setLineDash([]); // Reset dash
+
+                // Logo (Top Right)
                 const logoImg = document.getElementById('brand-logo');
                 if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
-                    const maxW = 250; const maxH = 80;
+                    const maxW = 220; const maxH = 80;
                     const ratio = logoImg.naturalWidth / logoImg.naturalHeight;
                     let drawW = maxW; let drawH = drawW / ratio;
                     if(drawH > maxH) { drawH = maxH; drawW = drawH * ratio; }
-                    ctx.drawImage(logoImg, 1100 - drawW, 65, drawW, drawH); 
+                    ctx.drawImage(logoImg, 1080 - drawW, 140, drawW, drawH); 
                 }
 
-                ctx.fillStyle = '#D35400'; ctx.font = 'bold 45px "Fredoka", Arial'; ctx.textAlign = 'center'; ctx.fillText('CERTIFICATE OF PARTICIPATION', 550, 150);
-                ctx.fillStyle = '#4A4036'; ctx.font = 'bold 30px "Noto Sans TC", Arial'; ctx.fillText('This certificate is proudly presented to', 550, 210);
+                // --- 排版設計：左邊金牌，中間字，右邊圖 ---
                 
-                ctx.fillStyle = '#4A4036'; ctx.font = '900 80px "Fredoka", Arial'; ctx.fillText(state.dName.toUpperCase(), 550, 310);
-                ctx.fillStyle = '#D35400'; ctx.font = 'bold 40px "Fredoka", Arial'; ctx.fillText(`DOG PARENTS: ${state.hName.toUpperCase()}`, 550, 370);
+                // 1. 中間文字
+                ctx.fillStyle = '#D35400'; ctx.font = '900 48px "Fredoka", Arial'; ctx.textAlign = 'center'; 
+                ctx.fillText('CERTIFICATE OF PARTICIPATION', 560, 180);
                 
-                // 🔥 解決文字疊相問題 (置中 + 斬行 + 英文 Native 翻譯) 🔥
-                ctx.fillStyle = '#444'; ctx.font = 'bold 22px "Fredoka", Arial'; // 用 Fredoka 字體令英文更圓潤可愛
-                ctx.fillText('Rumor has it that a higher AI match score reveals a deeper bond of love!', 550, 440);
-                ctx.fillText('You and your doggo look incredibly alike,', 550, 480);
-                ctx.fillText('and we can truly feel the endless love flowing between you from these photos!', 550, 520);
+                ctx.fillStyle = '#666'; ctx.font = 'bold 28px "Noto Sans TC", Arial'; 
+                ctx.fillText('This certificate is proudly presented to', 560, 240);
+                
+                ctx.fillStyle = '#54b97c'; ctx.font = '900 75px "Fredoka", Arial'; ctx.fillText(state.hName.toUpperCase(), 560, 320);
+                ctx.fillStyle = '#FF9F43'; ctx.font = 'bold 50px "Fredoka", Arial'; ctx.fillText(`& ${state.dName.toUpperCase()}`, 560, 380);
+                
+                // 英文溫馨段落 (分3行)
+                ctx.fillStyle = '#444'; ctx.font = 'bold 22px "Fredoka", Arial'; 
+                ctx.fillText('Rumor has it that a higher AI match score', 560, 440);
+                ctx.fillText('reveals a deeper bond of love! You two look incredibly alike,', 560, 480);
+                ctx.fillText('and we can truly feel the endless love flowing between you!', 560, 520);
 
+                // 2. 右邊相片
                 try {
-                    drawCroppedCircle(ctx, state.imgs.h1, 920, 400, 120, '#fff', 8);
-                    drawCroppedCircle(ctx, state.imgs.d1, 1040, 540, 120, '#fff', 8);
-                    
-                    ctx.fillStyle = '#F39C12'; ctx.beginPath(); ctx.arc(1040, 700, 60, 0, Math.PI*2); ctx.fill();
-                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(1040, 700, 50, 0, Math.PI*2); ctx.stroke();
-                    ctx.fillStyle = '#fff'; ctx.font = 'bold 20px Arial'; ctx.textAlign = 'center'; ctx.fillText('OFFICIAL', 1040, 695); ctx.fillText('CERTIFIED', 1040, 720);
+                    drawCroppedCircle(ctx, state.imgs.h1, 930, 330, 130, '#54b97c', 8);
+                    drawCroppedCircle(ctx, state.imgs.d1, 1020, 540, 130, '#FF9F43', 8);
+                    ctx.fillStyle = '#FF6B6B'; ctx.font = 'bold 60px Arial'; ctx.fillText('❤️', 960, 450);
                 } catch(e) {}
 
-                ctx.fillStyle = '#F1C40F'; ctx.beginPath(); ctx.arc(200, 500, 110, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#D35400'; ctx.font = '900 55px "Fredoka", Arial'; ctx.textAlign = 'center'; ctx.fillText(`${state.scores.final}%`, 200, 520);
-                
-                ctx.fillStyle = '#888'; ctx.font = '22px Arial'; ctx.textAlign = 'left'; 
-                ctx.fillText(`Date: ${new Date().toLocaleDateString()}  |  Code: ${state.code}`, 80, 720);
-                
-                ctx.textAlign = 'center'; ctx.fillStyle = '#333'; ctx.font = 'italic 30px Arial'; ctx.fillText('AnimalsSum', 550, 680);
-                ctx.fillRect(430, 700, 240, 2); ctx.font = '20px Arial'; ctx.fillText('AnimalsSum CEO', 550, 730);
+                // 3. 左邊大獎牌 (金幣 + 絲帶)
+                // 絲帶
+                ctx.fillStyle = '#E74C3C'; ctx.beginPath();
+                ctx.moveTo(130, 500); ctx.lineTo(90, 680); ctx.lineTo(150, 640); ctx.lineTo(210, 680); ctx.lineTo(190, 500); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(250, 500); ctx.lineTo(290, 680); ctx.lineTo(230, 640); ctx.lineTo(170, 680); ctx.lineTo(190, 500); ctx.fill();
+                // 金牌
+                ctx.fillStyle = '#F1C40F'; ctx.beginPath(); ctx.arc(190, 490, 120, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = '#F39C12'; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(190, 490, 100, 0, Math.PI*2); ctx.stroke();
+                // 分數
+                ctx.fillStyle = '#D35400'; ctx.font = '900 50px "Fredoka", Arial'; ctx.fillText(`${state.scores.final}%`, 190, 490);
+                ctx.fillStyle = '#A04000'; ctx.font = 'bold 22px "Noto Sans TC", Arial'; ctx.fillText('AI MATCH SCORE', 190, 530);
 
+                // Footer & Signature
+                ctx.fillStyle = '#888'; ctx.font = '22px Arial'; ctx.textAlign = 'left'; 
+                ctx.fillText(`Date: ${new Date().toLocaleDateString()}   |   Code: ${state.code}`, 100, 710);
+                
+                ctx.textAlign = 'center'; ctx.fillStyle = '#333'; ctx.font = 'italic 30px Arial'; ctx.fillText('AnimalsSum', 560, 650);
+                ctx.fillRect(440, 670, 240, 3); ctx.font = '20px Arial'; ctx.fillText('AnimalsSum CEO', 560, 710);
+
+                // Save to Firebase
                 const certDataURL = canvas.toDataURL('image/jpeg', 0.6);
                 const docId = `${state.hName.trim().toLowerCase()}_${state.dName.trim().toLowerCase()}`;
-                
                 const record = { dogName: state.dName, humanName: state.hName, email: "", score: state.scores.final, certImg: certDataURL, timestamp: new Date().getTime(), code: state.code };
-
                 if (db) { try { await db.collection("certs").doc(docId).set(record); } catch(e) { localStorage.setItem('cert_' + docId, JSON.stringify(record)); }
                 } else { localStorage.setItem('cert_' + docId, JSON.stringify(record)); }
 
@@ -383,6 +419,9 @@
 
         function animateValue(id, endVal) { let el = document.getElementById(id); let start = endVal - 2.000; let timer = setInterval(() => { start += 0.051; if(start >= endVal) { start = endVal; clearInterval(timer); } el.innerText = start.toFixed(3) + "%"; }, 30); }
 
+        // ==========================================
+        // 5. 搞笑 IG/FB Share 圖 (高階描邊字體技術)
+        // ==========================================
         async function shareResult() {
             const btn = document.querySelector('button[onclick="shareResult()"]');
             const oldText = btn.innerText; btn.innerText = "⏳ 準備緊靚相..."; btn.disabled = true;
@@ -390,29 +429,44 @@
 
             try {
                 const canvas = document.getElementById('shareCanvas'); const ctx = canvas.getContext('2d');
+                
+                // 🔥 改回品牌薄荷綠漸變底 🔥
                 let grd = ctx.createLinearGradient(0, 0, 1080, 1080);
-                grd.addColorStop(0, "#FFD93D"); grd.addColorStop(1, "#FF9F43");
+                grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
                 ctx.fillStyle = grd; ctx.fillRect(0,0,1080,1080);
                 
+                // 白框 + 黃框
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 40; ctx.strokeRect(20,20,1040,1040);
-                ctx.strokeStyle = '#F39C12'; ctx.lineWidth = 10; ctx.strokeRect(40,40,1000,1000);
+                ctx.strokeStyle = '#FFD93D'; ctx.lineWidth = 10; ctx.strokeRect(40,40,1000,1000);
+
+                // 🔥 加入 Logo (Top Center) 🔥
+                const logoImg = document.getElementById('brand-logo');
+                if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
+                    const maxW = 350; const maxH = 100;
+                    const ratio = logoImg.naturalWidth / logoImg.naturalHeight;
+                    let drawW = maxW; let drawH = drawW / ratio;
+                    if(drawH > maxH) { drawH = maxH; drawW = drawH * ratio; }
+                    ctx.drawImage(logoImg, 540 - (drawW/2), 60, drawW, drawH); 
+                }
                 
                 try {
-                    drawCroppedCircle(ctx, state.imgs.h1, 300, 360, 200, '#fff', 18);
-                    drawCroppedCircle(ctx, state.imgs.d1, 780, 360, 200, '#fff', 18);
-                    drawStrokedText(ctx, 'VS', 540, 400, 'italic 900 130px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
+                    drawCroppedCircle(ctx, state.imgs.h1, 300, 420, 200, '#fff', 18);
+                    drawCroppedCircle(ctx, state.imgs.d1, 780, 420, 200, '#fff', 18);
+                    drawStrokedText(ctx, 'VS', 540, 460, 'italic 900 130px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
                 } catch(e) {}
                 
-                drawStrokedText(ctx, '🐾 人寵前世測試 🐾', 540, 130, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
+                // 🔥 Title 修改為 人寵似樣測試 🔥
+                drawStrokedText(ctx, '🐾 人寵似樣測試 🐾', 540, 210, '900 70px "Noto Sans TC", sans-serif', '#fff', '#2d3436', 15);
                 
-                ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.beginPath(); ctx.roundRect(80, 600, 920, 400, 40); ctx.fill();
+                // 分數 Box 
+                ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.beginPath(); ctx.roundRect(80, 660, 920, 360, 40); ctx.fill();
                 
-                drawStrokedText(ctx, state.comment, 540, 690, '900 55px "Noto Sans TC", sans-serif', '#e74c3c', '#fff', 12);
-                drawStrokedText(ctx, `${state.scores.final}%`, 540, 830, '900 140px "Fredoka", sans-serif', '#54b97c', '#fff', 20);
+                drawStrokedText(ctx, state.comment, 540, 750, '900 50px "Noto Sans TC", sans-serif', '#e74c3c', '#fff', 12);
+                drawStrokedText(ctx, `${state.scores.final}%`, 540, 880, '900 140px "Fredoka", sans-serif', '#54b97c', '#fff', 20);
 
                 ctx.fillStyle = '#555'; ctx.font = 'bold 35px "Mochiy Pop One", sans-serif'; ctx.textAlign = 'left';
-                ctx.fillText(`🎨 顏色: ${state.scores.c}%     👀 眼神: ${state.scores.e}%`, 150, 920);
-                ctx.fillText(`🏃 動作: ${state.scores.a}%     🍖 貪食: ${state.scores.f}%`, 150, 970);
+                ctx.fillText(`🎨 顏色: ${state.scores.c}%     👀 眼神: ${state.scores.e}%`, 150, 960);
+                ctx.fillText(`🏃 動作: ${state.scores.a}%     🍖 貪食: ${state.scores.f}%`, 150, 1010);
 
                 canvas.toBlob(async (blob) => {
                     const file = new File([blob], "AnimalsSum_Share.jpg", { type: "image/jpeg" });
@@ -423,6 +477,9 @@
             } catch (error) { btn.innerText = oldText; btn.disabled = false; }
         }
 
+        // ==========================================
+        // 6. 簡化登記系統
+        // ==========================================
         function goToRetrieve() {
             if(state.hName) document.getElementById('ret-human').value = state.hName;
             if(state.dName) document.getElementById('ret-dog').value = state.dName;
