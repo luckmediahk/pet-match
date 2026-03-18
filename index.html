@@ -111,7 +111,6 @@
 </head>
 <body>
 
-    <!-- ⚠️ 必須將你嘅 Logo 圖片放入 GitHub，然後改叫 logo.png ⚠️ -->
     <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.src='https://via.placeholder.com/300x100.png?text=ANIMALS+SUM'">
 
     <div id="loader">
@@ -122,7 +121,7 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v20.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v21.0</span></div>
             <h1>🐾 人寵配對挑戰賽</h1>
         </header>
 
@@ -200,7 +199,7 @@
             </div>
         </div>
 
-        <!-- VIEW 4: RETRIEVE -->
+        <!-- VIEW 4: RETRIEVE (移除咗 Code 輸入框) -->
         <div id="view-retrieve" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:5px;">📜 證書領取及登記</h2>
             <p style="text-align:center; color:#666; margin-top:0;">輸入名及電郵即可下載大會高清證書！</p>
@@ -217,7 +216,7 @@
     <canvas id="shareCanvas" width="1080" height="1080" style="display:none;"></canvas>
 
     <script>
-        // Safari/iOS Canvas Compatibility Fix
+        // Safari Compatibility Fix
         if (!CanvasRenderingContext2D.prototype.roundRect) {
           CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
             if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2;
@@ -327,80 +326,91 @@
                 setTimeout(()=> { document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%'; document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%'; document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%'; document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%'; document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; }, 500);
 
                 // ==========================================
-                // 🔥 V20.0 終極可愛大會證書 (絕無疊字版) 🔥
+                // 🔥 V21.0 終極大會證書 (全新 Canva 風格) 🔥
                 // ==========================================
                 const canvas = document.getElementById('certCanvas'); const ctx = canvas.getContext('2d');
                 
-                // 1. 暖黃底色 + 腳印圖案
-                ctx.fillStyle = '#FFF9E6'; ctx.fillRect(0,0,1200,800); 
-                ctx.fillStyle = 'rgba(255, 159, 67, 0.05)'; ctx.font = '50px Arial';
-                for(let i=0; i<20; i++) { ctx.fillText('🐾', Math.random()*1200, Math.random()*800); ctx.fillText('🦴', Math.random()*1200, Math.random()*800); }
+                // 1. 溫馨米黃背景
+                ctx.fillStyle = '#FDFBF7'; ctx.fillRect(0,0,1200,800); 
+                
+                // 2. 粉紫色幼邊框
+                ctx.strokeStyle = '#9B59B6'; ctx.lineWidth = 4; ctx.strokeRect(30, 30, 1140, 740);
 
-                // 2. 頂部彩色三角碎花彩旗
-                const buntingColors =['#FF6B6B', '#4ECDC4', '#FFE66D', '#FF9F43', '#A8E6CF', '#9b59b6'];
-                for(let i=0; i<12; i++) {
-                    ctx.fillStyle = buntingColors[i % buntingColors.length];
-                    ctx.beginPath(); ctx.moveTo(i*100, 0); ctx.lineTo(i*100 + 100, 0); ctx.lineTo(i*100 + 50, 90); ctx.fill();
-                }
-
-                // 3. 中央白色圓角大卡片
-                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(50, 110, 1100, 660, 40); ctx.fill();
-                ctx.strokeStyle = '#FFD93D'; ctx.lineWidth = 12; ctx.stroke();
-                ctx.strokeStyle = '#FF9F43'; ctx.lineWidth = 6; ctx.setLineDash([15, 15]); ctx.lineCap = 'round';
-                ctx.beginPath(); ctx.roundRect(70, 130, 1060, 620, 25); ctx.stroke(); ctx.setLineDash([]);
+                // 3. 底部粉紅波浪圖案
+                ctx.fillStyle = '#FFE0E6'; ctx.beginPath(); ctx.moveTo(0, 650); ctx.bezierCurveTo(300, 550, 600, 750, 1200, 600); ctx.lineTo(1200, 800); ctx.lineTo(0, 800); ctx.fill();
+                ctx.fillStyle = '#FFD0D8'; ctx.beginPath(); ctx.moveTo(0, 720); ctx.bezierCurveTo(400, 620, 800, 820, 1200, 680); ctx.lineTo(1200, 800); ctx.lineTo(0, 800); ctx.fill();
 
                 // 4. Logo (右上角)
                 const logoImg = document.getElementById('brand-logo');
                 if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
-                    const maxW = 200; const maxH = 70;
+                    const maxW = 200; const maxH = 80;
                     const ratio = logoImg.naturalWidth / logoImg.naturalHeight;
                     let drawW = maxW; let drawH = drawW / ratio;
                     if(drawH > maxH) { drawH = maxH; drawW = drawH * ratio; }
-                    ctx.drawImage(logoImg, 1060 - drawW, 150, drawW, drawH); 
+                    ctx.drawImage(logoImg, 930, 50, drawW, drawH); 
                 }
 
-                // 5. 標題與名字 (正上方)
-                ctx.fillStyle = '#D35400'; ctx.font = '900 45px "Fredoka", Arial'; ctx.textAlign = 'center'; 
-                ctx.fillText('CERTIFICATE OF PARTICIPATION', 600, 200);
-                
-                ctx.fillStyle = '#54b97c'; ctx.font = '900 70px "Fredoka", Arial'; 
-                ctx.fillText(`${state.hName.toUpperCase()} & ${state.dName.toUpperCase()}`, 600, 290);
+                // 5. 標題 C E R T I F I C A T E (超闊字距)
+                ctx.fillStyle = '#E84393'; ctx.font = '900 60px "Fredoka", Arial'; ctx.textAlign = 'center'; 
+                ctx.fillText('C E R T I F I C A T E', 600, 130);
+                ctx.fillStyle = '#2C3E50'; ctx.font = 'bold 22px "Fredoka", Arial'; 
+                ctx.fillText('O F   P A R T I C I P A T I O N', 600, 175);
 
-                // 6. 分數大獎牌 (移去左邊)
-                ctx.fillStyle = '#E74C3C'; ctx.beginPath(); // 絲帶
-                ctx.moveTo(170, 500); ctx.lineTo(130, 680); ctx.lineTo(200, 630); ctx.lineTo(270, 680); ctx.lineTo(230, 500); ctx.fill();
-                ctx.fillStyle = '#F1C40F'; ctx.beginPath(); ctx.arc(200, 480, 110, 0, Math.PI*2); ctx.fill(); // 金牌底
-                ctx.strokeStyle = '#FFF'; ctx.lineWidth = 8; ctx.stroke();
-                ctx.strokeStyle = '#F39C12'; ctx.lineWidth = 4; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
-                ctx.fillStyle = '#D35400'; ctx.font = '900 55px "Fredoka", Arial'; ctx.fillText(`${state.scores.final}%`, 200, 490);
-                ctx.fillStyle = '#A04000'; ctx.font = 'bold 22px "Noto Sans TC", Arial'; ctx.fillText('AI MATCH SCORE', 200, 530);
+                // 6. 中間金色分數大獎牌 (防疊字)
+                ctx.fillStyle = '#F1C40F'; ctx.beginPath(); ctx.arc(600, 280, 65, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = '#E67E22'; ctx.lineWidth = 4; ctx.setLineDash([5, 5]); 
+                ctx.beginPath(); ctx.arc(600, 280, 55, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+                ctx.fillStyle = '#D35400'; ctx.font = '900 38px "Fredoka", Arial'; ctx.fillText(`${state.scores.final}%`, 600, 295);
 
-                // 7. 兩張大頭相 (移去右邊)
+                // 7. 頒發對象名字
+                ctx.fillStyle = '#2C3E50'; ctx.font = 'bold 20px "Noto Sans TC", Arial'; 
+                ctx.fillText('This certificate is proudly awarded to:', 600, 390);
+                // 名字用粉紅色可愛字體
+                ctx.fillStyle = '#E84393'; ctx.font = 'italic 900 65px "Mochiy Pop One", "Fredoka", Arial'; 
+                ctx.fillText(`${state.hName.toUpperCase()} & ${state.dName.toUpperCase()}`, 600, 470);
+
+                // 8. 完美英文愛意金句
+                ctx.fillStyle = '#2C3E50'; ctx.font = 'bold 20px "Fredoka", Arial'; 
+                ctx.fillText('They say the higher the AI similarity score, the deeper the love.', 600, 530);
+                ctx.fillText('You and your dog are so alike in every line of your faces —', 600, 565);
+                ctx.fillText('and just one photo is enough to feel the endless, gentle love flowing between you.', 600, 600);
+
+                // 9. 簽名線 (兩條)
+                ctx.strokeStyle = '#2C3E50'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(350, 710); ctx.lineTo(500, 710); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(700, 710); ctx.lineTo(850, 710); ctx.stroke();
+                ctx.fillStyle = '#E84393'; ctx.font = '16px "Fredoka", Arial';
+                ctx.fillText('ANIMALS SUM', 425, 735); ctx.fillText('AI JUDGE', 775, 735);
+
+                // 10. 左右護法大頭相 + Tag
                 try {
-                    // 中心點設喺 900，左邊相 760，右邊相 1040 (保證與左邊獎牌有極大距離)
-                    drawCroppedCircle(ctx, state.imgs.h1, 760, 450, 130, '#54b97c', 8);
-                    drawCroppedCircle(ctx, state.imgs.d1, 1000, 450, 130, '#FF9F43', 8);
-                    ctx.fillStyle = '#FF6B6B'; ctx.font = 'bold 60px Arial'; ctx.fillText('❤️', 880, 470);
+                    drawCroppedCircle(ctx, state.imgs.h1, 200, 600, 130, '#F1C40F', 10);
+                    drawCroppedCircle(ctx, state.imgs.d1, 1000, 600, 130, '#F1C40F', 10);
+                    // 畫粉紅小名牌
+                    ctx.fillStyle = '#E84393';
+                    ctx.beginPath(); ctx.roundRect(140, 710, 120, 35, 15); ctx.fill();
+                    ctx.beginPath(); ctx.roundRect(940, 710, 120, 35, 15); ctx.fill();
+                    ctx.fillStyle = '#FFF'; ctx.font = 'bold 18px "Noto Sans TC"';
+                    ctx.fillText('Dog Parent', 200, 734);
+                    ctx.fillText('Furry Baby', 1000, 734);
                 } catch(e) {}
 
-                // 8. 溫馨長英文句子 (打橫放喺下方，保證 0 重疊)
-                ctx.fillStyle = '#444'; ctx.font = 'bold 24px "Fredoka", Arial'; 
-                ctx.fillText('They say the higher the AI similarity score, the deeper the love.', 600, 610);
-                ctx.fillText('You and your dog are so alike in every line of your faces —', 600, 650);
-                ctx.fillText('and just one photo is enough to feel the endless, gentle love flowing between you.', 600, 690);
+                // 11. 隨機星星裝飾
+                ctx.fillStyle = '#FF9F43'; ctx.font = '30px Arial';
+                ctx.fillText('★', 150, 150); ctx.fillText('★', 1050, 250); ctx.fillText('★', 300, 300); ctx.fillText('✨', 800, 150); ctx.fillText('💖', 850, 400);
 
-                // 9. Footer (左邊日期，中間公司名)
-                ctx.fillStyle = '#888'; ctx.font = '22px Arial'; ctx.textAlign = 'left'; 
-                ctx.fillText(`Date: ${new Date().toLocaleDateString()}`, 100, 740);
+                // 🔥 終極安全 ID 淨化機制 (防客亂打空格)
+                const safeHName = state.hName.replace(/\s+/g, '').toLowerCase();
+                const safeDName = state.dName.replace(/\s+/g, '').toLowerCase();
+                const docId = `${safeHName}_${safeDName}`;
                 
-                ctx.textAlign = 'center'; ctx.fillStyle = '#54b97c'; ctx.font = '900 28px "Fredoka", Arial'; 
-                ctx.fillText('Animals Sum Love and Hope', 600, 740);
-
-                // Save to Firebase
                 const certDataURL = canvas.toDataURL('image/jpeg', 0.6);
-                const docId = `${state.hName.trim().toLowerCase()}_${state.dName.trim().toLowerCase()}`;
-                const record = { dogName: state.dName, humanName: state.hName, email: "", score: state.scores.final, certImg: certDataURL, timestamp: new Date().getTime(), code: state.code };
-                if (db) { try { await db.collection("certs").doc(docId).set(record); } catch(e) { localStorage.setItem('cert_' + docId, JSON.stringify(record)); }
+                const record = { dogName: state.dName, humanName: state.hName, email: "", score: state.scores.final, certImg: certDataURL, timestamp: new Date().getTime() };
+                
+                if (db) { 
+                    db.collection("certs").doc(docId).set(record)
+                      .then(() => console.log("Firebase 儲存成功！"))
+                      .catch(e => { console.error("Firebase Error:", e); localStorage.setItem('cert_' + docId, JSON.stringify(record)); });
                 } else { localStorage.setItem('cert_' + docId, JSON.stringify(record)); }
 
                 document.getElementById('loader').style.display = 'none';
@@ -475,7 +485,10 @@
             if(!inputHuman || !inputDog || !inputEmail) return alert("❌ 請填寫所有資料！");
             if(!inputEmail.includes('@') || !inputEmail.includes('.')) return alert("❌ Email 格式不正確！");
 
-            const docId = `${inputHuman.toLowerCase()}_${inputDog.toLowerCase()}`;
+            // 🔥 取回時同樣用淨化過嘅 ID 確保配對成功 🔥
+            const safeHName = inputHuman.replace(/\s+/g, '').toLowerCase();
+            const safeDName = inputDog.replace(/\s+/g, '').toLowerCase();
+            const docId = `${safeHName}_${safeDName}`;
 
             const btn = document.getElementById('btn-fetch-cert'); btn.innerText = "⏳ 尋找及下載中..."; btn.disabled = true;
             let data = null;
@@ -494,7 +507,7 @@
             if(data) {
                 let link = document.createElement('a'); link.download = `AnimalsSum_Cert_${inputHuman}_${inputDog}.jpg`; link.href = data.certImg; link.click();
                 alert(`✅ 登記成功！\n證書已經開始下載，多謝參與！`); location.reload(); 
-            } else { alert("❌ 搵唔到你嘅記錄！請確保人類同狗狗名字打得啱。"); }
+            } else { alert("❌ 雲端搵唔到記錄！請確保你打嘅名同剛才玩嗰陣一模一樣。"); }
             btn.innerText = "✅ 確認登記並下載證書"; btn.disabled = false;
         }
     </script>
