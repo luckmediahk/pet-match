@@ -114,7 +114,7 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v26.1</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v27.0</span></div>
             <h1>🐾 神速合拍大比拚</h1>
         </header>
 
@@ -131,22 +131,23 @@
             </div>
 
             <div class="round-box">
-                <div class="round-title">📸 拍攝參加者與狗狗 (大頭/全身皆可)</div>
+                <div class="round-title">📸 拍攝或選擇參加者與狗狗相片</div>
                 <div class="match-row">
+                    <!-- 🔥 移除 capture="environment"，加入 影相/相簿 文字 🔥 -->
                     <div class="photo-card" id="box-h-1" onclick="document.getElementById('u-h-1').click()">
                         <div class="bubble" id="b-h-1"></div>
                         <div class="img-box">
-                            <span class="placeholder">🧍‍♂️</span><div class="cam-icon">📷 人類就位</div><img id="img-h-1">
+                            <span class="placeholder">🧍‍♂️</span><div class="cam-icon">📷 影相 / 相簿</div><img id="img-h-1">
                         </div>
-                        <input type="file" id="u-h-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person')">
+                        <input type="file" id="u-h-1" hidden accept="image/*" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person')">
                     </div>
                     <div style="font-weight:900; color:var(--accent); font-size:2rem; font-style:italic; align-self:center;">VS</div>
                     <div class="photo-card" id="box-d-1" onclick="document.getElementById('u-d-1').click()">
                         <div class="bubble" id="b-d-1"></div>
                         <div class="img-box">
-                            <span class="placeholder">🐕</span><div class="cam-icon">📷 主子就位</div><img id="img-d-1">
+                            <span class="placeholder">🐕</span><div class="cam-icon">📷 影相 / 相簿</div><img id="img-d-1">
                         </div>
-                        <input type="file" id="u-d-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog')">
+                        <input type="file" id="u-d-1" hidden accept="image/*" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog')">
                     </div>
                 </div>
             </div>
@@ -182,12 +183,12 @@
 
             <div class="action-btns-grid">
                 <button class="main-btn" style="background:#000;" onclick="shareResultInstant()">📱 極速 Share (大會機專用)</button>
-                <button class="main-btn sec-btn" onclick="switchView('view-upload')">🔄 重新影相</button>
+                <button class="main-btn sec-btn" onclick="switchView('view-upload')">🔄 重新影相/揀相</button>
                 <button class="main-btn action-btn" style="grid-column: 1 / -1;" onclick="location.reload()">✅ 完成，下一位！</button>
             </div>
         </div>
 
-        <!-- VIEW 4: RETRIEVE -->
+        <!-- VIEW 4: RETRIEVE (Public Default View) -->
         <div id="view-retrieve" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:5px; font-size: 2rem;">📸 下載打卡靚相！</h2>
             <p style="text-align:center; color:#666; margin-top:0; font-size:1.1rem;">輸入您同主子嘅名，即可攞返成績圖！</p>
@@ -213,7 +214,7 @@
 
     </div>
 
-    <!-- IG Canvas -->
+    <!-- IG 4:5 Canvas -->
     <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
@@ -269,12 +270,12 @@
 
             if (targetRole === 'person') {
                 if (preds.find(p => p.class === 'person' && p.score > minScore)) { status = "ok"; msg = "🏃‍♂️ 捕捉成功！"; } 
-                else { msg = "❌ 搵唔到人/太濛！請重影"; }
+                else { msg = "❌ 搵唔到人/太濛！請重試"; }
             } else {
                 let isDog = preds.find(p =>['dog','cat','bird','horse','bear','sheep'].includes(p.class) && p.score > minScore);
                 if (!isDog && models.mobile) { const mobCheck = await models.mobile.classify(img); isDog = mobCheck.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k))); }
                 if (isDog) { status = "ok"; msg = "💃 汪星人 OK！"; } 
-                else { msg = "❌ 認唔到主子！請重影"; }
+                else { msg = "❌ 認唔到主子！請重試"; }
             }
 
             bubble.innerText = msg; bubble.className = "bubble " + status;
@@ -371,11 +372,10 @@
                     drawStrokedText(sCtx, 'VS', 540, 820, 'italic 900 140px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
                 } catch(e) {}
                 
-                // 🔥 細項數據白框 (向上推 30px) 🔥
+                // 細項數據白框
                 sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1030, 920, 230, 40); sCtx.fill();
                 sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
                 
-                // 🔥 內部數據 Y 軸向上推 30px 🔥
                 sCtx.textAlign = 'left';
                 sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1110);
                 sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1180);
@@ -385,7 +385,7 @@
                 sCtx.textAlign = 'center';
                 sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1240);
 
-                // 🔥 加網址 (向上推 35px 去到安全區域) 🔥
+                // 加網址
                 sCtx.fillStyle = '#fff';
                 sCtx.font = 'bold 30px "Fredoka", sans-serif';
                 sCtx.fillText('ANIMALSSUM.COM', 540, 1290);
