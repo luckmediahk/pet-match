@@ -7,7 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <title>－－－－－－－－－－－－－－－－－－－－－－－－－－－－－</title>
+    <!-- 🔥 已經幫你改好標題 🔥 -->
+    <title>🐶 AnimalsSum | 神速合拍大比拚</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap" rel="stylesheet">
@@ -115,11 +116,12 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v25.0</span></div>
-            <h1>🐾神速合拍大比拚</h1>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v25.1</span></div>
+            <!-- 🔥 改好咗大會主標題 🔥 -->
+            <h1>🐾 神速合拍大比拚</h1>
         </header>
 
-        <!-- 🔥 VIEW 1: HOME (Staff Mode) 🔥 -->
+        <!-- VIEW 1: HOME (Staff Mode) -->
         <div id="view-home" class="view">
             <button class="main-btn" style="padding: 40px; font-size: clamp(2rem, 5vw, 3rem); margin-top: 50px;" onclick="switchView('view-upload')">🎮 開始遊戲！</button>
         </div>
@@ -188,7 +190,7 @@
             </div>
         </div>
 
-        <!-- 🔥 VIEW 4: RETRIEVE (Public Default View) 🔥 -->
+        <!-- VIEW 4: RETRIEVE -->
         <div id="view-retrieve" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:5px; font-size: 2rem;">📸 下載打卡靚相！</h2>
             <p style="text-align:center; color:#666; margin-top:0; font-size:1.1rem;">輸入您同主子嘅名，即可攞返成績圖！</p>
@@ -214,7 +216,7 @@
 
     </div>
 
-    <!-- 🔥 改為 1080 x 1350 IG 完美直度 Size 🔥 -->
+    <!-- 🔥 改為 1080 x 1350 IG 直度 Size 🔥 -->
     <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
@@ -339,7 +341,7 @@
                 setTimeout(()=> { document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%'; document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%'; document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%'; document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%'; document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; }, 500);
 
                 // ==========================================
-                // 🔥 重新排版: V25.0 打卡圖 (1080 x 1350) 🔥
+                // 🔥 V25.1 打卡圖 (1080 x 1350) - 客製化標題版 🔥
                 // ==========================================
                 const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
                 let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); 
@@ -356,8 +358,8 @@
                     if(dH > 80) { dH = 80; dW = dH * r; } sCtx.drawImage(logoImg, 1000 - dW, 70, dW, dH); 
                 }
                 
-                // 2. 標題 (正中)
-                drawStrokedText(sCtx, '🐾 AI人寵似樣大測試 🐾', 540, 150, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
+                // 2. 標題 (正中) - 🔥 已改名做 AI人寵似樣 🔥
+                drawStrokedText(sCtx, '🐾 AI人寵似樣 🐾', 540, 150, '900 80px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
                 
                 // 3. 評語與分數框 (中上)
                 sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 220, 920, 320, 40); sCtx.fill();
