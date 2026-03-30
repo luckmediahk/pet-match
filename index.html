@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- 🔥 支援 iOS "加入主畫面" 變成 Full Screen App 🔥 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="logo.png">
     
-    <title>🐶 AnimalsSum | 人寵配對大作戰</title>
+    <title>－－－－－－－－－－－－－－－－－－－－－－－－－－－－－</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap" rel="stylesheet">
     
+    <!-- Firebase & AI Libraries -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -115,16 +115,16 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v24.0</span></div>
-            <h1>🐾 人寵配對挑戰賽</h1>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v25.0</span></div>
+            <h1>🐾神速合拍大比拚</h1>
         </header>
 
-        <!-- 🔥 VIEW 1: HOME (Staff Mode Only) 🔥 -->
+        <!-- 🔥 VIEW 1: HOME (Staff Mode) 🔥 -->
         <div id="view-home" class="view">
             <button class="main-btn" style="padding: 40px; font-size: clamp(2rem, 5vw, 3rem); margin-top: 50px;" onclick="switchView('view-upload')">🎮 開始遊戲！</button>
         </div>
 
-        <!-- VIEW 2: UPLOAD (1 Photo Only) -->
+        <!-- VIEW 2: UPLOAD (1 Photo) -->
         <div id="view-upload" class="view">
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
@@ -132,12 +132,12 @@
             </div>
 
             <div class="round-box">
-                <div class="round-title">📸 拍攝參加者與狗狗 (全身照)</div>
+                <div class="round-title">📸 拍攝參加者與狗狗 (大頭/全身皆可)</div>
                 <div class="match-row">
                     <div class="photo-card" id="box-h-1" onclick="document.getElementById('u-h-1').click()">
                         <div class="bubble" id="b-h-1"></div>
                         <div class="img-box">
-                            <span class="placeholder">🧍‍♂️</span><div class="cam-icon">📷 人類擺 Pose</div><img id="img-h-1">
+                            <span class="placeholder">🧍‍♂️</span><div class="cam-icon">📷 人類就位</div><img id="img-h-1">
                         </div>
                         <input type="file" id="u-h-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person')">
                     </div>
@@ -145,7 +145,7 @@
                     <div class="photo-card" id="box-d-1" onclick="document.getElementById('u-d-1').click()">
                         <div class="bubble" id="b-d-1"></div>
                         <div class="img-box">
-                            <span class="placeholder">🐕</span><div class="cam-icon">📷 主子擺 Pose</div><img id="img-d-1">
+                            <span class="placeholder">🐕</span><div class="cam-icon">📷 主子就位</div><img id="img-d-1">
                         </div>
                         <input type="file" id="u-d-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog')">
                     </div>
@@ -198,7 +198,7 @@
             <button id="btn-fetch-cert" class="main-btn action-btn" style="padding: 25px; margin-top: 20px;" onclick="fetchAndRegisterCert()">✅ 搵相兼下載！</button>
         </div>
 
-        <!-- VIEW 5: DOWNLOAD CENTER (Only IG Share image) -->
+        <!-- VIEW 5: DOWNLOAD CENTER -->
         <div id="view-dl-center" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:5px; font-size: 2rem;">🎉 搵到啦！</h2>
             <p style="font-size: 1.1rem; color: #888; margin-bottom: 20px; text-align: center; font-weight: bold;">💡 提示：請「長按圖片」儲存落手機相簿，或者撳下面按鈕下載！</p>
@@ -214,10 +214,10 @@
 
     </div>
 
-    <canvas id="shareCanvas" width="1080" height="1080" style="display:none;"></canvas>
+    <!-- 🔥 改為 1080 x 1350 IG 完美直度 Size 🔥 -->
+    <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
-        // Safari Compatibility Fix
         if (!CanvasRenderingContext2D.prototype.roundRect) {
           CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
             if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2;
@@ -243,13 +243,9 @@
 
         document.fonts.ready.then(function() { console.log('Fonts loaded'); });
 
-        // 🔥 Routing: 隱藏後門機制 🔥
         window.addEventListener('DOMContentLoaded', async () => {
-            if(window.location.hash === '#staffplay') { 
-                switchView('view-home'); // 工作人員入口
-            } else { 
-                switchView('view-retrieve'); // 公眾入口 (防玩)
-            }
+            if(window.location.hash === '#staffplay') { switchView('view-home'); } 
+            else { switchView('view-retrieve'); }
         });
 
         async function loadAIinBackground() {
@@ -306,7 +302,6 @@
             ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
 
-        // 🔥 防撞分 Unique Score Generator 🔥
         function genUniqueScore(min) {
             let usedScores = JSON.parse(localStorage.getItem('usedScores') || '[]');
             let score; let isDuplicate = true;
@@ -315,20 +310,17 @@
                 if(!usedScores.includes(score)) isDuplicate = false;
             }
             usedScores.push(score);
-            if(usedScores.length > 1000) usedScores.shift(); // Keep array size manageable
+            if(usedScores.length > 1000) usedScores.shift(); 
             localStorage.setItem('usedScores', JSON.stringify(usedScores));
             return score;
         }
-
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
         async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
 
             setTimeout(async () => {
-                // 1 張相定生死
                 let finalAvg = genUniqueScore(80);
-                
                 let colorS = genRandomScore(70); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
                 state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
@@ -346,36 +338,57 @@
                 animateValue('s-final', finalAvg);
                 setTimeout(()=> { document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%'; document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%'; document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%'; document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%'; document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; }, 500);
 
-                // --- 淨係畫 IG Share 圖 ---
+                // ==========================================
+                // 🔥 重新排版: V25.0 打卡圖 (1080 x 1350) 🔥
+                // ==========================================
                 const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
-                let grd = sCtx.createLinearGradient(0, 0, 1080, 1080); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
-                sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1080);
-                sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 40; sCtx.strokeRect(20,20,1040,1040);
-                sCtx.strokeStyle = '#FFD93D'; sCtx.lineWidth = 10; sCtx.strokeRect(40,40,1000,1000);
+                let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); 
+                grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
+                sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
+                
+                sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 40; sCtx.strokeRect(20,20,1040,1310);
+                sCtx.strokeStyle = '#FFD93D'; sCtx.lineWidth = 10; sCtx.strokeRect(40,40,1000,1270);
 
+                // 1. Logo (右上角)
                 const logoImg = document.getElementById('brand-logo');
                 if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
-                    const r = logoImg.naturalWidth / logoImg.naturalHeight; let dW = 350; let dH = dW / r;
-                    if(dH > 100) { dH = 100; dW = dH * r; } sCtx.drawImage(logoImg, 540 - (dW/2), 60, dW, dH); 
+                    const r = logoImg.naturalWidth / logoImg.naturalHeight; let dW = 250; let dH = dW / r;
+                    if(dH > 80) { dH = 80; dW = dH * r; } sCtx.drawImage(logoImg, 1000 - dW, 70, dW, dH); 
                 }
                 
+                // 2. 標題 (正中)
+                drawStrokedText(sCtx, '🐾 AI人寵似樣大測試 🐾', 540, 150, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
+                
+                // 3. 評語與分數框 (中上)
+                sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 220, 920, 320, 40); sCtx.fill();
+                drawStrokedText(sCtx, 'AI 終極大會評語', 540, 280, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
+                drawStrokedText(sCtx, state.comment, 540, 350, '900 50px "Noto Sans TC", sans-serif', '#e74c3c', '#fff', 10);
+                drawStrokedText(sCtx, `${state.scores.final}%`, 540, 500, '900 150px "Fredoka", sans-serif', '#54b97c', '#fff', 20);
+
+                // 4. 兩張大頭相 (中下)
                 try {
-                    drawCroppedCircle(sCtx, state.imgs.h1, 300, 420, 200, '#fff', 18); drawCroppedCircle(sCtx, state.imgs.d1, 780, 420, 200, '#fff', 18);
-                    drawStrokedText(sCtx, 'VS', 540, 460, 'italic 900 130px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
+                    drawCroppedCircle(sCtx, state.imgs.h1, 300, 780, 220, '#fff', 18); 
+                    drawCroppedCircle(sCtx, state.imgs.d1, 780, 780, 220, '#fff', 18);
+                    drawStrokedText(sCtx, 'VS', 540, 820, 'italic 900 140px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
                 } catch(e) {}
                 
-                drawStrokedText(sCtx, '🐾 人寵似樣測試 🐾', 540, 210, '900 70px "Noto Sans TC", sans-serif', '#fff', '#2d3436', 15);
-                sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 660, 920, 360, 40); sCtx.fill();
-                drawStrokedText(sCtx, state.comment, 540, 750, '900 50px "Noto Sans TC", sans-serif', '#e74c3c', '#fff', 12);
-                drawStrokedText(sCtx, `${state.scores.final}%`, 540, 880, '900 140px "Fredoka", sans-serif', '#54b97c', '#fff', 20);
-                sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", sans-serif'; sCtx.textAlign = 'left';
-                sCtx.fillText(`🎨 顏色: ${state.scores.c}%     👀 眼神: ${state.scores.e}%`, 150, 960);
-                sCtx.fillText(`🏃 動作: ${state.scores.a}%     🎭 神態: ${state.scores.v}%`, 150, 1010);
+                // 5. 五大細項數據 (最底)
+                sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1060, 920, 230, 40); sCtx.fill();
+                sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
+                
+                sCtx.textAlign = 'left';
+                sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1140);
+                sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1210);
+                sCtx.fillText(`👀 眼神: ${state.scores.e}%`, 580, 1140);
+                sCtx.fillText(`🎭 神態: ${state.scores.v}%`, 580, 1210);
+                
+                sCtx.textAlign = 'center';
+                sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1270);
                 
                 sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
                 const shareDataURL = sCanvas.toDataURL('image/jpeg', 0.7);
 
-                // Save to Firebase (Only shareImg now)
+                // Save to Firebase
                 const safeHName = state.hName.replace(/\s+/g, '').toLowerCase(); const safeDName = state.dName.replace(/\s+/g, '').toLowerCase();
                 const docId = `${safeHName}_${safeDName}`;
                 const record = { dogName: state.dName, humanName: state.hName, email: "", score: state.scores.final, shareImg: shareDataURL, timestamp: new Date().getTime() };
