@@ -6,8 +6,6 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- 🔥 已經幫你改好標題 🔥 -->
     <title>🐶 AnimalsSum | 神速合拍大比拚</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
@@ -116,8 +114,7 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v25.1</span></div>
-            <!-- 🔥 改好咗大會主標題 🔥 -->
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v26.0</span></div>
             <h1>🐾 神速合拍大比拚</h1>
         </header>
 
@@ -138,17 +135,13 @@
                 <div class="match-row">
                     <div class="photo-card" id="box-h-1" onclick="document.getElementById('u-h-1').click()">
                         <div class="bubble" id="b-h-1"></div>
-                        <div class="img-box">
-                            <span class="placeholder">🧍‍♂️</span><div class="cam-icon">📷 人類就位</div><img id="img-h-1">
-                        </div>
+                        <div class="img-box"><span class="placeholder">🧍‍♂️</span><div class="cam-icon">📷 人類就位</div><img id="img-h-1"></div>
                         <input type="file" id="u-h-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person')">
                     </div>
                     <div style="font-weight:900; color:var(--accent); font-size:2rem; font-style:italic; align-self:center;">VS</div>
                     <div class="photo-card" id="box-d-1" onclick="document.getElementById('u-d-1').click()">
                         <div class="bubble" id="b-d-1"></div>
-                        <div class="img-box">
-                            <span class="placeholder">🐕</span><div class="cam-icon">📷 主子就位</div><img id="img-d-1">
-                        </div>
+                        <div class="img-box"><span class="placeholder">🐕</span><div class="cam-icon">📷 主子就位</div><img id="img-d-1"></div>
                         <input type="file" id="u-d-1" hidden accept="image/*" capture="environment" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog')">
                     </div>
                 </div>
@@ -190,7 +183,7 @@
             </div>
         </div>
 
-        <!-- VIEW 4: RETRIEVE -->
+        <!-- VIEW 4: RETRIEVE (Public Default View) -->
         <div id="view-retrieve" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:5px; font-size: 2rem;">📸 下載打卡靚相！</h2>
             <p style="text-align:center; color:#666; margin-top:0; font-size:1.1rem;">輸入您同主子嘅名，即可攞返成績圖！</p>
@@ -204,7 +197,6 @@
         <div id="view-dl-center" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:5px; font-size: 2rem;">🎉 搵到啦！</h2>
             <p style="font-size: 1.1rem; color: #888; margin-bottom: 20px; text-align: center; font-weight: bold;">💡 提示：請「長按圖片」儲存落手機相簿，或者撳下面按鈕下載！</p>
-
             <div class="dl-card" style="background: transparent; border: none; box-shadow: none;">
                 <img id="dl-img-share" src="" alt="Share Image" style="max-width: 100%; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
                 <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
@@ -216,7 +208,7 @@
 
     </div>
 
-    <!-- 🔥 改為 1080 x 1350 IG 直度 Size 🔥 -->
+    <!-- IG 4:5 Canvas -->
     <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
@@ -341,7 +333,7 @@
                 setTimeout(()=> { document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%'; document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%'; document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%'; document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%'; document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; }, 500);
 
                 // ==========================================
-                // 🔥 V25.1 打卡圖 (1080 x 1350) - 客製化標題版 🔥
+                // 🔥 V26.0 終極 Share 圖 (Logo 放大 + 新標題) 🔥
                 // ==========================================
                 const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
                 let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); 
@@ -351,30 +343,27 @@
                 sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 40; sCtx.strokeRect(20,20,1040,1310);
                 sCtx.strokeStyle = '#FFD93D'; sCtx.lineWidth = 10; sCtx.strokeRect(40,40,1000,1270);
 
-                // 1. Logo (右上角)
+                // 🔥 Logo 放大 20% 🔥
                 const logoImg = document.getElementById('brand-logo');
                 if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
-                    const r = logoImg.naturalWidth / logoImg.naturalHeight; let dW = 250; let dH = dW / r;
-                    if(dH > 80) { dH = 80; dW = dH * r; } sCtx.drawImage(logoImg, 1000 - dW, 70, dW, dH); 
+                    const r = logoImg.naturalWidth / logoImg.naturalHeight; let dW = 300; let dH = dW / r;
+                    if(dH > 100) { dH = 100; dW = dH * r; } sCtx.drawImage(logoImg, 1020 - dW, 55, dW, dH); 
                 }
                 
-                // 2. 標題 (正中) - 🔥 已改名做 AI人寵似樣 🔥
-                drawStrokedText(sCtx, '🐾 AI人寵似樣 🐾', 540, 150, '900 80px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
+                // 🔥 新標題 (加咗"大測試") 🔥
+                drawStrokedText(sCtx, '🐾 AI人寵似樣大測試 🐾', 540, 150, '900 65px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
                 
-                // 3. 評語與分數框 (中上)
                 sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 220, 920, 320, 40); sCtx.fill();
                 drawStrokedText(sCtx, 'AI 終極大會評語', 540, 280, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
                 drawStrokedText(sCtx, state.comment, 540, 350, '900 50px "Noto Sans TC", sans-serif', '#e74c3c', '#fff', 10);
                 drawStrokedText(sCtx, `${state.scores.final}%`, 540, 500, '900 150px "Fredoka", sans-serif', '#54b97c', '#fff', 20);
 
-                // 4. 兩張大頭相 (中下)
                 try {
                     drawCroppedCircle(sCtx, state.imgs.h1, 300, 780, 220, '#fff', 18); 
                     drawCroppedCircle(sCtx, state.imgs.d1, 780, 780, 220, '#fff', 18);
                     drawStrokedText(sCtx, 'VS', 540, 820, 'italic 900 140px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
                 } catch(e) {}
                 
-                // 5. 五大細項數據 (最底)
                 sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1060, 920, 230, 40); sCtx.fill();
                 sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
                 
@@ -386,11 +375,15 @@
                 
                 sCtx.textAlign = 'center';
                 sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1270);
+
+                // 🔥 加網址 ANIMALSSUM.COM 喺最底 🔥
+                sCtx.fillStyle = '#fff';
+                sCtx.font = 'bold 30px "Fredoka", sans-serif';
+                sCtx.fillText('ANIMALSSUM.COM', 540, 1325);
                 
                 sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
                 const shareDataURL = sCanvas.toDataURL('image/jpeg', 0.7);
 
-                // Save to Firebase
                 const safeHName = state.hName.replace(/\s+/g, '').toLowerCase(); const safeDName = state.dName.replace(/\s+/g, '').toLowerCase();
                 const docId = `${safeHName}_${safeDName}`;
                 const record = { dogName: state.dName, humanName: state.hName, email: "", score: state.scores.final, shareImg: shareDataURL, timestamp: new Date().getTime() };
