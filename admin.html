@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚙️ AnimalsSum | 大會後台系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
@@ -26,8 +24,8 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
         .cert-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border-top: 5px solid #54b97c; }
         .cert-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .cert-img-box { width: 100%; aspect-ratio: 3/2; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ddd; }
-        .cert-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .cert-img-box { width: 100%; aspect-ratio: 1/1; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ddd; }
+        .cert-img-box img { width: 100%; height: 100%; object-fit: contain; }
         .info p { margin: 5px 0; font-size: 1rem; color: #555; }
         .print-btn { width: 100%; background: #0984e3; color: white; border: none; padding: 12px; font-size: 1.2rem; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
         
@@ -64,17 +62,8 @@
         <div class="table-container">
             <button class="dl-csv-btn" onclick="downloadCSV()">⬇️ 下載 Excel (CSV)</button>
             <table id="data-table">
-                <thead>
-                    <tr>
-                        <th>人類名字</th>
-                        <th>狗狗名字</th>
-                        <th>AI 分數</th>
-                        <th>聯絡 Email</th>
-                        <th>遊玩時間</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                </tbody>
+                <thead><tr><th>人類名字</th><th>狗狗名字</th><th>AI 分數</th><th>聯絡 Email</th><th>遊玩時間</th></tr></thead>
+                <tbody id="table-body"></tbody>
             </table>
         </div>
     </div>
@@ -88,70 +77,52 @@
           messagingSenderId: "285758735120",
           appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        
-        let allData =[]; 
+        firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); let allData =[]; 
 
         function switchTab(viewId, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            btn.classList.add('active');
+            document.getElementById(viewId).classList.add('active'); btn.classList.add('active');
         }
 
         db.collection("certs").orderBy("timestamp", "desc").limit(100).onSnapshot((snapshot) => {
-            const grid = document.getElementById('cert-grid');
-            const tbody = document.getElementById('table-body');
+            const grid = document.getElementById('cert-grid'); const tbody = document.getElementById('table-body');
             grid.innerHTML = ''; tbody.innerHTML = ''; allData =[]; 
 
             if(snapshot.empty) {
-                grid.innerHTML = '<h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 暫時未有證書記錄...</h2>';
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">暫無數據</td></tr>';
-                return;
+                grid.innerHTML = '<h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 暫時未有記錄...</h2>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">暫無數據</td></tr>'; return;
             }
 
             snapshot.forEach((doc) => {
-                const data = doc.data();
-                allData.push(data);
-                
+                const data = doc.data(); allData.push(data);
                 const emailText = data.email ? data.email : "<span style='color:red;'>未登記</span>";
-                const dateObj = data.timestamp ? new Date(data.timestamp) : new Date();
-                const timeStr = dateObj.toLocaleString('zh-HK');
+                const timeStr = (data.timestamp ? new Date(data.timestamp) : new Date()).toLocaleString('zh-HK');
 
-                const card = document.createElement('div');
-                card.className = 'cert-card';
+                // 移除 certImg，改用 shareImg
+                const imgSrc = data.shareImg ? data.shareImg : 'https://via.placeholder.com/1080x1080.png?text=No+Image';
+
+                const card = document.createElement('div'); card.className = 'cert-card';
                 card.innerHTML = `
-                    <div class="cert-img-box"><img src="${data.certImg}" alt="Certificate"></div>
+                    <div class="cert-img-box"><img src="${imgSrc}" alt="Share Image"></div>
                     <div class="info">
                         <p>人類: <strong style="font-size:1.2rem;">${data.humanName}</strong></p>
                         <p>狗狗: <strong style="font-size:1.2rem;">${data.dogName}</strong></p>
                         <p>分數: <strong style="color:#54b97c; font-size:1.2rem;">${data.score}%</strong></p>
                     </div>
-                    <button class="print-btn" onclick="printImage('${data.certImg}')">🖨️ 列印證書</button>
+                    <button class="print-btn" onclick="printImage('${imgSrc}')">🖨️ 列印打卡圖</button>
                 `;
                 grid.appendChild(card);
 
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${data.humanName}</strong></td>
-                    <td><strong>${data.dogName}</strong></td>
-                    <td style="color:#54b97c; font-weight:bold;">${data.score}%</td>
-                    <td>${emailText}</td>
-                    <td style="color:#888; font-size:0.9rem;">${timeStr}</td>
-                `;
+                tr.innerHTML = `<td><strong>${data.humanName}</strong></td><td><strong>${data.dogName}</strong></td><td style="color:#54b97c; font-weight:bold;">${data.score}%</td><td>${emailText}</td><td style="color:#888; font-size:0.9rem;">${timeStr}</td>`;
                 tbody.appendChild(tr);
             });
         });
 
         function printImage(base64Img) {
             const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                    <head><title>Print Certificate</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#fff;}img{max-width:100%;max-height:100vh;object-fit:contain;}@media print{@page{margin:0;size:landscape;}}</style></head>
-                    <body><img src="${base64Img}" onload="window.print(); window.close();"></body>
-                </html>
-            `);
+            printWindow.document.write(`<html><head><title>Print Image</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#fff;}img{max-width:100%;max-height:100vh;object-fit:contain;}@media print{@page{margin:0;size:portrait;}}</style></head><body><img src="${base64Img}" onload="window.print(); window.close();"></body></html>`);
             printWindow.document.close();
         }
 
@@ -159,10 +130,8 @@
             if(allData.length === 0) return alert("無數據可供下載！");
             let csvContent = "\uFEFF人類名字,狗狗名字,分數(%),聯絡Email,遊玩時間\n";
             allData.forEach(row => {
-                const dateObj = row.timestamp ? new Date(row.timestamp) : new Date();
-                const timeStr = dateObj.toLocaleString('zh-HK').replace(/,/g, ''); 
-                const email = row.email ? row.email : "未登記";
-                csvContent += `${row.humanName},${row.dogName},${row.score},${email},${timeStr}\n`;
+                const timeStr = (row.timestamp ? new Date(row.timestamp) : new Date()).toLocaleString('zh-HK').replace(/,/g, ''); 
+                csvContent += `${row.humanName},${row.dogName},${row.score},${row.email ? row.email : "未登記"},${timeStr}\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `AnimalsSum_Data_${new Date().getTime()}.csv`;
