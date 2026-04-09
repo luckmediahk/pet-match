@@ -74,10 +74,20 @@
         .funny-label { font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; }
         .funny-text { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin: 0; }
 
+        /* 🔥 5大細項分析 Bar CSS 重新加入 🔥 */
+        .detail-bars { background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        .detail-bars-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
+        @media(min-width: 768px) { .detail-bars-grid { grid-template-columns: 1fr 1fr; gap: 25px; } }
+        .bar-row { display: flex; align-items: center; font-size: 1.1rem; }
+        .bar-label { width: 120px; font-weight: bold; color: #555; }
+        .bar-bg { flex: 1; height: 14px; background: #ddd; border-radius: 7px; overflow: hidden; margin: 0 10px; }
+        .bar-fill { height: 100%; background: var(--brand); width: 0%; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .bar-val { width: 75px; font-weight: bold; text-align: right; color: #444; }
+
         .action-btns-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 25px; }
         @media(min-width: 768px) { .action-btns-grid { grid-template-columns: 1fr 1fr; } }
 
-        /* 🔥 Leaderboard Styles 🔥 */
+        /* Leaderboard Styles */
         .rank-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
         .rank-row { display: flex; align-items: center; background: #fff; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); gap: 15px; }
         .rank-num { font-size: 1.5rem; font-weight: 900; color: #aaa; width: 40px; text-align: center; }
@@ -91,7 +101,7 @@
         .rank-names p { margin: 0; font-size: 0.85rem; color: #888; }
         .rank-score { font-size: 1.5rem; font-weight: 900; color: var(--brand); }
 
-        /* 🔥 Modals 🔥 */
+        /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 20px; }
         .modal-content { background: #fff; padding: 30px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-content h2 { margin-top: 0; color: var(--brand); font-size: 1.8rem; }
@@ -108,8 +118,6 @@
 </head>
 <body>
 
-    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.src='https://via.placeholder.com/300x100.png?text=ANIMALS+SUM'">
-
     <div id="loader">
         <div class="spinner">⚙️</div>
         <h2 id="loader-text">大數據運算中...</h2>
@@ -118,7 +126,7 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v30.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v31.0</span></div>
             <h1>🐾 AI 人寵似樣大測試</h1>
         </header>
 
@@ -128,13 +136,12 @@
                 <button class="main-btn" style="padding: 30px; font-size: clamp(1.8rem, 4vw, 2.5rem);" onclick="switchView('view-upload')">🎮 立即開始測試</button>
                 <button class="main-btn sec-btn" style="padding: 20px; font-size: clamp(1.2rem, 3vw, 1.5rem);" onclick="renderLeaderboard()">🏆 睇全港排行榜</button>
             </div>
-            <!-- Phase 2 Teaser -->
             <p style="text-align:center; color:#888; font-weight:bold; margin-top:30px; background:#f0f2f5; padding:15px; border-radius:15px;">
                 🔥 【預告】如果狗狗做咗人會係咩樣？第二擊神級 AI 即將推出，敬請期待！
             </p>
         </div>
 
-        <!-- VIEW 2: UPLOAD (No Camera Lock) -->
+        <!-- VIEW 2: UPLOAD -->
         <div id="view-upload" class="view">
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
@@ -144,7 +151,6 @@
             <div class="round-box">
                 <div class="round-title">📸 拍攝或上傳 (大頭/全身皆可)</div>
                 <div class="match-row">
-                    <!-- Removed capture="environment" to allow photo album -->
                     <div class="photo-card" id="box-h-1" onclick="document.getElementById('u-h-1').click()">
                         <div class="bubble" id="b-h-1"></div>
                         <div class="img-box">
@@ -181,6 +187,18 @@
                 <div class="funny-text" id="res-comment">...</div>
             </div>
 
+            <!-- 🔥 HTML 重新加返 5 大分析數據 🔥 -->
+            <div class="detail-bars">
+                <h3 style="margin:0; text-align:center;">📊 深度分析數據</h3>
+                <div class="detail-bars-grid">
+                    <div class="bar-row"><div class="bar-label">🎨 毛色/髮色</div><div class="bar-bg"><div class="bar-fill" id="bar-color" style="background:#f1c40f;"></div></div><div class="bar-val" id="val-color">0%</div></div>
+                    <div class="bar-row"><div class="bar-label">👀 眼神交流</div><div class="bar-bg"><div class="bar-fill" id="bar-eye" style="background:#3498db;"></div></div><div class="bar-val" id="val-eye">0%</div></div>
+                    <div class="bar-row"><div class="bar-label">🏃 動作同步率</div><div class="bar-bg"><div class="bar-fill" id="bar-action" style="background:#e74c3c;"></div></div><div class="bar-val" id="val-action">0%</div></div>
+                    <div class="bar-row"><div class="bar-label">🎭 氣質神態</div><div class="bar-bg"><div class="bar-fill" id="bar-vibe" style="background:#9b59b6;"></div></div><div class="bar-val" id="val-vibe">0%</div></div>
+                    <div class="bar-row"><div class="bar-label">🍖 貪食基因</div><div class="bar-bg"><div class="bar-fill" id="bar-funny" style="background:#ff9ff3;"></div></div><div class="bar-val" id="val-funny">0%</div></div>
+                </div>
+            </div>
+
             <div class="action-btns-grid">
                 <button class="main-btn" style="background:#E1306C;" onclick="shareResultInstant()">📱 分享到 IG</button>
                 <button class="main-btn" style="background:#0984e3;" onclick="downloadShareImg()">📥 下載靚圖</button>
@@ -195,7 +213,6 @@
             <p style="text-align:center; color:#666; margin-top:0;">睇下全港邊對人寵最似樣！</p>
             
             <div class="rank-list" id="leaderboard-container">
-                <!-- 數據會載入喺度 -->
                 <p style="text-align:center;">載入中...</p>
             </div>
 
@@ -204,8 +221,7 @@
 
     </div>
 
-    <!-- 🔥 MODALS 🔥 -->
-    <!-- 1. IG Follow Gate Modal -->
+    <!-- MODALS -->
     <div id="ig-gate-modal" class="modal-overlay">
         <div class="modal-content">
             <h2>🔒 報告已生成！</h2>
@@ -214,7 +230,6 @@
         </div>
     </div>
 
-    <!-- 2. Consent Modal for Leaderboard -->
     <div id="consent-modal" class="modal-overlay">
         <div class="modal-content">
             <h2>⚠️ 發佈確認</h2>
@@ -224,7 +239,7 @@
         </div>
     </div>
 
-    <!-- IG 4:5 Canvas -->
+    <!-- IG Canvas -->
     <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
@@ -242,32 +257,16 @@
         let aiReady = false;
         let state = { hName: '', dName: '', imgs: { h1:null, d1:null }, scores: {}, shareImgBlob: null, docId: null };
 
-        // 🐕 強化版 AI Keyword (防止認錯外星物體)
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
-        const rejectKeywords =['bottle', 'car', 'chair', 'cup', 'tv', 'laptop', 'cell phone', 'book']; // coco-ssd 常見死物
+        const rejectKeywords =['bottle', 'car', 'chair', 'cup', 'tv', 'laptop', 'cell phone', 'book']; 
 
-        // 🌟 20 個逼真假數據 (Seed Data for Leaderboard)
         const fakeLeaderboardData =[
             { humanName: "Jason", dogName: "Mochi", score: 82.314, humanImg: "https://i.pravatar.cc/150?u=jason1", dogImg: "https://images.dog.ceo/breeds/retriever-golden/n02099601_3004.jpg", public: true },
             { humanName: "Ka Yan", dogName: "Coffee", score: 81.552, humanImg: "https://i.pravatar.cc/150?u=kayan", dogImg: "https://images.dog.ceo/breeds/poodle-toy/n02113624_9577.jpg", public: true },
             { humanName: "阿明", dogName: "旺財", score: 80.123, humanImg: "https://i.pravatar.cc/150?u=ming", dogImg: "https://images.dog.ceo/breeds/shiba/shiba-13.jpg", public: true },
             { humanName: "Yoyo", dogName: "豆豆", score: 79.888, humanImg: "https://i.pravatar.cc/150?u=yoyo", dogImg: "https://images.dog.ceo/breeds/corgi-cardigan/n02112018_2080.jpg", public: true },
             { humanName: "Alex", dogName: "Lucky", score: 78.405, humanImg: "https://i.pravatar.cc/150?u=alex", dogImg: "https://images.dog.ceo/breeds/husky/n02110185_10047.jpg", public: true },
-            { humanName: "Wing", dogName: "豬豬", score: 77.912, humanImg: "https://i.pravatar.cc/150?u=wing", dogImg: "https://images.dog.ceo/breeds/pug/n02110958_13619.jpg", public: true },
-            { humanName: "俊傑", dogName: "Max", score: 76.541, humanImg: "https://i.pravatar.cc/150?u=jj", dogImg: "https://images.dog.ceo/breeds/beagle/n02088364_12458.jpg", public: true },
-            { humanName: "Maggie", dogName: "Bella", score: 75.333, humanImg: "https://i.pravatar.cc/150?u=maggie", dogImg: "https://images.dog.ceo/breeds/chihuahua/n02085620_10074.jpg", public: true },
-            { humanName: "Kelvin", dogName: "Charlie", score: 74.801, humanImg: "https://i.pravatar.cc/150?u=kelvin", dogImg: "https://images.dog.ceo/breeds/bulldog-french/n02108915_10091.jpg", public: true },
-            { humanName: "欣欣", dogName: "Luna", score: 73.210, humanImg: "https://i.pravatar.cc/150?u=yan", dogImg: "https://images.dog.ceo/breeds/maltese/n02085936_10078.jpg", public: true },
-            { humanName: "Tom", dogName: "Rocky", score: 72.500, humanImg: "https://i.pravatar.cc/150?u=tom", dogImg: "https://images.dog.ceo/breeds/schnauzer-miniature/n02097047_1010.jpg", public: true },
-            { humanName: "Iris", dogName: "Daisy", score: 71.995, humanImg: "https://i.pravatar.cc/150?u=iris2", dogImg: "https://images.dog.ceo/breeds/pomeranian/n02112018_1090.jpg", public: true },
-            { humanName: "David", dogName: "Cooper", score: 70.456, humanImg: "https://i.pravatar.cc/150?u=david", dogImg: "https://images.dog.ceo/breeds/boxer/n02108089_1006.jpg", public: true },
-            { humanName: "Suki", dogName: "Lola", score: 69.800, humanImg: "https://i.pravatar.cc/150?u=suki", dogImg: "https://images.dog.ceo/breeds/retriever-golden/n02099601_1020.jpg", public: true },
-            { humanName: "Brian", dogName: "Sadie", score: 68.321, humanImg: "https://i.pravatar.cc/150?u=brian", dogImg: "https://images.dog.ceo/breeds/dalmatian/n02110341_1008.jpg", public: true },
-            { humanName: "Kiki", dogName: "Toby", score: 67.111, humanImg: "https://i.pravatar.cc/150?u=kiki", dogImg: "https://images.dog.ceo/breeds/poodle-standard/n02113799_1001.jpg", public: true },
-            { humanName: "Jacky", dogName: "Bailey", score: 66.505, humanImg: "https://i.pravatar.cc/150?u=jacky", dogImg: "https://images.dog.ceo/breeds/shiba/shiba-1.jpg", public: true },
-            { humanName: "Mandy", dogName: "Chloe", score: 65.890, humanImg: "https://i.pravatar.cc/150?u=mandy", dogImg: "https://images.dog.ceo/breeds/corgi-cardigan/n02112018_1024.jpg", public: true },
-            { humanName: "Chris", dogName: "Bear", score: 64.200, humanImg: "https://i.pravatar.cc/150?u=chris", dogImg: "https://images.dog.ceo/breeds/husky/n02110185_10051.jpg", public: true },
-            { humanName: "Chloe", dogName: "Stella", score: 62.100, humanImg: "https://i.pravatar.cc/150?u=chloe", dogImg: "https://images.dog.ceo/breeds/pug/n02110958_1004.jpg", public: true }
+            { humanName: "Wing", dogName: "豬豬", score: 77.912, humanImg: "https://i.pravatar.cc/150?u=wing", dogImg: "https://images.dog.ceo/breeds/pug/n02110958_13619.jpg", public: true }
         ];
 
         async function loadAIinBackground() {
@@ -279,29 +278,49 @@
 
         function switchView(viewId) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(viewId).classList.add('active'); window.scrollTo(0,0); }
 
-        // 🔥 強化版 AI 驗證 (防死物) 🔥
+        // 🔥 新增：處理死圖機制及多人/多狗防禦 🔥
         async function checkImg(e, imgId, bubbleId, targetRole) {
             const file = e.target.files[0]; if(!file) return;
             const img = document.getElementById(imgId); const bubble = document.getElementById(bubbleId); const box = document.getElementById('box-' + imgId.replace('img-',''));
-            img.src = URL.createObjectURL(file); img.style.display = 'block'; box.classList.add('has-img'); box.querySelector('.placeholder').style.display = 'none'; box.querySelector('.cam-icon').style.display = 'none';
+            
+            box.classList.remove('has-img'); img.style.display = 'none';
+
+            // Catch invalid formats (e.g. HEIC on unsupported browsers)
+            img.onerror = () => {
+                bubble.innerText = "❌ 圖片無法讀取，請試另一張相！"; bubble.className = "bubble err";
+                state.imgs[imgId.replace('img-','').replace('-','')] = null; box.classList.remove('has-img');
+                box.querySelector('.placeholder').style.display = 'block'; box.querySelector('.cam-icon').style.display = 'block';
+                checkAllReady();
+            };
+
+            img.src = URL.createObjectURL(file); 
+            img.style.display = 'block'; box.classList.add('has-img'); 
+            box.querySelector('.placeholder').style.display = 'none'; box.querySelector('.cam-icon').style.display = 'none';
             bubble.style.display = 'block'; bubble.innerText = "🔍 AI 嚴格檢測中..."; bubble.className = "bubble warn";
 
             while(!aiReady) { bubble.innerText = "⏳ AI 啟動中...稍候"; await new Promise(r => setTimeout(r, 500)); }
-            await new Promise(r => img.onload = r);
+            
+            try { await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; }); } catch(err) { return; }
             
             const preds = await models.coco.detect(img); let msg = "", status = "err"; 
-            const minScore = 0.55; // 提高嚴格度
-
-            // 檢查有無無聊死物
+            const minScore = 0.50; 
             const hasJunk = preds.some(p => rejectKeywords.includes(p.class) && p.score > 0.4);
 
-            if(hasJunk && !preds.some(p => ['person', 'dog', 'cat'].includes(p.class) && p.score > 0.6)) {
-                msg = "❌ AI 覺得呢個似外星物體多啲喎...";
+            const persons = preds.filter(p => p.class === 'person' && p.score > 0.4);
+            const animals = preds.filter(p =>['dog','cat','bird','horse','bear','sheep'].includes(p.class) && p.score > 0.4);
+
+            // 🔥 太多生物檢查 🔥
+            if (persons.length > 0 && animals.length > 0) {
+                msg = "❌ 太多生物喇！請剪裁成單人或單隻寵物相！"; status = "err";
+            } else if (persons.length > 1 || animals.length > 1) {
+                msg = "❌ 太多生物喇！請確保畫面只有一位主角！"; status = "err";
+            } else if(hasJunk && !persons.length && !animals.length) {
+                msg = "❌ AI 覺得呢個似死物多啲喎..."; status = "err";
             } else if (targetRole === 'person') {
-                if (preds.find(p => p.class === 'person' && p.score > minScore)) { status = "ok"; msg = "🏃‍♂️ 完美捕捉靚樣！"; } 
+                if (persons.length === 1 && persons[0].score > minScore) { status = "ok"; msg = "🏃‍♂️ 完美捕捉靚樣！"; } 
                 else { msg = "❌ 認唔到人樣！係咪太暗或者俾嘢遮住？"; }
             } else {
-                let isDog = preds.find(p =>['dog'].includes(p.class) && p.score > minScore); // 移除了 cat/horse 等
+                let isDog = animals.length > 0;
                 if (!isDog && models.mobile) { const mobCheck = await models.mobile.classify(img); isDog = mobCheck.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k))); }
                 if (isDog) { status = "ok"; msg = "💃 汪星人確認 OK！"; } 
                 else { msg = "❌ 認唔出係狗狗！請重影"; }
@@ -317,25 +336,15 @@
             if(hn && dn && state.imgs.h1 && state.imgs.d1) { btn.disabled = false; state.hName = hn; state.dName = dn; } else { btn.disabled = true; }
         }
 
-        // --- IG Follow Gate ---
         function processAI() {
             document.getElementById('loader').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('ig-gate-modal').style.display = 'flex';
-            }, 2500); // Fake processing time
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; document.getElementById('ig-gate-modal').style.display = 'flex'; }, 2500);
         }
 
         function unlockResult() {
-            const btn = document.getElementById('btn-ig-unlock');
-            btn.innerText = "⏳ 等待驗證中..."; btn.disabled = true;
-            // 彈去 IG
+            const btn = document.getElementById('btn-ig-unlock'); btn.innerText = "⏳ 等待驗證中..."; btn.disabled = true;
             window.open('https://www.instagram.com/animalssum/', '_blank');
-            // 時間差解鎖
-            setTimeout(() => {
-                document.getElementById('ig-gate-modal').style.display = 'none';
-                generateResults(); // Proceed to actual drawing
-            }, 3000);
+            setTimeout(() => { document.getElementById('ig-gate-modal').style.display = 'none'; generateResults(); }, 3000);
         }
 
         function drawCroppedCircle(ctx, img, cx, cy, radius, borderColor, borderWidth) {
@@ -347,22 +356,23 @@
         }
         function drawStrokedText(ctx, text, x, y, font, fillColor, strokeColor, lineWidth) {
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
-            ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y);
-            ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
+            ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
         function genUniqueScore(min) {
             let usedScores = JSON.parse(localStorage.getItem('usedScores') || '[]'); let score; let isDuplicate = true;
             while(isDuplicate) { score = parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); if(!usedScores.includes(score)) isDuplicate = false; }
             usedScores.push(score); if(usedScores.length > 1000) usedScores.shift(); localStorage.setItem('usedScores', JSON.stringify(usedScores)); return score;
         }
+        function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
         async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
             document.getElementById('loader-text').innerText = "生成報告中...";
 
             setTimeout(async () => {
-                let finalAvg = genUniqueScore(80); // Online 分數依然保證 80+
-                state.scores = { final: finalAvg };
+                let finalAvg = genUniqueScore(80); 
+                let colorS = genRandomScore(70); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
+                state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
                 let comment = "";
                 if(finalAvg >= 95) comment = "👼 靈魂共振！前世係同一個人！";
@@ -378,7 +388,15 @@
                 let el = document.getElementById('s-final'); let start = finalAvg - 2.000;
                 let timer = setInterval(() => { start += 0.051; if(start >= finalAvg) { start = finalAvg; clearInterval(timer); } el.innerText = start.toFixed(3) + "%"; }, 30);
 
-                // --- 畫 Share 圖 ---
+                // 🔥 動畫更新 5 大分析數值 🔥
+                setTimeout(()=> { 
+                    document.getElementById('bar-color').style.width = colorS+'%'; document.getElementById('val-color').innerText = colorS+'%'; 
+                    document.getElementById('bar-eye').style.width = eyeS+'%'; document.getElementById('val-eye').innerText = eyeS+'%'; 
+                    document.getElementById('bar-action').style.width = actionS+'%'; document.getElementById('val-action').innerText = actionS+'%'; 
+                    document.getElementById('bar-vibe').style.width = vibeS+'%'; document.getElementById('val-vibe').innerText = vibeS+'%'; 
+                    document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; 
+                }, 500);
+
                 const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
                 let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
                 sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
@@ -387,7 +405,7 @@
                 
                 drawStrokedText(sCtx, '🐾 AI 人寵似樣大測試 🐾', 540, 150, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
                 sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 220, 920, 320, 40); sCtx.fill();
-                drawStrokedText(sCtx, 'AI 終極報告', 540, 280, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
+                drawStrokedText(sCtx, 'AI 終極大會評語', 540, 280, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
                 drawStrokedText(sCtx, state.comment, 540, 350, '900 50px "Noto Sans TC", sans-serif', '#e74c3c', '#fff', 10);
                 drawStrokedText(sCtx, `${state.scores.final}%`, 540, 500, '900 150px "Fredoka", sans-serif', '#54b97c', '#fff', 20);
 
@@ -396,15 +414,22 @@
                     drawStrokedText(sCtx, 'VS', 540, 820, 'italic 900 140px "Fredoka", sans-serif', '#FF6B6B', '#fff', 25);
                 } catch(e) {}
                 
-                sCtx.fillStyle = '#fff'; sCtx.font = 'bold 30px "Fredoka", sans-serif'; sCtx.fillText('ANIMALSSUM.COM', 540, 1290);
+                // Add analysis stats back into share canvas
+                sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1060, 920, 200, 40); sCtx.fill();
+                sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
+                sCtx.textAlign = 'left';
+                sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1140);
+                sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1210);
+                sCtx.fillText(`👀 眼神: ${state.scores.e}%`, 580, 1140);
+                sCtx.fillText(`🎭 神態: ${state.scores.v}%`, 580, 1210);
+
+                sCtx.fillStyle = '#fff'; sCtx.font = 'bold 30px "Fredoka", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText('ANIMALSSUM.COM', 540, 1320);
                 
                 sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
                 const shareDataURL = sCanvas.toDataURL('image/jpeg', 0.7);
 
-                // --- 儲存準備 (Public: false 預設) ---
                 state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                 
-                // Save original photos as compressed data URLs for leaderboard display
                 const hCanvas = document.createElement('canvas'); hCanvas.width=150; hCanvas.height=150;
                 drawCroppedCircle(hCanvas.getContext('2d'), state.imgs.h1, 75, 75, 75, '', 0);
                 const dCanvas = document.createElement('canvas'); dCanvas.width=150; dCanvas.height=150;
@@ -441,15 +466,12 @@
             link.click();
         }
 
-        // --- Leaderboard Logic ---
         function showConsentModal() { document.getElementById('consent-modal').style.display = 'flex'; }
 
         async function publishToLeaderboard() {
             document.getElementById('consent-modal').style.display = 'none';
             document.getElementById('loader').style.display = 'flex';
-            if(db && state.docId) {
-                try { await db.collection("certs").doc(state.docId).update({ public: true }); } catch(e) {}
-            }
+            if(db && state.docId) { try { await db.collection("certs").doc(state.docId).update({ public: true }); } catch(e) {} }
             alert("✅ 成功發佈至全港排行榜！");
             document.getElementById('loader').style.display = 'none';
             renderLeaderboard();
@@ -460,9 +482,8 @@
             const container = document.getElementById('leaderboard-container');
             container.innerHTML = '<p style="text-align:center;">載入中...</p>';
             
-            let combinedData = [...fakeLeaderboardData]; // Seed data
+            let combinedData = [...fakeLeaderboardData]; 
             
-            // Try fetch real public data
             if(db) {
                 try {
                     const snap = await db.collection("certs").where("public", "==", true).get();
@@ -470,7 +491,6 @@
                 } catch(e) { console.log("Fetch LB error", e); }
             }
 
-            // Sort Descending
             combinedData.sort((a,b) => b.score - a.score);
 
             container.innerHTML = '';
