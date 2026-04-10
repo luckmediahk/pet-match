@@ -17,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -26,7 +25,7 @@
         .container { width: 95%; max-width: 1000px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 30px; padding: 30px; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
         
         header { text-align: center; margin-bottom: 20px; position: relative; }
-        .logo-tag { background: var(--dark); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 1rem; display: inline-block; }
+        .logo-tag { background: var(--dark); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 1rem; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .ver-tag { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 5px; vertical-align: super; }
         h1 { font-size: clamp(1.8rem, 5vw, 3rem); margin: 10px 0 5px; color: var(--brand); text-shadow: 2px 2px 0px #eee; font-weight: 900; }
 
@@ -42,7 +41,6 @@
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1.1rem; }
 
-        /* 🔥 全新首頁 Button 排版 🔥 */
         .home-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 40px; }
         .btn-primary-home { background: var(--brand); color: white; border: none; width: 100%; padding: 25px; border-radius: 15px; font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #3da065; transition: all 0.1s; }
         .btn-primary-home:active { transform: translateY(4px); box-shadow: 0 2px 0 #3da065; }
@@ -57,7 +55,7 @@
 
         .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
         .round-title { text-align: center; font-weight: 900; color: #fff; margin-bottom: 15px; font-size: 1.3rem; background: #54a0ff; display: inline-block; padding: 8px 25px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 5px 15px rgba(84,160,255,0.3); }
-        .match-row { display: flex; gap: 10px; justify-content: center; align-items: stretch; }
+        .match-row { display: flex; gap: 10px; justify-content: center; align-items: stretch; height: calc(100% - 50px); }
         
         .photo-card { flex: 1; background: #f8f9fa; border-radius: 15px; padding: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); position: relative; cursor: pointer; text-align: center; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; }
         .photo-card:active { transform: scale(0.95); }
@@ -74,25 +72,25 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; display: none; z-index: 10; white-space: nowrap; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 V37 全新 Puzzle 拼圖介面 🔥 */
+        /* 🔥 V38: 拼圖排版及置中分數 🔥 */
         .result-header { text-align:center; margin-bottom:20px; }
         .result-header h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); color: #444; margin: 0; }
         
         .puzzle-arena { display: flex; justify-content: center; align-items: center; position: relative; margin: 25px 0 35px 0; }
-        .puzzle-piece { width: clamp(150px, 42vw, 220px); aspect-ratio: 1/1; position: relative; }
-        .puzzle-piece img { width: 100%; height: 100%; object-fit: cover; }
-        .puzzle-human { clip-path: polygon(0 0, 85% 0, 85% 35%, 100% 50%, 85% 65%, 85% 100%, 0 100%); z-index: 2; }
-        .puzzle-dog { clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 15% 65%, 30% 50%, 15% 35%); margin-left: -15%; z-index: 1; }
+        .puzzle-piece { width: clamp(150px, 42vw, 220px); aspect-ratio: 1/1.1; background: #fff; padding: 10px 10px 25px 10px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); position: relative; }
+        .puzzle-human { transform: rotate(-5deg) translateY(10px); z-index: 2; }
+        .puzzle-dog { transform: rotate(6deg) translateY(-10px); z-index: 1; }
+        .puzzle-piece img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; background: #eee; }
         .puzzle-vs { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 8vw, 4.5rem); font-weight: 900; color: var(--danger); font-style: italic; text-shadow: 3px 3px 0px #fff, -3px -3px 0 #fff, 0 5px 15px rgba(0,0,0,0.2); z-index: 3; font-family: 'Mochiy Pop One', sans-serif; }
 
-        /* 🔥 全新 分數排版 🔥 */
-        .simple-score-box { text-align: center; margin: 20px 0 30px 0; }
-        .simple-score-label { font-size: 1.2rem; color: #888; font-weight: bold; margin-bottom: 5px; }
-        .simple-score-val { font-size: clamp(4.5rem, 10vw, 7rem); color: var(--brand); font-weight: 900; line-height: 1; text-shadow: 3px 3px 0 #eee; }
-
+        /* 🔥 V38: 評語放上，分數放下 🔥 */
         .funny-verdict-box { background: linear-gradient(135deg, #FFD93D, #FF9F43); padding: 25px; border-radius: 20px; margin-bottom: 20px; text-align: center; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3); animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .funny-label { font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; }
         .funny-text { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 900; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin: 0; line-height: 1.3;}
+
+        .simple-score-box { text-align: center; margin: 15px 0 30px 0; }
+        .simple-score-label { font-size: 1.2rem; color: #888; font-weight: bold; margin-bottom: 5px; }
+        .simple-score-val { font-size: clamp(4.5rem, 10vw, 7rem); color: var(--brand); font-weight: 900; line-height: 1; text-shadow: 3px 3px 0 #eee; }
 
         .detail-bars { background: #f9f9f9; padding: 25px; border-radius: 25px; border: 2px solid #eee; margin-bottom: 25px; }
         .detail-bars-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 10px;}
@@ -152,7 +150,7 @@
 </head>
 <body>
 
-    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;">
+    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.src='https://via.placeholder.com/300x100.png?text=ANIMALS+SUM'">
 
     <div id="loader">
         <div class="spinner">⚙️</div>
@@ -162,7 +160,7 @@
     <div class="container">
         <header>
             <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v37.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v38.0</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
@@ -217,7 +215,7 @@
             <button class="main-btn sec-btn" style="border:none; box-shadow:none; color:#999; margin-top:15px;" onclick="location.reload()">🏠 返回主頁</button>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS (全新 Puzzle 拼圖 + 置中分數版) 🔥 -->
+        <!-- 🔥 VIEW 3: RESULTS (全新 評語優先排版) 🔥 -->
         <div id="view-result" class="view">
             <div class="result-header">
                 <h2>🏆 <span id="res-names" style="color:var(--brand);"></span> 的報告</h2>
@@ -229,18 +227,20 @@
                 <div class="puzzle-piece puzzle-dog"><img id="res-img-d"></div>
             </div>
             
-            <div class="simple-score-box">
-                <div class="simple-score-label">人寵相似度</div>
-                <div class="simple-score-val" id="s-final">0%</div>
-            </div>
-            
+            <!-- 🔥 評語放喺上方最特出 🔥 -->
             <div class="funny-verdict-box">
                 <div class="funny-label">AI 終極大會評語</div>
                 <div class="funny-text" id="res-comment">...</div>
             </div>
 
+            <!-- 🔥 數字分數移去下面 🔥 -->
+            <div class="simple-score-box">
+                <div class="simple-score-label">人寵相似度</div>
+                <div class="simple-score-val" id="s-final">0%</div>
+            </div>
+
             <div class="detail-bars">
-                <h3 style="margin:0; text-align:center;">📊 深度分析數據</h3>
+                <h3 style="margin-top:0; text-align:center;">📊 深度分析數據</h3>
                 <div class="detail-bars-grid">
                     <div class="bar-row"><div class="bar-label">🎨 毛色/髮色</div><div class="bar-bg"><div class="bar-fill" id="bar-color" style="background:#f1c40f;"></div></div><div class="bar-val" id="val-color">0%</div></div>
                     <div class="bar-row"><div class="bar-label">👀 眼神交流</div><div class="bar-bg"><div class="bar-fill" id="bar-eye" style="background:#3498db;"></div></div><div class="bar-val" id="val-eye">0%</div></div>
@@ -280,7 +280,7 @@
     <div id="ig-gate-modal" class="modal-overlay">
         <div class="modal-content">
             <h2>🔒 報告已生成！</h2>
-            <p>整Game 要有心，follow 「動物之心」，支持人寵齊開心～<br><br>請 <b>Follow 我哋 Instagram</b>，解鎖睇結果！</p>
+            <p>支持我們製作更多人寵遊戲，<br><br>請 <b>Follow 動物之心</b>，解鎖睇結果。</p>
             <button class="main-btn action-btn" style="padding:20px;" id="btn-ig-unlock" onclick="unlockResult()">👉 去 Follow IG 解鎖</button>
         </div>
     </div>
@@ -294,7 +294,6 @@
         </div>
     </div>
 
-    <!-- IG Canvas -->
     <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
@@ -320,8 +319,8 @@
             { humanName: "Ka Yan", dogName: "Coffee", score: 95.552, humanImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=150&h=150&fit=crop", public: true },
             { humanName: "阿明", dogName: "旺財", score: 94.123, humanImg: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=150&h=150&fit=crop", public: true },
             { humanName: "Yoyo", dogName: "豆豆", score: 93.888, humanImg: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop", public: true },
-            { humanName: "Alex", dogName: "Lucky", score: 92.405, humanImg: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1537151608804-ea2d14ac28bc?w=150&h=150&fit=crop", public: true },
-            { humanName: "Wing", dogName: "豬豬", score: 91.912, humanImg: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=150&h=150&fit=crop", public: true }
+            { humanName: "Alex", dogName: "Lucky", score: 92.405, humanImg: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1537151608804-ea2d14ac28bc?w=150&h=150&fit=crop", public: true },
+            { humanName: "Wing", dogName: "豬豬", score: 91.912, humanImg: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=150&h=150&fit=crop", public: true }
         ];
 
         async function loadAIinBackground() {
@@ -386,6 +385,13 @@
             setTimeout(() => { document.getElementById('ig-gate-modal').style.display = 'none'; generateResults(); }, 3000);
         }
 
+        function drawCroppedCircle(ctx, img, cx, cy, radius, borderColor, borderWidth) {
+            ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
+            const nw = img.naturalWidth || img.width; const nh = img.naturalHeight || img.height;
+            const size = Math.min(nw, nh); const sx = (nw - size) / 2; const sy = (nh - size) / 2;
+            ctx.drawImage(img, sx, sy, size, size, cx - radius, cy - radius, radius * 2, radius * 2); ctx.restore();
+            if(borderWidth > 0) { ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.lineWidth = borderWidth; ctx.strokeStyle = borderColor; ctx.stroke(); }
+        }
         function drawStrokedText(ctx, text, x, y, font, fillColor, strokeColor, lineWidth) {
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
             ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
@@ -407,14 +413,13 @@
                 let colorS = genRandomScore(70); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
                 state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
-                // 🔥 更新咗 Typo 同刪走 ~ 嘅全新對白 🔥
+                // 🔥 新對白 (無波浪號) 🔥
                 let comment = "";
                 if(finalAvg >= 97) comment = "👼 靈魂共振！根本係源自同一個靈魂本源吧";
                 else if(finalAvg >= 93) comment = "🧬 血濃於水！前世肯肯定係親生兄弟/姊妹";
                 else if(finalAvg >= 88) comment = "🅾️ 親緣天定！咁似樣，注定做你仔女啦";
                 else if(finalAvg >= 84) comment = "😂 越養越似！連笑起上嚟個樣都一樣樣架喎";
                 else comment = "🐶 最佳拍檔！互相陪伴、沿途有愛";
-                
                 state.comment = comment; 
 
                 document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
@@ -432,7 +437,7 @@
                     document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; 
                 }, 100);
 
-                // --- 畫 Share 圖 ---
+                // --- 畫 Share 圖 (Puzzle 拼圖) ---
                 const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
                 let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
                 sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
@@ -456,10 +461,9 @@
                 sCtx.lineWidth = 20; sCtx.strokeStyle = '#fff'; sCtx.strokeText(`${state.scores.final}%`, 540, 540);
                 sCtx.fillStyle = '#54b97c'; sCtx.font = '900 150px "Fredoka", sans-serif'; sCtx.fillText(`${state.scores.final}%`, 540, 540);
 
-                // 🔥 Share 圖嘅 拼圖式 (Puzzle) 對決效果 🔥
+                // 🔥 拼圖排版 🔥
                 try {
                     let w = 400, h = 400; let y = 600;
-                    
                     sCtx.save(); sCtx.beginPath(); sCtx.moveTo(170, y); sCtx.lineTo(170 + w*0.85, y); sCtx.lineTo(170 + w*0.85, y + h*0.35); sCtx.lineTo(170 + w, y + h*0.5); sCtx.lineTo(170 + w*0.85, y + h*0.65); sCtx.lineTo(170 + w*0.85, y + h); sCtx.lineTo(170, y + h); sCtx.closePath(); sCtx.clip();
                     let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1); 
                     sCtx.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, 170, y, w, h); sCtx.restore();
@@ -514,7 +518,7 @@
         async function shareResultInstant() {
             if(!state.shareImgBlob) return alert("圖片準備中，請稍候...");
             const file = new File([state.shareImgBlob], "AnimalsSum_Share.jpg", { type: "image/jpeg" });
-            const text = `我同 ${state.dName} 喺 AnimalsSum 配對攞到 ${state.scores.final}%！快啲嚟測下！\n@animalssum`;
+            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中攞到 ${state.scores.final}%！快啲嚟測下！\n@animalssum`;
             try {
                 if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ title: 'AnimalsSum', text: text, files:[file] }); } 
                 else { await navigator.share({ title: 'AnimalsSum', text: text, url: window.location.href }); }
@@ -545,7 +549,7 @@
                 try {
                     const snap = await db.collection("certs").where("public", "==", true).get();
                     snap.forEach(doc => { combinedData.push(doc.data()); });
-                } catch(e) {}
+                } catch(e) { console.log("Fetch LB error", e); }
             }
 
             combinedData.sort((a,b) => b.score - a.score);
@@ -556,7 +560,7 @@
 
             listArea.innerHTML = '';
             const top3 = combinedData.slice(0, 3);
-            const displayOrder =[];
+            const displayOrder = [];
             if(top3[1]) displayOrder.push({ data: top3[1], class: 'rank-2', medal: '🥈' });
             if(top3[0]) displayOrder.push({ data: top3[0], class: 'rank-1', medal: '🥇' });
             if(top3[2]) displayOrder.push({ data: top3[2], class: 'rank-3', medal: '🥉' });
@@ -580,15 +584,14 @@
                 const actualRank = idx + 4;
                 const div = document.createElement('div');
                 div.className = 'rank-row';
-                // 🔥 修復咗 item.data.dogImg 嘅死圖 Bug！ 🔥
                 div.innerHTML = `
                     <div class="rank-num">${actualRank}</div>
                     <div class="rank-avatars">
                         <img src="${item.humanImg}">
-                        <img src="${item.dogImg}">
+                        <img src="${item.data.dogImg}">
                     </div>
                     <div class="rank-names">
-                        <h4>${item.humanName} & ${item.dogName}</h4>
+                        <h4>${item.data.humanName} & ${item.data.dogName}</h4>
                     </div>
                     <div class="rank-score">${item.score}%</div>
                 `;
