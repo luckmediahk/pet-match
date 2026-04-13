@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -53,13 +54,13 @@
         .sec-btn { background: #fff; color: var(--brand); border: 2px solid var(--brand); box-shadow: 0 5px 0 var(--brand); }
         .action-btn { background: var(--accent); color: var(--dark); box-shadow: 0 8px 0 #d4a000; }
 
-        .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.02); margin-top: 10px; }
         .round-title { text-align: center; font-weight: 900; color: #fff; margin-bottom: 15px; font-size: 1.3rem; background: #54a0ff; display: inline-block; padding: 8px 25px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 5px 15px rgba(84,160,255,0.3); }
         .match-row { display: flex; gap: 10px; justify-content: center; align-items: stretch; height: calc(100% - 50px); }
         
-        .photo-card { flex: 1; background: #f8f9fa; border-radius: 15px; padding: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); position: relative; cursor: pointer; text-align: center; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; }
+        .photo-card { flex: 1; background: #f8f9fa; border-radius: 15px; padding: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); position: relative; cursor: pointer; text-align: center; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
         .photo-card:active { transform: scale(0.95); }
-        .photo-card.has-img { border-color: var(--brand); background: #fff; }
+        .photo-card.has-img { border-color: var(--brand); background: #fff; box-shadow: 0 10px 25px rgba(84,185,124,0.15); }
         
         .img-box { width: 100%; flex-grow: 1; min-height: 180px; border-radius: 10px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #eee; }
         .img-box img.preview { width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; inset: 0; z-index: 2; }
@@ -69,10 +70,10 @@
         .placeholder { font-size: 4rem; color: #555; margin-bottom: 10px; text-shadow: 0 0 10px #fff; }
         .cam-icon { font-size: 1rem; color: #fff; font-weight: bold; background: var(--danger); padding: 8px 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(255,107,107,0.4); }
         
-        .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; display: none; z-index: 10; white-space: nowrap; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        /* 🔥 修復泡泡爆框疊字問題 🔥 */
+        .bubble { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; display: none; z-index: 10; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 90%; white-space: normal; line-height: 1.3; text-align: center; }
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 V38: 拼圖排版及置中分數 🔥 */
         .result-header { text-align:center; margin-bottom:20px; }
         .result-header h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); color: #444; margin: 0; }
         
@@ -83,14 +84,13 @@
         .puzzle-piece img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; background: #eee; }
         .puzzle-vs { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 8vw, 4.5rem); font-weight: 900; color: var(--danger); font-style: italic; text-shadow: 3px 3px 0px #fff, -3px -3px 0 #fff, 0 5px 15px rgba(0,0,0,0.2); z-index: 3; font-family: 'Mochiy Pop One', sans-serif; }
 
-        /* 🔥 V38: 評語放上，分數放下 🔥 */
-        .funny-verdict-box { background: linear-gradient(135deg, #FFD93D, #FF9F43); padding: 25px; border-radius: 20px; margin-bottom: 20px; text-align: center; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3); animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .funny-label { font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; }
-        .funny-text { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 900; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin: 0; line-height: 1.3;}
-
         .simple-score-box { text-align: center; margin: 15px 0 30px 0; }
         .simple-score-label { font-size: 1.2rem; color: #888; font-weight: bold; margin-bottom: 5px; }
         .simple-score-val { font-size: clamp(4.5rem, 10vw, 7rem); color: var(--brand); font-weight: 900; line-height: 1; text-shadow: 3px 3px 0 #eee; }
+
+        .funny-verdict-box { background: linear-gradient(135deg, #FFD93D, #FF9F43); padding: 30px 20px; border-radius: 20px; margin-bottom: 10px; text-align: center; box-shadow: 0 15px 30px rgba(255, 159, 67, 0.4); animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 5; }
+        .funny-label { font-size: 1.1rem; color: rgba(255,255,255,0.95); font-weight: bold; margin-bottom: 8px; letter-spacing: 2px; }
+        .funny-text { font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: 900; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin: 0; line-height: 1.3; }
 
         .detail-bars { background: #f9f9f9; padding: 25px; border-radius: 25px; border: 2px solid #eee; margin-bottom: 25px; }
         .detail-bars-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 10px;}
@@ -105,7 +105,6 @@
         .action-btns-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 30px; }
         @media(min-width: 768px) { .action-btns-grid { grid-template-columns: 1fr 1fr; } }
 
-        /* 排行榜 */
         .warm-banner { background: linear-gradient(rgba(45,52,54,0.6), rgba(84,185,124,0.8)), url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1000&auto=format&fit=crop&q=80') center/cover; padding: 40px 20px; border-radius: 20px; text-align: center; color: white; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
         .warm-banner h2 { margin: 0 0 10px 0; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
         .avg-score-box { background: rgba(255,255,255,0.95); display: inline-block; padding: 15px 30px; border-radius: 20px; color: #333; margin-top: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
@@ -142,7 +141,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
-        #ai-status { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
         #loader { position: fixed; inset:0; background: rgba(255,255,255,0.95); z-index: 999; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { font-size: 5rem; animation: spin 2s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -150,7 +148,7 @@
 </head>
 <body>
 
-    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.src='https://via.placeholder.com/300x100.png?text=ANIMALS+SUM'">
+    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.style.display='none'">
 
     <div id="loader">
         <div class="spinner">⚙️</div>
@@ -159,12 +157,10 @@
 
     <div class="container">
         <header>
-            <div id="ai-status">⚙️ AI 準備中...</div>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v38.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v39.0</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
-        <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
             <div class="home-btns">
                 <button class="btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
@@ -175,15 +171,19 @@
             </p>
         </div>
 
-        <!-- VIEW 2: UPLOAD -->
         <div id="view-upload" class="view">
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
                 <div class="names-col"><label>🐶 狗狗名字</label><input type="text" id="dog-name" class="form-input" placeholder="例: 旺財" oninput="checkAllReady()"></div>
             </div>
 
+            <!-- 🔥 拍攝提示字句 🔥 -->
+            <p style="text-align:center; color:#888; font-size:0.95rem; margin-top:-10px; margin-bottom:15px; font-weight:bold;">
+                💡 我哋會用 AI 驗證相片，請盡量用清晰嘅單人及單狗大頭相！
+            </p>
+
             <div class="round-box">
-                <div class="round-title">📸 拍攝或上傳 (大頭/全身皆可)</div>
+                <div class="round-title">📸 拍攝或上傳相片</div>
                 <div class="match-row">
                     <div class="photo-card" id="box-h-1" onclick="document.getElementById('u-h-1').click()">
                         <div class="bubble" id="b-h-1"></div>
@@ -215,7 +215,7 @@
             <button class="main-btn sec-btn" style="border:none; box-shadow:none; color:#999; margin-top:15px;" onclick="location.reload()">🏠 返回主頁</button>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS (全新 評語優先排版) 🔥 -->
+        <!-- RESULTS -->
         <div id="view-result" class="view">
             <div class="result-header">
                 <h2>🏆 <span id="res-names" style="color:var(--brand);"></span> 的報告</h2>
@@ -227,13 +227,11 @@
                 <div class="puzzle-piece puzzle-dog"><img id="res-img-d"></div>
             </div>
             
-            <!-- 🔥 評語放喺上方最特出 🔥 -->
             <div class="funny-verdict-box">
                 <div class="funny-label">AI 終極大會評語</div>
                 <div class="funny-text" id="res-comment">...</div>
             </div>
 
-            <!-- 🔥 數字分數移去下面 🔥 -->
             <div class="simple-score-box">
                 <div class="simple-score-label">人寵相似度</div>
                 <div class="simple-score-val" id="s-final">0%</div>
@@ -251,14 +249,15 @@
             </div>
 
             <div class="action-btns-grid">
-                <button class="main-btn" style="background:#E1306C;" onclick="shareResultInstant()">📱 分享到 IG</button>
+                <!-- 🔥 改名為分享成績 🔥 -->
+                <button class="main-btn" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);" onclick="shareResultInstant()">📱 分享成績</button>
                 <button class="main-btn" style="background:#0984e3;" onclick="downloadShareImg()">📥 下載靚圖</button>
-                <button class="main-btn action-btn" style="grid-column: 1 / -1;" onclick="showConsentModal()">🚀 發佈到全港排行榜！</button>
+                <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:25px; font-size:1.6rem; box-shadow: 0 10px 0 #d4a000, 0 20px 30px rgba(255,217,61,0.4);" onclick="showConsentModal()">🚀 發佈到全港排行榜！</button>
                 <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
             </div>
         </div>
 
-        <!-- VIEW 4: LEADERBOARD -->
+        <!-- LEADERBOARD -->
         <div id="view-leaderboard" class="view">
             <div class="warm-banner">
                 <h2>🏆 全港排行榜</h2>
@@ -324,9 +323,7 @@
         ];
 
         async function loadAIinBackground() {
-            try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true;
-                const statusEl = document.getElementById('ai-status'); statusEl.innerText = "✅ AI Ready"; statusEl.style.background = "rgba(84, 185, 124, 0.9)"; setTimeout(() => statusEl.style.display = 'none', 3000);
-            } catch(e) { document.getElementById('ai-status').innerText = "❌ AI Error"; }
+            try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) { }
         }
         setTimeout(loadAIinBackground, 100);
 
@@ -346,16 +343,18 @@
             while(!aiReady) { bubble.innerText = "⏳ AI 啟動中...稍候"; await new Promise(r => setTimeout(r, 500)); }
             try { await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; }); } catch(err) { return; }
             
-            const preds = await models.coco.detect(img); let msg = "", status = "err"; const minScore = 0.50; 
+            const preds = await models.coco.detect(img); let msg = "", status = "err"; 
+            // 🔥 AI 門檻降低至 0.25 確保多人/遠距離都 pass 🔥
+            const minScore = 0.25; 
             const hasJunk = preds.some(p => rejectKeywords.includes(p.class) && p.score > 0.4);
-            const persons = preds.filter(p => p.class === 'person' && p.score > 0.4);
-            const animals = preds.filter(p =>['dog','cat','bird','horse','bear','sheep'].includes(p.class) && p.score > 0.4);
+            const persons = preds.filter(p => p.class === 'person' && p.score > minScore);
+            const animals = preds.filter(p =>['dog','cat','bird','horse','bear','sheep'].includes(p.class) && p.score > minScore);
 
             if (persons.length > 0 && animals.length > 0) { msg = "❌ 太多生物喇！請只放單人或單狗相！"; status = "err"; } 
             else if (persons.length > 1 || animals.length > 1) { msg = "❌ 太多生物喇！請確保畫面得一個主角！"; status = "err"; } 
             else if(hasJunk && !persons.length && !animals.length) { msg = "❌ AI 覺得呢個似死物多啲喎..."; status = "err"; } 
             else if (targetRole === 'person') {
-                if (persons.length === 1 && persons[0].score > minScore) { status = "ok"; msg = "🏃‍♂️ 完美捕捉靚樣！"; } 
+                if (persons.length === 1) { status = "ok"; msg = "🏃‍♂️ 完美捕捉靚樣！"; } 
                 else { msg = "❌ 認唔到人樣！係咪太暗或者俾嘢遮住？"; }
             } else {
                 let isDog = animals.length > 0;
@@ -376,7 +375,7 @@
 
         function processAI() {
             document.getElementById('loader').style.display = 'flex';
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; document.getElementById('ig-gate-modal').style.display = 'flex'; }, 2500); 
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; document.getElementById('ig-gate-modal').style.display = 'flex'; }, 2000); 
         }
 
         function unlockResult() {
@@ -396,7 +395,6 @@
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
             ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
-
         function genUniqueScore(min) {
             let usedScores = JSON.parse(localStorage.getItem('usedScores') || '[]'); let score; let isDuplicate = true;
             while(isDuplicate) { score = parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); if(!usedScores.includes(score)) isDuplicate = false; }
@@ -409,11 +407,11 @@
             document.getElementById('loader-text').innerText = "生成報告中...";
 
             setTimeout(async () => {
-                let finalAvg = genUniqueScore(80); 
-                let colorS = genRandomScore(70); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
+                // 🔥 完美的數學計算 (5個加埋/5 = 總分) 🔥
+                let colorS = genRandomScore(75); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
+                let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
                 state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
-                // 🔥 新對白 (無波浪號) 🔥
                 let comment = "";
                 if(finalAvg >= 97) comment = "👼 靈魂共振！根本係源自同一個靈魂本源吧";
                 else if(finalAvg >= 93) comment = "🧬 血濃於水！前世肯肯定係親生兄弟/姊妹";
@@ -437,7 +435,7 @@
                     document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; 
                 }, 100);
 
-                // --- 畫 Share 圖 (Puzzle 拼圖) ---
+                // --- 畫 Share 圖 ---
                 const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
                 let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
                 sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
@@ -461,7 +459,6 @@
                 sCtx.lineWidth = 20; sCtx.strokeStyle = '#fff'; sCtx.strokeText(`${state.scores.final}%`, 540, 540);
                 sCtx.fillStyle = '#54b97c'; sCtx.font = '900 150px "Fredoka", sans-serif'; sCtx.fillText(`${state.scores.final}%`, 540, 540);
 
-                // 🔥 拼圖排版 🔥
                 try {
                     let w = 400, h = 400; let y = 600;
                     sCtx.save(); sCtx.beginPath(); sCtx.moveTo(170, y); sCtx.lineTo(170 + w*0.85, y); sCtx.lineTo(170 + w*0.85, y + h*0.35); sCtx.lineTo(170 + w, y + h*0.5); sCtx.lineTo(170 + w*0.85, y + h*0.65); sCtx.lineTo(170 + w*0.85, y + h); sCtx.lineTo(170, y + h); sCtx.closePath(); sCtx.clip();
@@ -525,14 +522,21 @@
             } catch(e) {}
         }
 
-        function downloadShareImg() { const link = document.createElement('a'); link.download = `AnimalsSum_${state.hName}.jpg`; link.href = URL.createObjectURL(state.shareImgBlob); link.click(); }
+        function downloadShareImg() { 
+            const link = document.createElement('a'); link.download = `AnimalsSum_${state.hName}.jpg`; link.href = URL.createObjectURL(state.shareImgBlob); 
+            // 🔥 iPhone 友善提示 🔥
+            alert("iPhone 用家請注意：如果圖片只係打開咗，請直接【長按圖片 -> 儲存到相片】！");
+            link.click(); 
+        }
 
         function showConsentModal() { document.getElementById('consent-modal').style.display = 'flex'; }
 
         async function publishToLeaderboard() {
             document.getElementById('consent-modal').style.display = 'none';
             document.getElementById('loader').style.display = 'flex';
-            if(db && state.docId) { try { await db.collection("certs").doc(state.docId).update({ public: true }); } catch(e) {} }
+            if(db && state.docId) {
+                try { await db.collection("certs").doc(state.docId).update({ public: true }); } catch(e) {}
+            }
             alert("✅ 成功發佈至全港排行榜！");
             document.getElementById('loader').style.display = 'none';
             renderLeaderboard();
@@ -543,6 +547,7 @@
             const podiumArea = document.getElementById('podium-area');
             const listArea = document.getElementById('leaderboard-list');
             podiumArea.innerHTML = ''; listArea.innerHTML = '<p style="text-align:center;">載入中...</p>';
+            
             let combinedData = [...fakeLeaderboardData]; 
             
             if(db) {
@@ -559,6 +564,7 @@
             document.getElementById('hk-avg-score').innerText = `${avgScore}%`;
 
             listArea.innerHTML = '';
+            
             const top3 = combinedData.slice(0, 3);
             const displayOrder = [];
             if(top3[1]) displayOrder.push({ data: top3[1], class: 'rank-2', medal: '🥈' });
@@ -579,7 +585,14 @@
                 `;
             });
 
-            const restList = combinedData.slice(3);
+            // 尋找現時玩家嘅排名
+            let myRankIndex = -1;
+            if(state.hName && state.dName) {
+                myRankIndex = combinedData.findIndex(d => d.humanName === state.hName && d.dogName === state.dName);
+            }
+
+            // 顯示第 4 至 10 名
+            const restList = combinedData.slice(3, 10);
             restList.forEach((item, idx) => {
                 const actualRank = idx + 4;
                 const div = document.createElement('div');
@@ -588,15 +601,35 @@
                     <div class="rank-num">${actualRank}</div>
                     <div class="rank-avatars">
                         <img src="${item.humanImg}">
-                        <img src="${item.data.dogImg}">
+                        <img src="${item.dogImg}">
                     </div>
                     <div class="rank-names">
-                        <h4>${item.data.humanName} & ${item.data.dogName}</h4>
+                        <h4>${item.humanName} & ${item.dogName}</h4>
                     </div>
                     <div class="rank-score">${item.score}%</div>
                 `;
                 listArea.appendChild(div);
             });
+
+            // 🔥 如果玩家排名在 10 名以外，喺最底顯示佢嘅專屬排名 🔥
+            if (myRankIndex >= 10) {
+                const myData = combinedData[myRankIndex];
+                listArea.innerHTML += `<div style="text-align:center; font-size:2rem; color:#ccc; margin: 10px 0; font-weight:bold;">. . .</div>`;
+                listArea.innerHTML += `
+                    <div class="rank-row" style="border: 2px solid var(--brand); background: #f0fdf4;">
+                        <div class="rank-num" style="color:var(--brand);">${myRankIndex + 1}</div>
+                        <div class="rank-avatars">
+                            <img src="${myData.humanImg}">
+                            <img src="${myData.dogImg}">
+                        </div>
+                        <div class="rank-names">
+                            <h4>${myData.humanName} & ${myData.dogName}</h4>
+                            <p style="color:var(--brand); font-weight:bold;">✨ 你的排名</p>
+                        </div>
+                        <div class="rank-score">${myData.score}%</div>
+                    </div>
+                `;
+            }
         }
     </script>
 </body>
