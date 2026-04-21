@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ AnimalsSum | 大會秘密後台</title>
+    <title>⚙️ 排行榜</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -29,25 +29,57 @@
         .dl-csv-btn { background: #FFD93D; color: #333; border: none; padding: 10px 20px; font-size: 1rem; font-weight: bold; border-radius: 10px; cursor: pointer; float: right; margin-bottom: 15px; }
         .admin-avatars img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
 
+        /* Filters & Stats */
+        .filter-bar { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .filter-bar input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
+        .filter-bar button { background: #0984e3; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        
+        .stats-row { display: flex; gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; flex: 1; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-left: 5px solid #54b97c; }
+        .stat-card h3 { margin: 0 0 10px 0; color: #555; font-size: 1.1rem; }
+        .stat-card .num { font-size: 2.5rem; font-weight: 900; color: #2d3436; }
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>⚙️ 大會證書 Control Panel</h1>
+        <h1>⚙️ 排行榜</h1>
         <div class="status">🟢 即時連線中 (Live Sync)</div>
     </header>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('data-view', this)">📋 參加者數據表 (有聯絡資料)</button>
+        <button class="tab-btn active" onclick="switchTab('data-view', this)">📋 參加者數據分析</button>
     </div>
 
     <div id="data-view" class="view active">
+        
+        <div class="filter-bar">
+            <label><strong>截至時間篩選：</strong></label>
+            <input type="datetime-local" id="filter-end-time">
+            <button onclick="fetchAndRenderData()">🔍 套用篩選</button>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <h3>👥 總參與人數</h3>
+                <div class="num" id="stat-total">0</div>
+            </div>
+            <div class="stat-card" style="border-color:#e84393;">
+                <h3>🐱 貓貓玩家 (V45起)</h3>
+                <div class="num" id="stat-cats" style="color:#e84393;">0</div>
+            </div>
+            <div class="stat-card" style="border-color:#0984e3;">
+                <h3>🐶 狗狗玩家 (V45起)</h3>
+                <div class="num" id="stat-dogs" style="color:#0984e3;">0</div>
+            </div>
+        </div>
+
         <div class="table-container">
             <button class="dl-csv-btn" onclick="downloadCSV()">⬇️ 下載 Excel (CSV)</button>
             <table id="data-table">
-                <thead><tr><th>名次</th><th>相片</th><th>人類名 (狗名)</th><th>AI 分數</th><th>真實姓名</th><th>電話</th><th>Email</th><th>上榜時間</th></tr></thead>
+                <thead><tr><th>名次</th><th>相片</th><th>人類名 (毛孩名)</th><th>寵物類型</th><th>IP 地區</th><th>AI 分數</th><th>真實姓名</th><th>電話</th><th>Email</th><th>上榜時間</th></tr></thead>
                 <tbody id="table-body"></tbody>
             </table>
         </div>
@@ -62,7 +94,9 @@
           messagingSenderId: "285758735120",
           appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95"
         };
-        firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); let allData =[]; 
+        firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); 
+        
+        let allData =[]; 
 
         function switchTab(viewId, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -70,34 +104,65 @@
             document.getElementById(viewId).classList.add('active'); btn.classList.add('active');
         }
 
-        db.collection("certs").where("public", "==", true).onSnapshot((snapshot) => {
+        async function fetchAndRenderData() {
             const tbody = document.getElementById('table-body');
-            tbody.innerHTML = ''; allData =[]; 
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">⏳ 載入中...</td></tr>';
+            allData =[];
 
-            if(snapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暫無數據</td></tr>'; return;
+            try {
+                const snap = await db.collection("certs").where("public", "==", true).get();
+                snap.forEach(doc => { allData.push(doc.data()); });
+            } catch(e) { console.error(e); }
+
+            // Apply Time Filter
+            const endTimeVal = document.getElementById('filter-end-time').value;
+            let filteredData = allData;
+            if(endTimeVal) {
+                const endTimestamp = new Date(endTimeVal).getTime();
+                filteredData = filteredData.filter(d => d.timestamp <= endTimestamp);
             }
 
-            snapshot.forEach((doc) => { allData.push(doc.data()); });
-
-            // Sort exactly like frontend leaderboard
-            allData.sort((a,b) => {
+            // Sort Descending
+            filteredData.sort((a,b) => {
                 if(b.score !== a.score) return b.score - a.score;
                 return (a.timestamp || 0) - (b.timestamp || 0);
             });
 
-            allData.forEach((data, index) => {
+            // Calculate Stats
+            document.getElementById('stat-total').innerText = filteredData.length;
+            let cats = 0; let dogs = 0;
+            filteredData.forEach(d => {
+                if(d.petType === 'Cat') cats++;
+                else if (d.petType === 'Dog') dogs++;
+                else if (d.dogName && (d.dogName.includes('貓') || d.dogName.includes('喵'))) cats++; // 推斷舊數據
+                else dogs++; // 預設為狗
+            });
+            document.getElementById('stat-cats').innerText = cats;
+            document.getElementById('stat-dogs').innerText = dogs;
+
+            // Render Table (Top 100 limit for view to prevent lag, but CSV downloads all)
+            tbody.innerHTML = '';
+            if(filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">暫無符合條件之數據</td></tr>'; return;
+            }
+
+            filteredData.slice(0, 100).forEach((data, index) => {
                 const rankStr = index + 1;
                 const emailText = data.regEmail ? data.regEmail : "<span style='color:red;'>未提供</span>";
                 const phoneText = data.regMobile ? data.regMobile : "<span style='color:red;'>未提供</span>";
                 const realNameText = data.regName ? data.regName : "<span style='color:red;'>未提供</span>";
                 const timeStr = (data.timestamp ? new Date(data.timestamp) : new Date()).toLocaleString('zh-HK');
+                
+                const petTypeStr = data.petType || 'Dog';
+                const ipStr = data.ip || '未記錄 (香港)';
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${rankStr}</strong></td>
                     <td class="admin-avatars"><img src="${data.humanImg || ''}"> <img src="${data.dogImg || ''}" style="margin-left:-15px;"></td>
                     <td>${data.humanName} & ${data.dogName}</td>
+                    <td>${petTypeStr}</td>
+                    <td>${ipStr}</td>
                     <td style="color:#54b97c; font-weight:bold;">${data.score}%</td>
                     <td>${realNameText}</td>
                     <td>${phoneText}</td>
@@ -106,17 +171,35 @@
                 `;
                 tbody.appendChild(tr);
             });
-        });
+        }
+
+        // Auto load on start
+        fetchAndRenderData();
 
         function downloadCSV() {
             if(allData.length === 0) return alert("無數據可供下載！");
-            let csvContent = "\uFEFF名次,人類名,狗狗名,AI分數(%),真實姓名,電話,聯絡Email,遊玩時間\n";
-            allData.forEach((row, index) => {
+            let csvContent = "\uFEFF名次,人類名,毛孩名,寵物類型,IP地區,AI分數(%),真實姓名,電話,聯絡Email,遊玩時間\n";
+            
+            // Re-apply filter for CSV export
+            const endTimeVal = document.getElementById('filter-end-time').value;
+            let filteredData = allData;
+            if(endTimeVal) {
+                const endTimestamp = new Date(endTimeVal).getTime();
+                filteredData = filteredData.filter(d => d.timestamp <= endTimestamp);
+            }
+            filteredData.sort((a,b) => {
+                if(b.score !== a.score) return b.score - a.score;
+                return (a.timestamp || 0) - (b.timestamp || 0);
+            });
+
+            filteredData.forEach((row, index) => {
                 const timeStr = (row.timestamp ? new Date(row.timestamp) : new Date()).toLocaleString('zh-HK').replace(/,/g, ''); 
-                csvContent += `${index+1},${row.humanName},${row.dogName},${row.score},${row.regName||''},${row.regMobile||''},${row.regEmail||''},${timeStr}\n`;
+                const pType = row.petType || 'Dog';
+                const ipLoc = row.ip || '未記錄';
+                csvContent += `${index+1},${row.humanName},${row.dogName},${pType},${ipLoc},${row.score},${row.regName||''},${row.regMobile||''},${row.regEmail||''},${timeStr}\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `AnimalsSum_Top100_Data_${new Date().getTime()}.csv`;
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `AnimalsSum_TopList_${new Date().getTime()}.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
