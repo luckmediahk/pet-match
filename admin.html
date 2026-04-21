@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ AnimalsSum | 大會後台系統</title>
+    <title>⚙️ AnimalsSum | 大會秘密後台</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -21,30 +21,13 @@
         .view { display: none; }
         .view.active { display: block; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .cert-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border-top: 5px solid #54b97c; }
-        .cert-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .cert-img-box { width: 100%; aspect-ratio: 4/5; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ddd; }
-        .cert-img-box img { width: 100%; height: 100%; object-fit: contain; }
-        .info p { margin: 5px 0; font-size: 1rem; color: #555; }
-        .dl-btn { width: 100%; background: #0984e3; color: white; border: none; padding: 12px; font-size: 1.1rem; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        
         .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; font-weight: bold; color: #333; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; vertical-align: middle; }
+        th { background: #f8f9fa; font-weight: bold; color: #333; position: sticky; top: 0; }
         tr:hover { background: #f1f8f5; }
         .dl-csv-btn { background: #FFD93D; color: #333; border: none; padding: 10px 20px; font-size: 1rem; font-weight: bold; border-radius: 10px; cursor: pointer; float: right; margin-bottom: 15px; }
-
-        /* 🔥 Ranking Styles 🔥 */
-        .filter-box { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .filter-box input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
-        .filter-box button { background: #54b97c; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        .rank-grid { display: flex; justify-content: center; gap: 20px; align-items: flex-end; padding-top: 20px;}
-        .rank-card { background: white; padding: 20px; border-radius: 15px; text-align: center; width: 30%; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; }
-        /* 亞軍 */ .rank-card:nth-child(1) { height: 420px; border-top: 10px solid #C0C0C0; }
-        /* 冠軍 */ .rank-card:nth-child(2) { height: 460px; border-top: 10px solid #FFD700; transform: translateY(-20px); z-index: 2; box-shadow: 0 15px 35px rgba(255,215,0,0.3); }
-        /* 季軍 */ .rank-card:nth-child(3) { height: 400px; border-top: 10px solid #CD7F32; }
+        .admin-avatars img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
@@ -53,40 +36,18 @@
 
     <header>
         <h1>⚙️ 大會證書 Control Panel</h1>
-        <div class="status">🟢 系統即時連線中 (Live Sync)</div>
+        <div class="status">🟢 即時連線中 (Live Sync)</div>
     </header>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('print-view', this)">🖨️ 現場打卡圖</button>
-        <button class="tab-btn" onclick="switchTab('rank-view', this)">🏆 現場排行榜</button>
-        <button class="tab-btn" onclick="switchTab('data-view', this)">📋 參加者數據表</button>
+        <button class="tab-btn active" onclick="switchTab('data-view', this)">📋 參加者數據表 (有聯絡資料)</button>
     </div>
 
-    <!-- VIEW 1: PRINT GRID -->
-    <div id="print-view" class="view active">
-        <div class="grid" id="cert-grid">
-            <h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 等待參加者數據...</h2>
-        </div>
-    </div>
-
-    <!-- 🔥 VIEW 2: RANKING 🔥 -->
-    <div id="rank-view" class="view">
-        <div class="filter-box">
-            <label>開始時間：</label><input type="datetime-local" id="rank-start">
-            <label>結束時間：</label><input type="datetime-local" id="rank-end">
-            <button onclick="updateRanking()">更新排名</button>
-        </div>
-        <div class="rank-grid" id="top3-container">
-            <!-- Ranking cards injected here -->
-        </div>
-    </div>
-
-    <!-- VIEW 3: DATA TABLE -->
-    <div id="data-view" class="view">
+    <div id="data-view" class="view active">
         <div class="table-container">
             <button class="dl-csv-btn" onclick="downloadCSV()">⬇️ 下載 Excel (CSV)</button>
             <table id="data-table">
-                <thead><tr><th>人類名字</th><th>狗狗名字</th><th>AI 分數</th><th>聯絡 Email</th><th>遊玩時間</th></tr></thead>
+                <thead><tr><th>名次</th><th>相片</th><th>人類名 (狗名)</th><th>AI 分數</th><th>真實姓名</th><th>電話</th><th>Email</th><th>上榜時間</th></tr></thead>
                 <tbody id="table-body"></tbody>
             </table>
         </div>
@@ -107,103 +68,55 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(viewId).classList.add('active'); btn.classList.add('active');
-            if(viewId === 'rank-view') updateRanking(); // 自動計一次
         }
 
-        // 增加 limit 到 1000 確保全日數據都可以用來計排名
-        db.collection("certs").orderBy("timestamp", "desc").limit(1000).onSnapshot((snapshot) => {
-            const grid = document.getElementById('cert-grid'); const tbody = document.getElementById('table-body');
-            grid.innerHTML = ''; tbody.innerHTML = ''; allData =[]; 
+        db.collection("certs").where("public", "==", true).onSnapshot((snapshot) => {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = ''; allData =[]; 
 
             if(snapshot.empty) {
-                grid.innerHTML = '<h2 style="color:#aaa; text-align:center; width:100%; grid-column: 1 / -1;">⏳ 暫時未有記錄...</h2>';
-                return;
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暫無數據</td></tr>'; return;
             }
 
-            snapshot.forEach((doc) => {
-                const data = doc.data(); allData.push(data);
-                const emailText = data.email ? data.email : "<span style='color:red;'>未登記</span>";
+            snapshot.forEach((doc) => { allData.push(doc.data()); });
+
+            // Sort exactly like frontend leaderboard
+            allData.sort((a,b) => {
+                if(b.score !== a.score) return b.score - a.score;
+                return (a.timestamp || 0) - (b.timestamp || 0);
+            });
+
+            allData.forEach((data, index) => {
+                const rankStr = index + 1;
+                const emailText = data.regEmail ? data.regEmail : "<span style='color:red;'>未提供</span>";
+                const phoneText = data.regMobile ? data.regMobile : "<span style='color:red;'>未提供</span>";
+                const realNameText = data.regName ? data.regName : "<span style='color:red;'>未提供</span>";
                 const timeStr = (data.timestamp ? new Date(data.timestamp) : new Date()).toLocaleString('zh-HK');
 
-                const imgSrc = data.shareImg ? data.shareImg : 'https://via.placeholder.com/1080x1350.png?text=No+Image';
-
-                // 只顯示最新 100 張以防畫面太卡
-                if(grid.children.length < 100) {
-                    const card = document.createElement('div'); card.className = 'cert-card';
-                    card.innerHTML = `
-                        <div class="cert-img-box"><img src="${imgSrc}" alt="Share Image"></div>
-                        <div class="info">
-                            <p>人類: <strong style="font-size:1.2rem;">${data.humanName}</strong></p>
-                            <p>狗狗: <strong style="font-size:1.2rem;">${data.dogName}</strong></p>
-                            <p>分數: <strong style="color:#54b97c; font-size:1.2rem;">${data.score}%</strong></p>
-                        </div>
-                        <button class="dl-btn" onclick="downloadAdminImage('${imgSrc}', 'AnimalsSum_${data.humanName}_${data.dogName}.jpg')">📥 下載打卡圖</button>
-                    `;
-                    grid.appendChild(card);
-                }
-
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td><strong>${data.humanName}</strong></td><td><strong>${data.dogName}</strong></td><td style="color:#54b97c; font-weight:bold;">${data.score}%</td><td>${emailText}</td><td style="color:#888; font-size:0.9rem;">${timeStr}</td>`;
+                tr.innerHTML = `
+                    <td><strong>${rankStr}</strong></td>
+                    <td class="admin-avatars"><img src="${data.humanImg || ''}"> <img src="${data.dogImg || ''}" style="margin-left:-15px;"></td>
+                    <td>${data.humanName} & ${data.dogName}</td>
+                    <td style="color:#54b97c; font-weight:bold;">${data.score}%</td>
+                    <td>${realNameText}</td>
+                    <td>${phoneText}</td>
+                    <td>${emailText}</td>
+                    <td style="color:#888; font-size:0.9rem;">${timeStr}</td>
+                `;
                 tbody.appendChild(tr);
             });
-            
-            // 如果而家喺排行榜版面，自動更新
-            if(document.getElementById('rank-view').classList.contains('active')) updateRanking();
         });
-
-        // 🔥 更新排行榜邏輯 🔥
-        function updateRanking() {
-            const startVal = document.getElementById('rank-start').value;
-            const endVal = document.getElementById('rank-end').value;
-            
-            let filtered = allData;
-            if(startVal) { const startTime = new Date(startVal).getTime(); filtered = filtered.filter(d => d.timestamp >= startTime); }
-            if(endVal) { const endTime = new Date(endVal).getTime(); filtered = filtered.filter(d => d.timestamp <= endTime); }
-            
-            // 按分數由高至低排
-            filtered.sort((a, b) => b.score - a.score);
-            const top3 = filtered.slice(0, 3);
-            
-            const container = document.getElementById('top3-container');
-            container.innerHTML = '';
-            if(top3.length === 0) {
-                container.innerHTML = '<h3 style="text-align:center;width:100%; color:#888;">此時段暫無數據</h3>'; return;
-            }
-            
-            // 為咗做到奧運頒獎台效果 (左銀、中金、右銅)，我哋要將 Array 重新排位： [1], [0], [2]
-            const displayOrder =[];
-            if(top3[1]) displayOrder.push({ data: top3[1], rank: 1, medal: '🥈 亞軍', color: '#C0C0C0' });
-            if(top3[0]) displayOrder.push({ data: top3[0], rank: 0, medal: '🥇 冠軍', color: '#FFD700' });
-            if(top3[2]) displayOrder.push({ data: top3[2], rank: 2, medal: '🥉 季軍', color: '#CD7F32' });
-            
-            displayOrder.forEach((item) => {
-                const card = document.createElement('div');
-                card.className = 'rank-card';
-                card.innerHTML = `
-                    <h2 style="margin-top:0; font-size:1.8rem; color:${item.color}; text-shadow:1px 1px 0 #000;">${item.medal}</h2>
-                    <img src="${item.data.shareImg || 'https://via.placeholder.com/300'}" style="width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:10px; margin-bottom:10px; border:2px solid ${item.color};">
-                    <h3 style="margin:5px 0;">${item.data.humanName} & ${item.data.dogName}</h3>
-                    <p style="font-size:2rem; color:#e74c3c; font-weight:900; margin:5px 0;">${item.data.score}%</p>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // 📥 改用 Download (取代 Print)
-        function downloadAdminImage(base64Img, filename) {
-            let link = document.createElement('a'); 
-            link.download = filename; link.href = base64Img; link.click();
-        }
 
         function downloadCSV() {
             if(allData.length === 0) return alert("無數據可供下載！");
-            let csvContent = "\uFEFF人類名字,狗狗名字,分數(%),聯絡Email,遊玩時間\n";
-            allData.forEach(row => {
+            let csvContent = "\uFEFF名次,人類名,狗狗名,AI分數(%),真實姓名,電話,聯絡Email,遊玩時間\n";
+            allData.forEach((row, index) => {
                 const timeStr = (row.timestamp ? new Date(row.timestamp) : new Date()).toLocaleString('zh-HK').replace(/,/g, ''); 
-                csvContent += `${row.humanName},${row.dogName},${row.score},${row.email ? row.email : "未登記"},${timeStr}\n`;
+                csvContent += `${index+1},${row.humanName},${row.dogName},${row.score},${row.regName||''},${row.regMobile||''},${row.regEmail||''},${timeStr}\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `AnimalsSum_Data_${new Date().getTime()}.csv`;
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `AnimalsSum_Top100_Data_${new Date().getTime()}.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
