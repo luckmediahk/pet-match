@@ -30,10 +30,12 @@
 
     <style>
         :root { --brand: #54b97c; --brand-dark: #3da065; --accent: #FFD93D; --danger: #FF6B6B; --dark: #2d3436; --light: #f6fffa; }
-        
-        /* 🔥 背景變回乾淨淺色，令浮動感更強 🔥 */
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; min-height: 100vh; color: var(--dark); position: relative; overflow-x: hidden; }
         
+        .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
+        .float-item { position: absolute; font-size: 2.5rem; opacity: 0.08; animation: floatAnim 15s infinite linear; }
+        @keyframes floatAnim { 0% { transform: translateY(110vh); } 100% { transform: translateY(-20vh); } }
+
         .container { width: 95%; max-width: 1000px; margin: 0 auto; background: #ffffff; border-radius: 30px; padding: 30px; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.15); position: relative; z-index: 1;}
         
         header { text-align: center; margin-bottom: 20px; position: relative; }
@@ -55,15 +57,13 @@
         .main-btn:disabled { background: #ccc; box-shadow: 0 8px 0 #999; cursor: not-allowed; }
         
         .btn-primary-home { padding: 25px; font-size: clamp(1.6rem, 4vw, 2.2rem); animation: pulseBtn 2s infinite; }
-        
-        /* 🔥 修復按鈕變綠色問題，強制白底綠字 🔥 */
         .btn-secondary-home { background: #fff !important; color: var(--brand) !important; border: 2px solid var(--brand); padding: 20px; font-size: clamp(1.2rem, 3vw, 1.6rem); box-shadow: 0 6px 0 var(--brand) !important; }
         .btn-secondary-home:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--brand) !important; }
         
         .sec-btn { background: #fff; color: var(--brand); border: 2px solid var(--brand); box-shadow: 0 5px 0 var(--brand); }
         .action-btn { background: var(--accent); color: var(--dark); box-shadow: 0 8px 0 #d4a000; }
 
-        .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.02); margin-top: 10px;}
         .round-title { text-align: center; font-weight: 900; color: #fff; margin-bottom: 15px; font-size: 1.1rem; background: #54a0ff; display: inline-block; padding: 8px 25px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 5px 15px rgba(84,160,255,0.3); }
         .match-row { display: flex; gap: 10px; justify-content: center; align-items: stretch; height: calc(100% - 50px); }
         
@@ -126,20 +126,31 @@
         .podium h4 { margin: 0 0 2px 0; font-size: 0.8rem; color: #333; line-height: 1.1; word-break: break-word; }
         .podium .score { color: var(--brand); font-weight: 900; font-size: 1.1rem; font-family: 'Fredoka', sans-serif; }
 
+        /* 🔥 排行榜防爆框排版 🔥 */
         .rank-list { display: flex; flex-direction: column; gap: 10px; }
-        .rank-row { display: flex; align-items: center; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; position: relative; overflow: hidden;}
-        .rank-row.highlight { border: 2px solid var(--brand) !important; background: #f0fdf4 !important; box-shadow: 0 5px 15px rgba(84, 185, 124, 0.3); padding: 7px 12px; } 
+        .rank-row { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; position: relative; overflow: hidden; gap: 10px;}
+        .rank-row.prize-zone { background: #fffcf0; border-color: #ffeaa7; } 
+        .rank-row.highlight { border: 3px solid var(--brand) !important; background: #f0fdf4 !important; box-shadow: 0 5px 15px rgba(84, 185, 124, 0.3); padding: 8px 13px; } 
         .podium.highlight { border-bottom: 5px solid var(--brand); background: #f0fdf4; }
 
-        .rank-num { font-size: 1.3rem; font-weight: 900; color: #bbb; width: 30px; text-align: center; }
-        .rank-row .avatars { display: flex; width: 80px; justify-content: center; }
-        .rank-row img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover; }
-        .rank-row img:nth-child(2) { margin-left: -15px; }
-        .rank-info { flex: 1; display: flex; flex-direction: column; padding-left: 10px; }
-        .rank-info h4 { margin: 0; font-size: 1rem; color: #333; word-break: break-word; line-height: 1.2; max-width: 150px;}
-        .rank-info .score { font-size: 1.2rem; font-weight: 900; color: var(--brand); margin-top: 2px; font-family: 'Fredoka', sans-serif; }
+        .rank-num { font-size: 1.3rem; font-weight: 900; color: #bbb; width: 35px; text-align: center; flex-shrink: 0;}
+        .rank-avatars { display: flex; width: 80px; justify-content: center; flex-shrink: 0;}
+        .rank-avatars img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover; }
+        .rank-avatars img:nth-child(2) { margin-left: -15px; }
         
+        .rank-names { flex: 1; min-width: 0; padding-left: 5px; }
+        .rank-names h4 { margin: 0; font-size: 0.95rem; color: #333; word-break: break-word; line-height: 1.2; }
+        .rank-names p { margin: 0; font-size: 0.75rem; color: var(--brand); font-weight: bold; }
+        
+        .rank-score-wrap { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+        .rank-score { font-size: 1.3rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; }
+
         .promo-box { text-align:center; color:#555; font-weight:bold; margin-top:30px; background:#fffcf0; border:2px solid #ffeaa7; padding:20px; border-radius:20px; line-height:1.6; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .tnc-link { display: block; text-align: center; margin-top: 30px; color: #999; font-size: 0.85rem; text-decoration: underline; cursor: pointer; }
+
+        /* T&C Page */
+        .tnc-content { background: #fff; padding: 25px; border-radius: 20px; text-align: left; color: #555; font-size: 0.9rem; line-height: 1.6; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .tnc-content h3 { color: #333; font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
         .modal-content { background: #fff; padding: 40px 30px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto;}
@@ -155,6 +166,14 @@
 </head>
 <body>
 
+    <!-- 漂浮物 -->
+    <div class="floating-bg">
+        <div class="float-item" style="left: 10%; animation-duration: 15s;">🐾</div>
+        <div class="float-item" style="left: 30%; animation-duration: 12s; animation-delay: 2s;">🦴</div>
+        <div class="float-item" style="left: 70%; animation-duration: 18s; animation-delay: 5s;">🐾</div>
+        <div class="float-item" style="left: 85%; animation-duration: 14s; animation-delay: 1s;">🦴</div>
+    </div>
+
     <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.style.display='none'">
 
     <div id="loader">
@@ -164,7 +183,7 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v45.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v46.0</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
@@ -174,9 +193,8 @@
                 <button class="main-btn btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
                 <button class="main-btn btn-secondary-home" onclick="renderLeaderboard()">🏆 睇全港排行榜</button>
             </div>
-            
-            <!-- 🔥 智能日期倒數廣告框 🔥 -->
             <div id="promo-teaser" class="promo-box"></div>
+            <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
         <!-- VIEW 2: UPLOAD -->
@@ -197,9 +215,7 @@
                         <div class="bubble" id="b-h-1"></div>
                         <div class="img-box">
                             <img class="demo-bg" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop&q=80" alt="demo">
-                            <div class="ui-elements">
-                                <span class="placeholder">🧍‍♂️</span><div class="cam-icon">上傳/影相</div>
-                            </div>
+                            <div class="ui-elements"><span class="placeholder">🧍‍♂️</span><div class="cam-icon">上傳/影相</div></div>
                             <img id="img-h-1" class="preview">
                         </div>
                         <input type="file" id="u-h-1" hidden accept="image/*" onchange="checkImg(event, 'img-h-1', 'b-h-1', 'person')">
@@ -209,9 +225,7 @@
                         <div class="bubble" id="b-d-1"></div>
                         <div class="img-box">
                             <img class="demo-bg" src="https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=300&h=300&fit=crop&q=80" alt="demo">
-                            <div class="ui-elements">
-                                <span class="placeholder">🐶🐱</span><div class="cam-icon">上傳/影相</div>
-                            </div>
+                            <div class="ui-elements"><span class="placeholder">🐶🐱</span><div class="cam-icon">上傳/影相</div></div>
                             <img id="img-d-1" class="preview">
                         </div>
                         <input type="file" id="u-d-1" hidden accept="image/*" onchange="checkImg(event, 'img-d-1', 'b-d-1', 'dog')">
@@ -221,12 +235,13 @@
 
             <button id="btn-calc" class="main-btn action-btn" style="margin-top:25px; padding: 25px;" onclick="processAI()" disabled>⚡ 開始 AI 運算</button>
             <button class="main-btn sec-btn" style="border:none; box-shadow:none; color:#999; margin-top:15px;" onclick="location.reload()">🏠 返回主頁</button>
+            <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
         <!-- VIEW 3: RESULTS -->
         <div id="view-result" class="view">
             <div class="result-header">
-                <h2>🏆 <span id="res-names" style="color:var(--brand);"></span> 的報告</h2>
+                <h2><span id="res-names" style="color:var(--brand);"></span> 的報告🏆</h2>
             </div>
             
             <div class="puzzle-arena">
@@ -268,7 +283,6 @@
         <div id="view-leaderboard" class="view">
             <div class="warm-banner">
                 <h2>🏆 全港排行榜</h2>
-                <p style="margin:0; font-size:1.1rem; opacity:0.9;">頭 50 名將獲得豐富獎品！</p>
                 <div class="avg-score-box">
                     <span style="font-size:1rem; color:#555; font-weight:bold;">全港平均相似度</span>
                     <span id="hk-avg-score">--.--%</span>
@@ -278,7 +292,40 @@
             <div class="podium-container" id="podium-area"></div>
             <div class="rank-list" id="leaderboard-list"><p style="text-align:center;">載入中...</p></div>
 
-            <button class="main-btn sec-btn" style="margin-top:40px; padding:20px;" onclick="switchView('view-home')">🏠 返回主頁</button>
+            <div id="promo-teaser-lb" class="promo-box" style="margin-top:40px;"></div>
+            <button class="main-btn sec-btn" style="margin-top:20px; padding:20px;" onclick="switchView('view-home')">🏠 返回主頁</button>
+            <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
+        </div>
+
+        <!-- 🔥 NEW VIEW 6: T&C 🔥 -->
+        <div id="view-tnc" class="view">
+            <h2 style="text-align:center; color:var(--brand); margin-bottom:20px;">📜 條款及細則與免責聲明</h2>
+            <div class="tnc-content">
+                <p>歡迎參與由 Animals Sum（動物之心）（下稱「本公司」）舉辦的網上遊戲。參加者一經進行遊戲（或生成報告），即代表已閱讀、明白並完全同意遵守以下條款及細則：</p>
+                
+                <h3>1. 參賽資格與名次計算（無限暢玩，嚴格核實）</h3>
+                <p><b>無限次參與：</b> 每名參加者及其毛孩均可無限次進行遊戲（包括 AI 似樣度測試等）。<br>
+                <b>最高排名計算：</b> 為確保公平，雖然參加者可多次遊玩，但系統只會計算該名參加者與其毛孩組合中「得分/排名最高」之一次成績。<br>
+                <b>身份核實與獲獎限制：</b> 本公司將以參加者提交之「姓名、電郵地址及手機號碼」作為身份核對基準。每位參加者及其毛孩組合，於每次活動中最多只會獲得一次得獎資格。<br>
+                <b>名次順延機制：</b> 若系統發現重複得獎者，本公司將自動取消其最高排名以外的所有名次。所騰出之名次及獎品，將按排行榜成績順延予下一位合資格參加者，直至全數得獎名額派發完畢為止。</p>
+
+                <h3>2. 授權條款及資料宣傳用途（相片及資料之使用）</h3>
+                <p><b>明示同意：</b> 參加者一經發送或上載任何相片（包括但不限於人類及毛孩之容貌），即等同正式參與本遊戲；一經提交個人資料（姓名、電郵、電話等），即等同同意參與「公開排行榜」。<br>
+                <b>宣傳授權：</b> 參加者同意並不可撤回地授權本公司（動物希望之心有限公司），將其上載之相片、測試結果、毛孩名字及公開顯示之名稱，無償用於本公司之所有官方渠道（包括但不限於網站、Instagram、Facebook、Threads 及對外宣傳品）作市場推廣及宣傳用途，而毋須事前通知或作任何額外補償。</p>
+
+                <h3>3. 排行榜公開性質（資料公開免責）</h3>
+                <p>參加者清楚明白並同意，本活動之「排行榜」屬絕對公開性質。排行榜上顯示的資訊（如：參加者填寫的顯示名稱、毛孩名稱、測試分數及相關頭像/相片）將對所有瀏覽該網站之公眾人士可見。<br>
+                對於任何第三方截圖、轉載或使用排行榜上之公開資訊，本公司一概不負責，亦不承擔任何直接或間接之法律責任。</p>
+
+                <h3>4. 隱私保障與極限免責聲明 (Disclaimer of Liability)</h3>
+                <p><b>盡力保密原則：</b> 本公司極度重視參加者的私隱，並會採取合理之商業技術措施（Commercially Reasonable Efforts）盡力妥善保存參加者提交的非公開個人資料（如電話號碼及電郵）。<br>
+                <b>免責聲明：</b> 互聯網資料傳輸及儲存無法保證百分百安全。參加者明白並同意，如因受到不可抗力因素、黑客攻擊、系統故障、第三方惡意程式入侵等非本公司能完全控制之原因，導致任何資料外洩、遺失或遭第三方盜用，本公司概不作任何保證，亦不會承擔任何形式之賠償及法律後果。參加者須自行承擔參與遊戲之一切風險。</p>
+
+                <h3>5. 最終決定權</h3>
+                <p>Animals Sum（動物希望之心）保留隨時修改、暫停或取消遊戲、獎品分配機制及本條款與細則之權利，而毋須作事先通知。<br>
+                如有任何爭議，Animals Sum（動物之心）保留最終決定權。</p>
+            </div>
+            <button class="main-btn action-btn" style="margin-top:20px;" onclick="switchView('view-home')">返回主頁</button>
         </div>
 
     </div>
@@ -301,13 +348,14 @@
             <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話"></div>
             <div class="input-group"><input type="email" id="reg-email" class="form-input" placeholder="📧 電郵地址"></div>
             
-            <p style="font-size:0.85rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜，不可撤回。</p>
+            <p style="font-size:0.85rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜，不可撤回。<br><span style="text-decoration:underline; cursor:pointer;" onclick="document.getElementById('consent-modal').style.display='none'; switchView('view-tnc');">閱讀條款及細則</span></p>
             
             <button class="main-btn action-btn" style="margin-bottom:15px; padding:20px; font-size:1.3rem;" onclick="publishToLeaderboard()">✅ 同意發佈並登記！</button>
             <button class="main-btn sec-btn" onclick="document.getElementById('consent-modal').style.display='none'">❌ 取消</button>
         </div>
     </div>
 
+    <!-- IG Canvas -->
     <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
@@ -323,10 +371,13 @@
 
         let models = { coco: null, mobile: null };
         let aiReady = false;
-        let state = { hName: '', dName: '', petType: 'Dog', imgs: { h1:null, d1:null }, scores: {}, shareImgBlob: null, docId: null };
+        let state = { hName: '', dName: '', petType: 'Dog', imgs: { h1:null, d1:null }, scores: {}, shareImgBlob: null, docId: null, refSource: 'organic' };
 
-        const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
-        const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
+        // 🔥 Partner 追蹤機制 (UTM ref) 🔥
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.get('ref')) state.refSource = urlParams.get('ref');
+
+        const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua', 'cat', 'kitten', 'tabby', 'persian', 'feline'];
         const rejectKeywords =['bottle', 'car', 'chair', 'cup', 'tv', 'laptop', 'cell phone', 'book']; 
 
         const fakeLeaderboardData =[
@@ -344,18 +395,20 @@
 
         document.fonts.ready.then(function() { console.log('Fonts loaded'); });
 
-        // 🔥 智能日期倒數系統 (V45 修訂) 🔥
         function updateCountdown() {
             const promoBox = document.getElementById('promo-teaser');
+            const promoBoxLb = document.getElementById('promo-teaser-lb');
             if(!promoBox) return;
             const now = new Date();
-            const cutoffDate = new Date(2026, 4, 6, 23, 59, 59); // 5月6日 (Month 4)
-            const phase2Date = new Date(2026, 4, 15, 0, 0, 0);   // 5月15日
+            // 🔥 5月7日 00:00:00 截數 (Month is 0-indexed) 🔥
+            const cutoffDate = new Date(2026, 4, 7, 0, 0, 0); 
+            const phase2Date = new Date(2026, 4, 15, 0, 0, 0);
 
+            let content = '';
             if (now >= phase2Date) {
-                promoBox.innerHTML = "🔥 下一重磅製作：毛孩像你 即將面世，敬請預留幻想！";
-            } else if (now > cutoffDate) {
-                promoBox.innerHTML = "🎁 【全城尋找 100% 餅印人寵】<br>現已截止，進入計算階段，可以主動在 IG 聯絡動物之心！";
+                content = "🔥 下一重磅製作：毛孩像你 即將面世，敬請預留幻想！";
+            } else if (now >= cutoffDate) {
+                content = "🎁 【全城尋找 100% 餅印人寵】<br>現已截止，進入計算階段，可以主動在 IG 聯絡動物之心！";
             } else {
                 const timeDiff = cutoffDate - now;
                 const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
@@ -363,8 +416,10 @@
                 if(daysLeft <= 7 && daysLeft > 1) dayText = `最後 ${daysLeft} 天`;
                 if(daysLeft === 1) dayText = "最後今天";
                 
-                promoBox.innerHTML = `🎁 【全城尋找 100% 餅印人寵】<br>排行榜頭 50 名可獲得豐富獎（包括寵物食品、養膚花水等）<br><span style="color:#e74c3c; font-size:1.2rem; display:block; margin-top:8px;">Cut-off Date: ${dayText}</span>`;
+                content = `🎁 【全城尋找 100% 餅印人寵】<br>排行榜頭 50 名可獲得豐富獎（包括寵物食品、養膚花水等）<br><span style="color:#e74c3c; font-size:1.2rem; display:block; margin-top:8px;">Cut-off Date: ${dayText}</span>`;
             }
+            promoBox.innerHTML = content;
+            if(promoBoxLb) promoBoxLb.innerHTML = content;
         }
 
         async function loadAIinBackground() {
@@ -376,7 +431,7 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
             window.scrollTo(0,0); 
-            if(viewId === 'view-home') updateCountdown();
+            updateCountdown();
         }
         updateCountdown();
 
@@ -407,7 +462,6 @@
                 else { msg = "❌ 認唔到人樣！係咪太暗或者俾嘢遮住？"; }
             } else {
                 let isPet = animals.length > 0;
-                // 檢查係貓定狗 (For Data Analytics)
                 const isCat = animals.some(a => catKeywords.includes(a.class));
                 if(isCat) state.petType = 'Cat';
                 
@@ -448,6 +502,7 @@
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
             ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
+        
         function genUniqueScore(min) {
             let base = Math.floor(Math.random() * (99999 - min * 1000)) + (min * 1000);
             let ms = Date.now() % 1000;
@@ -457,9 +512,8 @@
 
         async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "生成報告中...";
 
-            // 🔥 Fetch IP for Admin tracking 🔥
+            // Extract IP for admin
             let userIP = "Unknown";
             try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
@@ -559,11 +613,12 @@
                 let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2);
                 ctxD.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, 0, 0, 150, 150);
 
+                // 🔥 Include Partner tracking (refSource), IP, and petType in record 🔥
                 const record = { 
                     dogName: state.dName, humanName: state.hName, score: state.scores.final, 
                     humanImg: hCanvas.toDataURL('image/jpeg', 0.5), dogImg: dCanvas.toDataURL('image/jpeg', 0.5), 
-                    public: false, timestamp: new Date().getTime(),
-                    ip: userIP, petType: state.petType || 'Dog'
+                    public: false, timestamp: new Date().getTime(), 
+                    ip: userIP, petType: state.petType || 'Dog', refSource: state.refSource
                 };
                 
                 if (db) { db.collection("certs").doc(state.docId).set(record).catch(e => { console.log(e); }); }
@@ -577,7 +632,7 @@
         async function shareResultInstant() {
             if(!state.shareImgBlob) return alert("圖片準備中，請稍候...");
             const file = new File([state.shareImgBlob], "AnimalsSum_Share.jpg", { type: "image/jpeg" });
-            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中攞到 ${state.scores.final}%！快啲嚟測下！\n@animalssum`;
+            const text = `我同 ${state.dName} 喺 AnimalsSum 配對攞到 ${state.scores.final}%！快啲嚟測下！\n@animalssum`;
             try {
                 if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ title: 'AnimalsSum', text: text, files:[file] }); } 
                 else { 
@@ -625,12 +680,13 @@
             
             if(db) {
                 try {
-                    // 🔥 強制由 Server 拉取最新數據，保證全港同步 🔥
+                    // 🔥 強制由 Server 讀取，防止手機暫存舊數據 🔥
                     const snap = await db.collection("certs").where("public", "==", true).get({ source: 'server' }); 
                     snap.forEach(doc => { combinedData.push(doc.data()); });
                 } catch(e) { console.log("Fetch LB error", e); }
             }
 
+            // 同分處理：遲玩嘅排後面
             combinedData.sort((a,b) => {
                 if(b.score !== a.score) return b.score - a.score;
                 return (a.timestamp || 0) - (b.timestamp || 0);
@@ -642,10 +698,12 @@
 
             listArea.innerHTML = '';
             
+            // 🔥 Load 頭 100 名 🔥
             const top100 = combinedData.slice(0, 100); 
             const top3 = top100.slice(0, 3);
             const displayOrder =[];
-            const showPrize = new Date() < new Date(2026, 4, 16, 0, 0, 0); // 5月15日後消失
+            // 🔥 禮物盒消失機制：5月7日 00:00 後自動收埋 🔥
+            const showPrize = new Date() < new Date(2026, 4, 7, 0, 0, 0); 
 
             if(top3[1]) displayOrder.push({ data: top3[1], class: 'rank-2', medal: '🥈' });
             if(top3[0]) displayOrder.push({ data: top3[0], class: 'rank-1', medal: '🥇' });
@@ -674,15 +732,17 @@
                 myRankIndex = combinedData.findIndex(d => d.humanName === state.hName && d.dogName === state.dName);
             }
 
+            // 🔥 放寬 List 到 100 名，防爆框排版 🔥
             const restList = top100.slice(3, 100);
             restList.forEach((item, idx) => {
                 const actualRank = idx + 4;
                 let isMe = (state.hName && state.dName && item.humanName === state.hName && item.dogName === state.dName);
                 let rowClass = "rank-row";
                 if (isMe) rowClass += " highlight";
+                else if (actualRank <= 50 && showPrize) rowClass += " prize-zone"; 
                 
                 let meTag = isMe ? `<p style="color:var(--brand); font-weight:bold; margin:0; font-size:0.8rem;">✨ 你的排名</p>` : '';
-                let prizeTag = (actualRank <= 50 && showPrize) ? `<div style="font-size:1.2rem; margin-top:2px;">🎁</div>` : '';
+                let prizeTag = (actualRank <= 50 && !isMe && showPrize) ? `<div class="prize-tag">🎁</div>` : '';
 
                 const div = document.createElement('div');
                 div.className = rowClass;
@@ -696,12 +756,15 @@
                         <h4>${item.humanName} & ${item.dogName}</h4>
                         ${meTag}
                     </div>
-                    ${prizeTag}
-                    <div class="rank-score">${item.score}%</div>
+                    <div class="rank-score-wrap">
+                        <span class="rank-score">${item.score}%</span>
+                        ${prizeTag}
+                    </div>
                 `;
                 listArea.appendChild(div);
             });
 
+            // 如果客排 100 名外，最底補返佢自己
             if (myRankIndex >= 100) {
                 const myData = combinedData[myRankIndex];
                 listArea.innerHTML += `<div style="text-align:center; font-size:2rem; color:#ccc; margin: 10px 0; font-weight:bold;">. . .</div>`;
@@ -716,7 +779,9 @@
                             <h4>${myData.humanName} & ${myData.dogName}</h4>
                             <p style="color:var(--brand); font-weight:bold; margin:0; font-size:0.8rem;">✨ 你的排名</p>
                         </div>
-                        <div class="rank-score">${myData.score}%</div>
+                        <div class="rank-score-wrap">
+                            <span class="rank-score">${myData.score}%</span>
+                        </div>
                     </div>
                 `;
             }
