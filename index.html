@@ -51,6 +51,9 @@
         .form-input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #ddd; font-size: 1.1rem; box-sizing: border-box; text-align: center; transition: 0.3s; background: #fff; }
         .form-input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 10px rgba(84,185,124,0.3); }
 
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1.1rem; }
+
         .home-btns { display: flex; flex-direction: column; gap: 20px; margin-top: 40px; }
         .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 18px; border-radius: 25px; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; cursor: pointer; box-shadow: 0 8px 0 #3da065; transition: all 0.1s; margin-top: 10px; }
         .main-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #3da065; animation: none; }
@@ -126,31 +129,27 @@
         .podium h4 { margin: 0 0 2px 0; font-size: 0.8rem; color: #333; line-height: 1.1; word-break: break-word; }
         .podium .score { color: var(--brand); font-weight: 900; font-size: 1.1rem; font-family: 'Fredoka', sans-serif; }
 
-        /* 🔥 排行榜防爆框排版 🔥 */
         .rank-list { display: flex; flex-direction: column; gap: 10px; }
-        .rank-row { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; position: relative; overflow: hidden; gap: 10px;}
+        .rank-row { display: flex; align-items: center; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; position: relative; overflow: hidden;}
         .rank-row.prize-zone { background: #fffcf0; border-color: #ffeaa7; } 
-        .rank-row.highlight { border: 3px solid var(--brand) !important; background: #f0fdf4 !important; box-shadow: 0 5px 15px rgba(84, 185, 124, 0.3); padding: 8px 13px; } 
+        .rank-row.highlight { border: 4px solid var(--brand) !important; background: #f0fdf4 !important; box-shadow: 0 5px 15px rgba(84, 185, 124, 0.3); padding: 7px 12px; } 
         .podium.highlight { border-bottom: 5px solid var(--brand); background: #f0fdf4; }
 
-        .rank-num { font-size: 1.3rem; font-weight: 900; color: #bbb; width: 35px; text-align: center; flex-shrink: 0;}
-        .rank-avatars { display: flex; width: 80px; justify-content: center; flex-shrink: 0;}
-        .rank-avatars img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover; }
-        .rank-avatars img:nth-child(2) { margin-left: -15px; }
+        .rank-num { font-size: 1.3rem; font-weight: 900; color: #bbb; width: 30px; text-align: center; }
+        .rank-row .avatars { display: flex; width: 80px; justify-content: center; }
+        .rank-row img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover; }
+        .rank-row img:nth-child(2) { margin-left: -15px; }
+        .rank-info { flex: 1; display: flex; flex-direction: column; padding-left: 10px; }
+        .rank-info h4 { margin: 0; font-size: 1rem; color: #333; word-break: break-word; line-height: 1.2; max-width: 150px;}
+        .rank-info .score { font-size: 1.2rem; font-weight: 900; color: var(--brand); margin-top: 2px; font-family: 'Fredoka', sans-serif; }
         
-        .rank-names { flex: 1; min-width: 0; padding-left: 5px; }
-        .rank-names h4 { margin: 0; font-size: 0.95rem; color: #333; word-break: break-word; line-height: 1.2; }
-        .rank-names p { margin: 0; font-size: 0.75rem; color: var(--brand); font-weight: bold; }
-        
-        .rank-score-wrap { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-        .rank-score { font-size: 1.3rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; }
+        .prize-tag { position: absolute; right: -25px; top: 10px; background: #FFD93D; color: #333; font-size: 0.7rem; font-weight: bold; padding: 3px 30px; transform: rotate(45deg); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        .promo-box { text-align:center; color:#555; font-weight:bold; margin-top:30px; background:#fffcf0; border:2px solid #ffeaa7; padding:20px; border-radius:20px; line-height:1.6; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .tnc-link { display: block; text-align: center; margin-top: 30px; color: #999; font-size: 0.85rem; text-decoration: underline; cursor: pointer; }
-
-        /* T&C Page */
         .tnc-content { background: #fff; padding: 25px; border-radius: 20px; text-align: left; color: #555; font-size: 0.9rem; line-height: 1.6; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .tnc-content h3 { color: #333; font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px; }
+        .tnc-link { display: block; text-align: center; margin-top: 30px; color: #999; font-size: 0.85rem; text-decoration: underline; cursor: pointer; }
+
+        .promo-box { text-align:center; color:#555; font-weight:bold; margin-top:30px; background:#fffcf0; border:2px solid #ffeaa7; padding:20px; border-radius:20px; line-height:1.6; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
         .modal-content { background: #fff; padding: 40px 30px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto;}
@@ -166,7 +165,6 @@
 </head>
 <body>
 
-    <!-- 漂浮物 -->
     <div class="floating-bg">
         <div class="float-item" style="left: 10%; animation-duration: 15s;">🐾</div>
         <div class="float-item" style="left: 30%; animation-duration: 12s; animation-delay: 2s;">🦴</div>
@@ -183,11 +181,10 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v46.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v46.1</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
-        <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
             <div class="home-btns">
                 <button class="main-btn btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
@@ -197,7 +194,6 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- VIEW 2: UPLOAD -->
         <div id="view-upload" class="view">
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
@@ -238,7 +234,6 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- VIEW 3: RESULTS -->
         <div id="view-result" class="view">
             <div class="result-header">
                 <h2><span id="res-names" style="color:var(--brand);"></span> 的報告🏆</h2>
@@ -279,7 +274,6 @@
             </div>
         </div>
 
-        <!-- VIEW 4: LEADERBOARD -->
         <div id="view-leaderboard" class="view">
             <div class="warm-banner">
                 <h2>🏆 全港排行榜</h2>
@@ -297,12 +291,10 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- 🔥 NEW VIEW 6: T&C 🔥 -->
         <div id="view-tnc" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:20px;">📜 條款及細則與免責聲明</h2>
             <div class="tnc-content">
                 <p>歡迎參與由 Animals Sum（動物之心）（下稱「本公司」）舉辦的網上遊戲。參加者一經進行遊戲（或生成報告），即代表已閱讀、明白並完全同意遵守以下條款及細則：</p>
-                
                 <h3>1. 參賽資格與名次計算（無限暢玩，嚴格核實）</h3>
                 <p><b>無限次參與：</b> 每名參加者及其毛孩均可無限次進行遊戲（包括 AI 似樣度測試等）。<br>
                 <b>最高排名計算：</b> 為確保公平，雖然參加者可多次遊玩，但系統只會計算該名參加者與其毛孩組合中「得分/排名最高」之一次成績。<br>
@@ -355,7 +347,6 @@
         </div>
     </div>
 
-    <!-- IG Canvas -->
     <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
 
     <script>
@@ -373,11 +364,11 @@
         let aiReady = false;
         let state = { hName: '', dName: '', petType: 'Dog', imgs: { h1:null, d1:null }, scores: {}, shareImgBlob: null, docId: null, refSource: 'organic' };
 
-        // 🔥 Partner 追蹤機制 (UTM ref) 🔥
         const urlParams = new URLSearchParams(window.location.search);
         if(urlParams.get('ref')) state.refSource = urlParams.get('ref');
 
-        const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua', 'cat', 'kitten', 'tabby', 'persian', 'feline'];
+        const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
+        const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
         const rejectKeywords =['bottle', 'car', 'chair', 'cup', 'tv', 'laptop', 'cell phone', 'book']; 
 
         const fakeLeaderboardData =[
@@ -400,8 +391,7 @@
             const promoBoxLb = document.getElementById('promo-teaser-lb');
             if(!promoBox) return;
             const now = new Date();
-            // 🔥 5月7日 00:00:00 截數 (Month is 0-indexed) 🔥
-            const cutoffDate = new Date(2026, 4, 7, 0, 0, 0); 
+            const cutoffDate = new Date(2026, 4, 6, 23, 59, 59); 
             const phase2Date = new Date(2026, 4, 15, 0, 0, 0);
 
             let content = '';
@@ -416,7 +406,7 @@
                 if(daysLeft <= 7 && daysLeft > 1) dayText = `最後 ${daysLeft} 天`;
                 if(daysLeft === 1) dayText = "最後今天";
                 
-                content = `🎁 【全城尋找 100% 餅印人寵】<br>排行榜頭 50 名可獲得豐富獎（包括寵物食品、養膚花水等）<br><span style="color:#e74c3c; font-size:1.2rem; display:block; margin-top:8px;">Cut-off Date: ${dayText}</span>`;
+                content = `🎁 【全城尋找 100% 餅印人寵】<br>排行榜頭 50 名可獲得豐富獎品（包括寵物食品、養膚花水等）<br><span style="color:#e74c3c; font-size:1.2rem; display:block; margin-top:8px;">Cut-off Date: ${dayText}</span>`;
             }
             promoBox.innerHTML = content;
             if(promoBoxLb) promoBoxLb.innerHTML = content;
@@ -431,10 +421,11 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
             window.scrollTo(0,0); 
-            updateCountdown();
+            if(viewId === 'view-home') updateCountdown();
         }
         updateCountdown();
 
+        // 🔥 V46.1: 移除人狗不能同框之限制 🔥
         async function checkImg(e, imgId, bubbleId, targetRole) {
             const file = e.target.files[0]; if(!file) return;
             const img = document.getElementById(imgId); const bubble = document.getElementById(bubbleId); const box = document.getElementById('box-' + imgId.replace('img-',''));
@@ -454,20 +445,25 @@
             const persons = preds.filter(p => p.class === 'person' && p.score > minScore);
             const animals = preds.filter(p =>['dog','cat','bird','horse','bear','sheep'].includes(p.class) && p.score > minScore);
 
-            if (persons.length > 0 && animals.length > 0) { msg = "❌ 太多生物喇！請只放單人或單毛孩相片！"; status = "err"; } 
-            else if (persons.length > 1 || animals.length > 1) { msg = "❌ 太多生物喇！請確保畫面得一個主角！"; status = "err"; } 
-            else if(hasJunk && !persons.length && !animals.length) { msg = "❌ AI 覺得呢個似死物多啲喎..."; status = "err"; } 
-            else if (targetRole === 'person') {
-                if (persons.length === 1) { status = "ok"; msg = "🏃‍♂️ 完美捕捉靚樣！"; } 
-                else { msg = "❌ 認唔到人樣！係咪太暗或者俾嘢遮住？"; }
+            // 放寬檢查邏輯
+            if (targetRole === 'person') {
+                if (persons.length > 0) { status = "ok"; msg = "🏃‍♂️ 完美捕捉靚樣！"; } 
+                else if (hasJunk && !animals.length) { msg = "❌ 喂，呢個似死物多啲喎..."; status = "err"; }
+                else { msg = "❌ 認唔到人樣！係咪太暗或者俾嘢遮住？"; status = "err"; }
             } else {
                 let isPet = animals.length > 0;
-                const isCat = animals.some(a => catKeywords.includes(a.class));
-                if(isCat) state.petType = 'Cat';
-                
-                if (!isPet && models.mobile) { const mobCheck = await models.mobile.classify(img); isPet = mobCheck.some(m => dogKeywords.some(k => m.className.toLowerCase().includes(k))); }
+                if(isPet) {
+                    const isCat = animals.some(a => catKeywords.includes(a.class));
+                    if(isCat) state.petType = 'Cat';
+                }
+                if (!isPet && models.mobile) { 
+                    const mobCheck = await models.mobile.classify(img); 
+                    isPet = mobCheck.some(m => dogKeywords.concat(catKeywords).some(k => m.className.toLowerCase().includes(k))); 
+                    if(isPet) state.petType = mobCheck.some(m => catKeywords.some(k => m.className.toLowerCase().includes(k))) ? 'Cat' : 'Dog';
+                }
                 if (isPet) { status = "ok"; msg = "🐾 毛孩確認 OK！"; } 
-                else { msg = "❌ 認唔出係毛孩！請重影"; }
+                else if (hasJunk && !persons.length) { msg = "❌ 喂，呢個似死物多啲喎..."; status = "err"; }
+                else { msg = "❌ 認唔出係毛孩！請重影"; status = "err"; }
             }
 
             bubble.innerText = msg; bubble.className = "bubble " + status;
@@ -502,18 +498,17 @@
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
             ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
-        
+
         function genUniqueScore(min) {
-            let base = Math.floor(Math.random() * (99999 - min * 1000)) + (min * 1000);
-            let ms = Date.now() % 1000;
-            return parseFloat((base / 1000 + ms / 100000).toFixed(3)); 
+            let usedScores = JSON.parse(localStorage.getItem('usedScores') || '[]'); let score; let isDuplicate = true;
+            while(isDuplicate) { score = parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); if(!usedScores.includes(score)) isDuplicate = false; }
+            usedScores.push(score); if(usedScores.length > 1000) usedScores.shift(); localStorage.setItem('usedScores', JSON.stringify(usedScores)); return score;
         }
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
         async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
 
-            // Extract IP for admin
             let userIP = "Unknown";
             try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
@@ -546,7 +541,6 @@
                     document.getElementById('bar-funny').style.width = funnyS+'%'; document.getElementById('val-funny').innerText = funnyS+'%'; 
                 }, 100);
 
-                // --- 畫 Share 圖 ---
                 const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
                 let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
                 sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
@@ -613,7 +607,6 @@
                 let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2);
                 ctxD.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, 0, 0, 150, 150);
 
-                // 🔥 Include Partner tracking (refSource), IP, and petType in record 🔥
                 const record = { 
                     dogName: state.dName, humanName: state.hName, score: state.scores.final, 
                     humanImg: hCanvas.toDataURL('image/jpeg', 0.5), dogImg: dCanvas.toDataURL('image/jpeg', 0.5), 
@@ -632,7 +625,7 @@
         async function shareResultInstant() {
             if(!state.shareImgBlob) return alert("圖片準備中，請稍候...");
             const file = new File([state.shareImgBlob], "AnimalsSum_Share.jpg", { type: "image/jpeg" });
-            const text = `我同 ${state.dName} 喺 AnimalsSum 配對攞到 ${state.scores.final}%！快啲嚟測下！\n@animalssum`;
+            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中攞到 ${state.scores.final}%！快啲嚟測下！\n@animalssum`;
             try {
                 if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ title: 'AnimalsSum', text: text, files:[file] }); } 
                 else { 
@@ -680,13 +673,11 @@
             
             if(db) {
                 try {
-                    // 🔥 強制由 Server 讀取，防止手機暫存舊數據 🔥
                     const snap = await db.collection("certs").where("public", "==", true).get({ source: 'server' }); 
                     snap.forEach(doc => { combinedData.push(doc.data()); });
                 } catch(e) { console.log("Fetch LB error", e); }
             }
 
-            // 同分處理：遲玩嘅排後面
             combinedData.sort((a,b) => {
                 if(b.score !== a.score) return b.score - a.score;
                 return (a.timestamp || 0) - (b.timestamp || 0);
@@ -698,11 +689,9 @@
 
             listArea.innerHTML = '';
             
-            // 🔥 Load 頭 100 名 🔥
             const top100 = combinedData.slice(0, 100); 
             const top3 = top100.slice(0, 3);
             const displayOrder =[];
-            // 🔥 禮物盒消失機制：5月7日 00:00 後自動收埋 🔥
             const showPrize = new Date() < new Date(2026, 4, 7, 0, 0, 0); 
 
             if(top3[1]) displayOrder.push({ data: top3[1], class: 'rank-2', medal: '🥈' });
@@ -732,7 +721,6 @@
                 myRankIndex = combinedData.findIndex(d => d.humanName === state.hName && d.dogName === state.dName);
             }
 
-            // 🔥 放寬 List 到 100 名，防爆框排版 🔥
             const restList = top100.slice(3, 100);
             restList.forEach((item, idx) => {
                 const actualRank = idx + 4;
@@ -754,17 +742,14 @@
                     </div>
                     <div class="rank-names">
                         <h4>${item.humanName} & ${item.dogName}</h4>
+                        ${prizeTag}
                         ${meTag}
                     </div>
-                    <div class="rank-score-wrap">
-                        <span class="rank-score">${item.score}%</span>
-                        ${prizeTag}
-                    </div>
+                    <div class="rank-score">${item.score}%</div>
                 `;
                 listArea.appendChild(div);
             });
 
-            // 如果客排 100 名外，最底補返佢自己
             if (myRankIndex >= 100) {
                 const myData = combinedData[myRankIndex];
                 listArea.innerHTML += `<div style="text-align:center; font-size:2rem; color:#ccc; margin: 10px 0; font-weight:bold;">. . .</div>`;
@@ -779,9 +764,7 @@
                             <h4>${myData.humanName} & ${myData.dogName}</h4>
                             <p style="color:var(--brand); font-weight:bold; margin:0; font-size:0.8rem;">✨ 你的排名</p>
                         </div>
-                        <div class="rank-score-wrap">
-                            <span class="rank-score">${myData.score}%</span>
-                        </div>
+                        <div class="rank-score">${myData.score}%</div>
                     </div>
                 `;
             }
