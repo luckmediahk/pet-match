@@ -6,9 +6,10 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>🐾 AnimalsSum | AI 人寵相似度大測試</title>
+    <title>🐶 AnimalsSum | 神速合拍大比拚</title>
     
-    <meta name="description" content="AI 神速合拍大比拚！立即測試你同毛孩有幾似樣，贏取豐富大獎！">
+    <!-- SEO & Social Media Share -->
+    <meta name="description" content="AI 神速合拍大比拚！立即測試你同毛孩有幾似樣，贏取龍角散等豐富大獎！">
     <meta property="og:title" content="🐾 AnimalsSum | AI 人寵相似度大測試">
     <meta property="og:description" content="我同主子似唔似樣？立即參加 AI 神速合拍大比拚，頭50名贏取豐富大獎！">
     <meta property="og:image" content="https://luckmediahk.github.io/pet-match/og-image.jpg">
@@ -18,6 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap" rel="stylesheet">
     
+    <!-- Firebase & AI Libraries -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
@@ -28,12 +30,10 @@
 
     <style>
         :root { --brand: #54b97c; --brand-dark: #3da065; --accent: #FFD93D; --danger: #FF6B6B; --dark: #2d3436; --light: #f6fffa; }
+        /* 背景清走 Emoji，保持簡潔 Pro 嘅漸變 */
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf8f1; margin: 0; padding: 20px; min-height: 100vh; color: var(--dark); position: relative; overflow-x: hidden; }
         
-        .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
-        .float-item { position: absolute; font-size: 2.5rem; opacity: 0.08; animation: floatAnim 15s infinite linear; }
-        @keyframes floatAnim { 0% { transform: translateY(110vh); } 100% { transform: translateY(-20vh); } }
-
+        /* 🔥 縮窄 Container，回復精緻 App 排版 🔥 */
         .container { width: 100%; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 35px; padding: 30px 20px; box-sizing: border-box; box-shadow: 0 15px 40px rgba(0,0,0,0.08); position: relative; z-index: 1;}
         
         header { text-align: center; margin-bottom: 20px; position: relative; }
@@ -89,8 +89,6 @@
 
         .res-puzzle-container { display: flex; justify-content: center; align-items: center; position: relative; margin: 10px 0 30px 0; gap: 10px;}
         .res-puzzle-card { width: clamp(120px, 38vw, 180px); background: #fff; padding: 8px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; position: relative; }
-        .res-puzzle-card.human-side { transform: rotate(-5deg) translateY(10px); z-index: 2; }
-        .res-puzzle-card.dog-side { transform: rotate(6deg) translateY(-10px); z-index: 1; }
         .res-puzzle-card img { width: 100%; aspect-ratio: 1/1.1; object-fit: cover; border-radius: 10px; background: #f0f0f0; }
         .res-puzzle-card p { margin: 8px 0 0 0; font-weight: bold; color: #555; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
@@ -117,6 +115,7 @@
         .btn-blue { background: #0984e3; box-shadow: 0 6px 0 #0764ad; }
         .btn-blue:active { box-shadow: 0 2px 0 #0764ad; }
 
+        /* 排行榜 */
         .warm-banner { background: linear-gradient(rgba(45,52,54,0.6), rgba(84,185,124,0.8)), url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1000&auto=format&fit=crop&q=80') center/cover; padding: 30px 15px; border-radius: 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .warm-banner h2 { margin: 0 0 5px 0; font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
         .avg-score-box { background: rgba(255,255,255,0.95); display: inline-block; padding: 10px 20px; border-radius: 15px; color: #333; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
@@ -136,7 +135,7 @@
         .podium .score { color: var(--brand); font-weight: 900; font-size: 1rem; font-family: 'Fredoka', sans-serif; }
 
         .rank-list { display: flex; flex-direction: column; gap: 10px; }
-        .rank-row { display: flex; align-items: center; background: #fff; padding: 10px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); gap: 10px; border: 1px solid #f0f0f0; position: relative; overflow: hidden;}
+        .rank-row { display: flex; align-items: center; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); gap: 10px; border: 1px solid #f0f0f0; position: relative; overflow: hidden;}
         .rank-row.prize-zone { background: #fffcf0; border-color: #ffeaa7; } 
         .rank-row.highlight { border: 3px solid var(--brand) !important; background: #f0fdf4 !important; box-shadow: 0 4px 12px rgba(84, 185, 124, 0.2); } 
         .podium.highlight { border-bottom: 4px solid var(--brand); background: #f0fdf4; }
@@ -148,6 +147,7 @@
         .rank-info { flex: 1; display: flex; flex-direction: column; padding-left: 5px; }
         .rank-info h4 { margin: 0; font-size: 0.95rem; color: #333; word-break: break-word; line-height: 1.2; max-width: 140px;}
         .rank-info .score { font-size: 1.1rem; font-weight: 900; color: var(--brand); margin-top: 2px; font-family: 'Fredoka', sans-serif; }
+        
         .prize-tag { position: absolute; right: -20px; top: 8px; background: #FFD93D; color: #333; font-size: 0.65rem; font-weight: bold; padding: 2px 25px; transform: rotate(45deg); }
 
         .tnc-content { background: #fff; padding: 20px; border-radius: 15px; text-align: left; color: #555; font-size: 0.85rem; line-height: 1.5; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -170,15 +170,7 @@
 </head>
 <body>
 
-    <!-- 漂浮物 -->
-    <div class="floating-bg">
-        <div class="float-item" style="left: 10%; animation-duration: 15s;">🐾</div>
-        <div class="float-item" style="left: 30%; animation-duration: 12s; animation-delay: 2s;">🦴</div>
-        <div class="float-item" style="left: 70%; animation-duration: 18s; animation-delay: 5s;">🐾</div>
-        <div class="float-item" style="left: 85%; animation-duration: 14s; animation-delay: 1s;">🦴</div>
-    </div>
-
-    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;">
+    <img id="brand-logo" src="./logo.png" crossorigin="anonymous" style="display:none;" onerror="this.style.display='none'">
 
     <div id="loader">
         <div class="spinner">⚙️</div>
@@ -187,7 +179,7 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v47.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v48.0</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
@@ -242,29 +234,26 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS (評語置頂 + 毒舌/治癒) 🔥 -->
+        <!-- 🔥 VIEW 3: RESULTS (修復顯示 100%) 🔥 -->
         <div id="view-result" class="view">
+            <div class="result-header">
+                <h2><span id="res-names" style="color:var(--brand);"></span> 的報告🏆</h2>
+            </div>
+            
+            <div class="puzzle-arena">
+                <div class="puzzle-piece puzzle-human"><img id="res-img-h"></div>
+                <div class="puzzle-vs">VS</div>
+                <div class="puzzle-piece puzzle-dog"><img id="res-img-d"></div>
+            </div>
             
             <div class="funny-verdict-box">
                 <div class="funny-label">AI 終極大會評語</div>
                 <div class="funny-text" id="res-comment">...</div>
             </div>
 
-            <div class="res-top-score">
-                <h3>人寵相似度</h3>
-                <div class="val" id="s-final">0%</div>
-            </div>
-
-            <div class="res-puzzle-container">
-                <div class="res-puzzle-card human-side">
-                    <img id="res-img-h">
-                    <p id="res-name-h">人類</p>
-                </div>
-                <div class="res-stamp">VS<br><span>神合體</span></div>
-                <div class="res-puzzle-card dog-side">
-                    <img id="res-img-d">
-                    <p id="res-name-d">狗狗</p>
-                </div>
+            <div class="simple-score-box">
+                <div class="simple-score-label">人寵相似度</div>
+                <div class="simple-score-val" id="s-final">0%</div>
             </div>
 
             <div class="detail-bars">
@@ -353,7 +342,7 @@
     <div id="ig-gate-modal" class="modal-overlay">
         <div class="modal-content">
             <h2 style="margin-bottom:10px;">🔒 報告已生成！</h2>
-            <p>支持我們製作更多人寵遊戲，<br>請 <b>Follow 動物之心</b>，解鎖睇結果。</p>
+            <p>支持我們製作更多人寵遊戲，請 <b>Follow 動物之心</b>，解鎖睇結果。</p>
             <button class="main-btn action-btn" style="padding:15px; font-size:1.1rem;" id="btn-ig-unlock" onclick="unlockResult()">👉 去 Follow IG 解鎖</button>
         </div>
     </div>
@@ -398,7 +387,7 @@
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
         const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
 
-        // 10 組永不死圖高清 Unsplash 數據 (分數 80-96)
+        // 🔥 永不死圖假數據庫 (分數 80-96) 🔥
         const fakeLeaderboardData =[
             { humanName: "Jason", dogName: "Mochi", score: 96.314, humanImg: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=150&h=150&fit=crop", public: true },
             { humanName: "Ka Yan", dogName: "Coffee", score: 95.552, humanImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=150&h=150&fit=crop", public: true },
@@ -443,7 +432,7 @@
         async function loadAIinBackground() {
             try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {}
         }
-        setTimeout(loadAIinBackground, 100);
+        loadAIinBackground();
 
         function switchView(viewId) { 
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
@@ -453,6 +442,7 @@
         }
         updateCountdown();
 
+        // 🔥 AI 判斷機制 (寬鬆版：只封鎖明顯錯誤) 🔥
         async function checkImg(e, imgId, bubbleId, targetRole) {
             const file = e.target.files[0]; if(!file) return;
             const img = document.getElementById(imgId); const bubble = document.getElementById(bubbleId); const box = document.getElementById('box-' + imgId.replace('img-',''));
@@ -467,13 +457,16 @@
             while(!aiReady) { bubble.innerText = "⏳ AI 啟動中...稍候"; await new Promise(r => setTimeout(r, 500)); }
             try { await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; }); } catch(err) { return; }
             
-            const preds = await models.coco.detect(img); let msg = "", status = "err"; const minScore = 0.25; 
+            const preds = await models.coco.detect(img); let msg = "", status = "err"; 
+            const minScore = 0.25; 
+            const hasJunk = preds.some(p => rejectKeywords.includes(p.class) && p.score > 0.4);
             const persons = preds.filter(p => p.class === 'person' && p.score > minScore);
             const animals = preds.filter(p =>['dog','cat','bird','horse','bear','sheep'].includes(p.class) && p.score > minScore);
 
             if (targetRole === 'person') {
                 if (persons.length > 0) { status = "ok"; msg = "🏃‍♂️ 完美捕捉靚樣！"; } 
-                else { msg = "❌ 認唔到人樣！係咪太暗或者俾嘢遮住？"; }
+                else if (hasJunk && !animals.length) { msg = "❌ 喂，呢個似死物多啲喎..."; status = "err"; }
+                else { msg = "❌ 認唔到人樣！係咪太暗或者俾嘢遮住？"; status = "err"; }
             } else {
                 let isPet = animals.length > 0;
                 if(isPet) {
@@ -486,8 +479,11 @@
                     if(isPet) state.petType = mobCheck.some(m => catKeywords.some(k => m.className.toLowerCase().includes(k))) ? 'Cat' : 'Dog';
                 }
 
-                if (isPet) { status = "ok"; msg = "🐾 毛孩確認 OK！"; } 
-                else { msg = "❌ 認唔出係毛孩！請重影"; }
+                const obviousPerson = preds.find(p => p.class === 'person' && p.score > 0.6);
+
+                if (!isPet) { msg = "❌ 認唔出係毛孩！請重影/揀過張"; status = "err"; }
+                else if (obviousPerson) { msg = "❌ 發現人類！請盡量裁走人樣，淨係留低主子！"; status = "err"; }
+                else { status = "ok"; msg = "🐾 毛孩確認 OK！"; }
             }
 
             bubble.innerText = msg; bubble.className = "bubble " + status;
@@ -522,6 +518,7 @@
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
             ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
+        
         function genUniqueScore(min) {
             let base = Math.floor(Math.random() * (99999 - min * 1000)) + (min * 1000);
             let ms = Date.now() % 1000;
@@ -536,139 +533,143 @@
             try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
             setTimeout(async () => {
-                let colorS = genRandomScore(75); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
-                // 🔥 修復：確保細項平均 === 總分 🔥
-                let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
-                
-                // Add unique salt to prevent leaderboard ties
-                finalAvg = parseFloat((finalAvg + (Date.now() % 100) / 10000).toFixed(3)); 
-                if(finalAvg > 99.999) finalAvg = 99.999;
-                
-                state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
-
-                // 🔥 毒舌 vs 治癒 評語 (80%+ 保底) 🔥
-                let comment = "";
-                if(finalAvg >= 96) comment = "👼 失散多年嘅親生骨肉，連執相都唔使！";
-                else if(finalAvg >= 92) comment = "😂 越養越似！連笑起上嚟個樣都一樣樣架喎！";
-                else if(finalAvg >= 88) comment = "🍖 似似哋，但你嘅貪食基因似乎強過主子！";
-                else if(finalAvg >= 84) comment = "👽 你哋係兩個星球嘅生物，唯一共同點係都鍾意瞓覺！";
-                else comment = "🐶 最佳拍檔！互相陪伴、沿途有愛！";
-                
-                state.comment = comment; 
-
-                document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
-                document.getElementById('res-comment').innerText = comment;
-                document.getElementById('res-name-h').innerText = state.hName;
-                document.getElementById('res-name-d').innerText = state.dName;
-                document.getElementById('res-img-h').src = state.imgs.h1.src; document.getElementById('res-img-d').src = state.imgs.d1.src;
-                
-                let el = document.getElementById('s-final'); let start = finalAvg - 2.000;
-                let timer = setInterval(() => { start += 0.051; if(start >= finalAvg) { start = finalAvg; clearInterval(timer); } el.innerText = start.toFixed(3) + "%"; }, 30);
-
-                setTimeout(()=> { 
-                    document.getElementById('bar-color').style.width = colorS+'%'; 
-                    document.getElementById('bar-eye').style.width = eyeS+'%'; 
-                    document.getElementById('bar-action').style.width = actionS+'%'; 
-                    document.getElementById('bar-vibe').style.width = vibeS+'%'; 
-                    document.getElementById('bar-funny').style.width = funnyS+'%'; 
-                    
-                    document.getElementById('val-color').innerText = colorS+'%'; 
-                    document.getElementById('val-eye').innerText = eyeS+'%'; 
-                    document.getElementById('val-action').innerText = actionS+'%'; 
-                    document.getElementById('val-vibe').innerText = vibeS+'%'; 
-                    document.getElementById('val-funny').innerText = funnyS+'%'; 
-                }, 100);
-
-                // --- 畫 Share 圖 (Puzzle Style) ---
-                const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
-                let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
-                sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
-                sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 40; sCtx.strokeRect(20,20,1040,1310);
-                sCtx.strokeStyle = '#FFD93D'; sCtx.lineWidth = 10; sCtx.strokeRect(40,40,1000,1270);
-                
-                const logoImg = document.getElementById('brand-logo');
-                if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0 && logoImg.src.indexOf('placeholder') === -1) {
-                    const r = logoImg.naturalWidth / logoImg.naturalHeight; let dW = 350; let dH = dW / r;
-                    if(dH > 100) { dH = 100; dW = dH * r; } sCtx.drawImage(logoImg, 540 - (dW/2), 60, dW, dH); 
-                }
-                
-                drawStrokedText(sCtx, '🐾 AI 人寵相似度大測試 🐾', 540, 200, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
-                sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 260, 920, 320, 40); sCtx.fill();
-                drawStrokedText(sCtx, 'AI 終極大會評語', 540, 320, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
-                
-                // 調整長字句 Size
-                let commentFontSize = '45px'; if(state.comment.length > 18) commentFontSize = '35px'; if(state.comment.length > 22) commentFontSize = '30px';
-                sCtx.lineWidth = 10; sCtx.strokeStyle = '#fff'; sCtx.strokeText(state.comment, 540, 410, 880);
-                sCtx.fillStyle = '#e74c3c'; sCtx.font = `900 ${commentFontSize} "Noto Sans TC", sans-serif`; sCtx.fillText(state.comment, 540, 410, 880);
-                
-                sCtx.lineWidth = 20; sCtx.strokeStyle = '#fff'; sCtx.strokeText(`${state.scores.final}%`, 540, 540);
-                sCtx.fillStyle = '#54b97c'; sCtx.font = '900 150px "Fredoka", sans-serif'; sCtx.fillText(`${state.scores.final}%`, 540, 540);
-
-                // Puzzle Photos
+                // 🔥 Try-Catch 終極防死機 🔥
                 try {
-                    let w = 400, h = 400; let y = 630;
-                    sCtx.save(); sCtx.translate(340, y + 200); sCtx.rotate(-4 * Math.PI / 180);
-                    sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.fill(); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
-                    sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, h-80, 10); sCtx.closePath(); sCtx.clip();
-                    let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1); 
-                    sCtx.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, -w/2 + 15, -h/2 + 15, w-30, h-80); sCtx.restore();
+                    let colorS = genRandomScore(75); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
+                    let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
+                    finalAvg = parseFloat((finalAvg + (Date.now() % 100) / 10000).toFixed(3)); 
+                    if(finalAvg > 99.999) finalAvg = 99.999;
+                    state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
+
+                    // 🔥 10 級全新搞笑評語 🔥
+                    let comment = "";
+                    if(finalAvg >= 98) comment = "👼 靈魂共振！根本係源自同一個靈魂本源吧";
+                    else if(finalAvg >= 96) comment = "🧬 血濃於水！前世肯肯定係親生兄弟姊妹";
+                    else if(finalAvg >= 94) comment = "😱 失散多年嘅親生骨肉，連執相都唔使！";
+                    else if(finalAvg >= 92) comment = "😂 越養越似！連笑起上嚟個樣都一樣樣架喎";
+                    else if(finalAvg >= 90) comment = "🅾️ 親緣天定！咁似樣，注定做你仔女啦";
+                    else if(finalAvg >= 88) comment = "❤️ 勁！似過同一個祖宗，出街肯定畀人認錯！";
+                    else if(finalAvg >= 86) comment = "😎 可能上世住隔離村，今世做埋一家人！";
+                    else if(finalAvg >= 84) comment = "🍖 似似哋，但你嘅貪食基因似乎強過主子！";
+                    else if(finalAvg >= 82) comment = "👽 你哋係兩個星球嘅生物，唯一共同點係鍾意瞓覺！";
+                    else comment = "🐶 最佳拍檔！互相陪伴、沿途有愛";
                     
-                    sCtx.save(); sCtx.translate(340, y + 200); sCtx.rotate(-4 * Math.PI / 180);
-                    sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.hName, 0, h/2 - 25); sCtx.restore();
+                    state.comment = comment; 
 
-                    sCtx.save(); sCtx.translate(740, y + 200); sCtx.rotate(5 * Math.PI / 180);
-                    sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.fill(); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
-                    sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, h-80, 10); sCtx.closePath(); sCtx.clip();
-                    let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2); 
-                    sCtx.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, -w/2 + 15, -h/2 + 15, w-30, h-80); sCtx.restore();
+                    document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
+                    document.getElementById('res-comment').innerText = comment;
+                    document.getElementById('res-img-h').src = state.imgs.h1.src; document.getElementById('res-img-d').src = state.imgs.d1.src;
                     
-                    sCtx.save(); sCtx.translate(740, y + 200); sCtx.rotate(5 * Math.PI / 180);
-                    sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.dName, 0, h/2 - 25); sCtx.restore();
+                    let el = document.getElementById('s-final'); let start = finalAvg - 2.000;
+                    let timer = setInterval(() => { start += 0.051; if(start >= finalAvg) { start = finalAvg; clearInterval(timer); } el.innerText = start.toFixed(3) + "%"; }, 30);
 
-                    // Stamp VS
-                    sCtx.save(); sCtx.translate(540, y + 200); sCtx.rotate(-10 * Math.PI / 180);
-                    sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.arc(0, 0, 75, 0, Math.PI*2); sCtx.fill();
-                    sCtx.lineWidth = 6; sCtx.strokeStyle = '#e74c3c'; sCtx.stroke();
-                    sCtx.fillStyle = '#e74c3c'; sCtx.font = 'italic 900 50px "Fredoka", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText('VS', 0, -5);
-                    sCtx.font = 'bold 22px "Noto Sans TC", sans-serif'; sCtx.fillText('神合體', 0, 25);
-                    sCtx.restore();
-                } catch(e) {}
-                
-                sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1080, 920, 210, 40); sCtx.fill();
-                sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
-                sCtx.textAlign = 'left';
-                sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1160);
-                sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1230);
-                sCtx.fillText(`👀 眼神: ${state.scores.e}%`, 580, 1160);
-                sCtx.fillText(`🎭 神態: ${state.scores.v}%`, 580, 1230);
-                sCtx.textAlign = 'center';
-                sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1280);
+                    setTimeout(()=> { 
+                        document.getElementById('val-color').innerText = colorS+'%'; 
+                        document.getElementById('val-eye').innerText = eyeS+'%'; 
+                        document.getElementById('val-action').innerText = actionS+'%'; 
+                        document.getElementById('val-vibe').innerText = vibeS+'%'; 
+                        document.getElementById('val-funny').innerText = funnyS+'%'; 
 
-                sCtx.fillStyle = '#fff'; sCtx.font = 'bold 30px "Fredoka", sans-serif'; sCtx.fillText('ANIMALSSUM.COM', 540, 1335);
-                
-                sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
-                const shareDataURL = sCanvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('bar-color').style.width = colorS+'%'; 
+                        document.getElementById('bar-eye').style.width = eyeS+'%'; 
+                        document.getElementById('bar-action').style.width = actionS+'%'; 
+                        document.getElementById('bar-vibe').style.width = vibeS+'%'; 
+                        document.getElementById('bar-funny').style.width = funnyS+'%'; 
+                    }, 100);
 
-                state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
-                
-                const hCanvas = document.createElement('canvas'); hCanvas.width=150; hCanvas.height=150;
-                const ctxH = hCanvas.getContext('2d'); ctxH.beginPath(); ctxH.arc(75, 75, 75, 0, Math.PI*2, true); ctxH.closePath(); ctxH.clip(); 
-                let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1);
-                ctxH.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, 0, 0, 150, 150);
-                
-                const dCanvas = document.createElement('canvas'); dCanvas.width=150; dCanvas.height=150;
-                const ctxD = dCanvas.getContext('2d'); ctxD.beginPath(); ctxD.arc(75, 75, 75, 0, Math.PI*2, true); ctxD.closePath(); ctxD.clip(); 
-                let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2);
-                ctxD.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, 0, 0, 150, 150);
+                    // --- 畫 Share 圖 ---
+                    const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
+                    let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
+                    sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
+                    sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 40; sCtx.strokeRect(20,20,1040,1310);
+                    sCtx.strokeStyle = '#FFD93D'; sCtx.lineWidth = 10; sCtx.strokeRect(40,40,1000,1270);
+                    
+                    const logoImg = document.getElementById('brand-logo');
+                    try {
+                        if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
+                            const r = logoImg.naturalWidth / logoImg.naturalHeight; let dW = 350; let dH = dW / r;
+                            if(dH > 100) { dH = 100; dW = dH * r; } sCtx.drawImage(logoImg, 540 - (dW/2), 60, dW, dH); 
+                        }
+                    } catch(e) { console.log('Logo skip'); }
+                    
+                    drawStrokedText(sCtx, '🐾 AI 人寵相似度大測試 🐾', 540, 200, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
+                    sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 260, 920, 320, 40); sCtx.fill();
+                    drawStrokedText(sCtx, 'AI 終極大會評語', 540, 320, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
+                    
+                    let commentFontSize = '45px'; if(comment.length > 20) commentFontSize = '35px'; if(comment.length > 25) commentFontSize = '28px';
+                    sCtx.lineWidth = 10; sCtx.strokeStyle = '#fff'; sCtx.strokeText(state.comment, 540, 400, 880);
+                    sCtx.fillStyle = '#e74c3c'; sCtx.font = `900 ${commentFontSize} "Noto Sans TC", sans-serif`; sCtx.fillText(state.comment, 540, 400, 880);
+                    
+                    sCtx.lineWidth = 20; sCtx.strokeStyle = '#fff'; sCtx.strokeText(`${state.scores.final}%`, 540, 540);
+                    sCtx.fillStyle = '#54b97c'; sCtx.font = '900 150px "Fredoka", sans-serif'; sCtx.fillText(`${state.scores.final}%`, 540, 540);
 
-                const record = { 
-                    dogName: state.dName, humanName: state.hName, score: state.scores.final, 
-                    humanImg: hCanvas.toDataURL('image/jpeg', 0.5), dogImg: dCanvas.toDataURL('image/jpeg', 0.5), 
-                    public: false, timestamp: new Date().getTime(), 
-                    ip: userIP, petType: state.petType || 'Dog', refSource: state.refSource
-                };
-                
-                if (db) { db.collection("certs").doc(state.docId).set(record).catch(e => { console.log(e); }); }
+                    try {
+                        let w = 400, h = 400; let y = 630;
+                        sCtx.save(); sCtx.translate(340, y + 200); sCtx.rotate(-4 * Math.PI / 180);
+                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.fill(); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
+                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, h-80, 10); sCtx.closePath(); sCtx.clip();
+                        let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1); 
+                        sCtx.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, -w/2 + 15, -h/2 + 15, w-30, h-80); sCtx.restore();
+                        
+                        sCtx.save(); sCtx.translate(340, y + 200); sCtx.rotate(-4 * Math.PI / 180);
+                        sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.hName, 0, h/2 - 25); sCtx.restore();
+
+                        sCtx.save(); sCtx.translate(740, y + 200); sCtx.rotate(5 * Math.PI / 180);
+                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.fill(); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
+                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, h-80, 10); sCtx.closePath(); sCtx.clip();
+                        let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2); 
+                        sCtx.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, -w/2 + 15, -h/2 + 15, w-30, h-80); sCtx.restore();
+                        
+                        sCtx.save(); sCtx.translate(740, y + 200); sCtx.rotate(5 * Math.PI / 180);
+                        sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.dName, 0, h/2 - 25); sCtx.restore();
+
+                        sCtx.save(); sCtx.translate(540, 830); sCtx.rotate(-10 * Math.PI / 180);
+                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.arc(0, 0, 75, 0, Math.PI*2); sCtx.fill();
+                        sCtx.lineWidth = 6; sCtx.strokeStyle = '#e74c3c'; sCtx.stroke();
+                        sCtx.fillStyle = '#e74c3c'; sCtx.font = 'italic 900 50px "Fredoka", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText('VS', 0, -5);
+                        sCtx.font = 'bold 22px "Noto Sans TC", sans-serif'; sCtx.fillText('神合體', 0, 25);
+                        sCtx.restore();
+                    } catch(e) {}
+                    
+                    sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1080, 920, 210, 40); sCtx.fill();
+                    sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
+                    sCtx.textAlign = 'left';
+                    sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1160);
+                    sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1230);
+                    sCtx.fillText(`👀 眼神: ${state.scores.e}%`, 580, 1160);
+                    sCtx.fillText(`🎭 神態: ${state.scores.v}%`, 580, 1230);
+                    sCtx.textAlign = 'center';
+                    sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1280);
+
+                    sCtx.fillStyle = '#fff'; sCtx.font = 'bold 30px "Fredoka", sans-serif'; sCtx.fillText('ANIMALSSUM.COM', 540, 1335);
+                    
+                    sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
+                    const shareDataURL = sCanvas.toDataURL('image/jpeg', 0.7);
+
+                    state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
+                    
+                    const hCanvas = document.createElement('canvas'); hCanvas.width=150; hCanvas.height=150;
+                    const ctxH = hCanvas.getContext('2d'); ctxH.beginPath(); ctxH.arc(75, 75, 75, 0, Math.PI*2, true); ctxH.closePath(); ctxH.clip(); 
+                    let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1);
+                    ctxH.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, 0, 0, 150, 150);
+                    
+                    const dCanvas = document.createElement('canvas'); dCanvas.width=150; dCanvas.height=150;
+                    const ctxD = dCanvas.getContext('2d'); ctxD.beginPath(); ctxD.arc(75, 75, 75, 0, Math.PI*2, true); ctxD.closePath(); ctxD.clip(); 
+                    let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2);
+                    ctxD.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, 0, 0, 150, 150);
+
+                    const record = { 
+                        dogName: state.dName, humanName: state.hName, score: state.scores.final, 
+                        humanImg: hCanvas.toDataURL('image/jpeg', 0.5), dogImg: dCanvas.toDataURL('image/jpeg', 0.5), 
+                        public: false, timestamp: new Date().getTime(), 
+                        ip: userIP, petType: state.petType || 'Dog', refSource: state.refSource
+                    };
+                    
+                    if (db) { db.collection("certs").doc(state.docId).set(record).catch(e => { console.log(e); }); }
+                } catch(error) {
+                    console.error("Canvas Gen Error:", error);
+                    alert("生成圖片時發生錯誤 (可能是圖片格式問題)，請嘗試使用另一張相片！");
+                }
 
                 document.getElementById('loader').style.display = 'none';
                 switchView('view-result');
@@ -679,7 +680,7 @@
         async function shareResultInstant() {
             if(!state.shareImgBlob) return alert("圖片準備中，請稍候...");
             const file = new File([state.shareImgBlob], "AnimalsSum_Share.jpg", { type: "image/jpeg" });
-            const text = `我同 ${state.dName} 喺 AnimalsSum 配對攞到 ${state.scores.final}%！快啲嚟測下！ #AnimalsSum人寵似樣測試 @animalssum`;
+            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中攞到 ${state.scores.final}%！快啲嚟測下！ #AnimalsSum人寵似樣測試 @animalssum`;
             try {
                 if (navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ title: 'AnimalsSum', text: text, files:[file] }); } 
                 else { 
