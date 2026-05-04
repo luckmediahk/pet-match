@@ -30,10 +30,9 @@
 
     <style>
         :root { --brand: #54b97c; --brand-dark: #3da065; --accent: #FFD93D; --danger: #FF6B6B; --dark: #2d3436; --light: #f6fffa; }
-        /* 背景清走 Emoji，保持簡潔 Pro 嘅漸變 */
+        
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf8f1; margin: 0; padding: 20px; min-height: 100vh; color: var(--dark); position: relative; overflow-x: hidden; }
         
-        /* 🔥 縮窄 Container，回復精緻 App 排版 🔥 */
         .container { width: 100%; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 35px; padding: 30px 20px; box-sizing: border-box; box-shadow: 0 15px 40px rgba(0,0,0,0.08); position: relative; z-index: 1;}
         
         header { text-align: center; margin-bottom: 20px; position: relative; }
@@ -48,12 +47,12 @@
         .names-col { flex: 1; min-width: 140px; }
         .names-col label { font-weight: bold; color: #555; display: block; margin-bottom: 5px; font-size: 0.9rem; text-align: center; }
         .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 1rem; box-sizing: border-box; text-align: center; transition: 0.3s; background: #fff; }
-        .form-input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 10px rgba(84,185,124,0.3); }
+        .form-input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 10px rgba(84,185,124,0.3); transform: scale(1.02);}
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1rem; }
 
         .home-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
-        .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 15px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #3da065; transition: all 0.1s; margin-top: 10px; }
+        .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 15px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #3da065; transition: transform 0.1s, box-shadow 0.1s; margin-top: 10px; }
         .main-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #3da065; animation: none; }
         .main-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; }
         
@@ -66,7 +65,8 @@
         .action-btn { background: var(--accent); color: var(--dark); box-shadow: 0 6px 0 #d4a000; }
         .action-btn:active { box-shadow: 0 3px 0 #d4a000; }
 
-        .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; margin-top: 10px;}
+        .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; margin-top: 10px; transition: 0.3s;}
+        .round-box:hover { border-color: var(--brand); }
         .round-title { text-align: center; font-weight: 900; color: #fff; margin-bottom: 15px; font-size: 1rem; background: #54a0ff; display: inline-block; padding: 6px 20px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 4px 10px rgba(84,160,255,0.3); }
         .match-row { display: flex; gap: 10px; justify-content: center; align-items: stretch; }
         
@@ -76,29 +76,35 @@
         .img-box { width: 100%; flex-grow: 1; min-height: 140px; border-radius: 10px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #eee; }
         .img-box img.preview { width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; inset: 0; z-index: 2; }
         .demo-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.25; z-index: 0; mix-blend-mode: multiply; }
-        .ui-elements { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+        .ui-elements { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .photo-card:hover .ui-elements { transform: scale(1.1); }
         .placeholder { font-size: 3rem; color: #555; margin-bottom: 5px; text-shadow: 0 0 10px #fff; }
         .cam-icon { font-size: 0.8rem; color: #fff; font-weight: bold; background: #4a90e2; padding: 6px 12px; border-radius: 15px; box-shadow: 0 4px 10px rgba(74,144,226,0.4); }
         
-        .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        .res-top-score { text-align: center; margin-bottom: 20px; }
-        .res-top-score h3 { margin: 0; font-size: 1.2rem; color: #333; font-weight: 900; }
-        .res-top-score .val { font-size: clamp(4rem, 12vw, 6rem); color: var(--brand); font-weight: 900; line-height: 1; text-shadow: 2px 2px 0 #eee; }
-
-        .res-puzzle-container { display: flex; justify-content: center; align-items: center; position: relative; margin: 10px 0 30px 0; gap: 10px;}
-        .res-puzzle-card { width: clamp(120px, 38vw, 180px); background: #fff; padding: 8px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; position: relative; }
-        .res-puzzle-card img { width: 100%; aspect-ratio: 1/1.1; object-fit: cover; border-radius: 10px; background: #f0f0f0; }
-        .res-puzzle-card p { margin: 8px 0 0 0; font-weight: bold; color: #555; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        /* 🔥 新增修復嘅 Result 頁面 CSS 🔥 */
+        .result-header { text-align: center; margin-bottom: 20px; }
+        .result-header h2 { margin: 0; font-size: 1.5rem; color: #333; font-weight: 900; line-height: 1.3;}
         
-        .res-stamp { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%) rotate(-10deg); background: #fff; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid #8e44ad; color: #8e44ad; font-weight: 900; font-size: 1.2rem; font-family: 'Mochiy Pop One', sans-serif; box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 5; flex-direction: column; line-height: 1;}
-        .res-stamp span { font-size: 0.8rem; color: #e74c3c; font-family: sans-serif; margin-top:2px;}
+        .puzzle-arena { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 25px 0; }
+        .puzzle-piece { width: clamp(110px, 35vw, 140px); aspect-ratio: 1; border-radius: 20px; border: 5px solid #fff; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: 0.3s; }
+        .puzzle-human { transform: rotate(-6deg); animation: bounceInLeft 0.6s ease-out; }
+        .puzzle-dog { transform: rotate(6deg); animation: bounceInRight 0.6s ease-out; }
+        .puzzle-piece img { width: 100%; height: 100%; object-fit: cover; }
+        .puzzle-vs { font-size: 2rem; font-weight: 900; color: var(--accent); font-style: italic; text-shadow: 3px 3px 0 var(--dark); z-index: 2; animation: popUp 0.5s 0.2s both; }
 
-        .funny-verdict-box { background: #fffcf0; padding: 20px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 2px solid #ffeaa7; box-shadow: 0 8px 20px rgba(0,0,0,0.05); position: relative; }
+        .simple-score-box { background: linear-gradient(135deg, #fff, #f8f9fa); padding: 20px; border-radius: 25px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 2px solid #eee; margin-bottom: 20px; transform: scale(1); transition: 0.2s; }
+        .simple-score-box:active { transform: scale(0.98); }
+        .simple-score-label { font-size: 1rem; color: #888; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;}
+        .simple-score-val { font-size: clamp(4rem, 12vw, 5.5rem); color: var(--brand); font-weight: 900; line-height: 1; font-family: 'Fredoka', sans-serif; text-shadow: 3px 3px 0 #eaf8f1; }
+
+        .funny-verdict-box { background: #fffcf0; padding: 20px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 2px solid #ffeaa7; box-shadow: 0 8px 20px rgba(0,0,0,0.05); position: relative; animation: fadeIn 0.8s ease-out; }
         .funny-label { font-size: 0.9rem; color: #a4b0be; font-weight: bold; margin-bottom: 5px; letter-spacing: 1px; display:flex; align-items:center; justify-content:center;}
         .funny-label::before, .funny-label::after { content: ''; flex: 1; border-bottom: 1px solid #dfe6e9; margin: 0 10px; }
-        .funny-text { font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 900; color: #2d3436; margin: 0; line-height: 1.4;}
+        .funny-text { font-size: clamp(1.2rem, 4vw, 1.6rem); font-weight: 900; color: #2d3436; margin: 0; line-height: 1.4;}
+        .sub-comment { margin-top: 10px; font-size: 0.95rem; color: #e17055; font-weight: bold; background: #fff; display: inline-block; padding: 5px 15px; border-radius: 15px; border: 1px dashed #ffeaa7;}
 
         .detail-bars { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; margin-bottom: 20px; }
         .detail-bars-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -122,7 +128,8 @@
         .avg-score-box span { font-size: 2.2rem; color: var(--brand); font-weight: 900; display: block; font-family: 'Fredoka', sans-serif;}
         
         .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin: 40px 0 30px 0; height: 160px; }
-        .podium { flex: 1; max-width: 110px; text-align: center; background: white; border-radius: 15px 15px 0 0; padding: 15px 5px 5px; position: relative; box-shadow: 0 -3px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: flex-end; }
+        .podium { flex: 1; max-width: 110px; text-align: center; background: white; border-radius: 15px 15px 0 0; padding: 15px 5px 5px; position: relative; box-shadow: 0 -3px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: flex-end; transition: transform 0.3s;}
+        .podium:hover { transform: translateY(-5px); }
         .podium.rank-1 { height: 140px; border-top: 8px solid #FFD700; z-index: 3; background: linear-gradient(to bottom, #fffdf0, #fff); }
         .podium.rank-2 { height: 100px; border-top: 8px solid #C0C0C0; z-index: 2; background: linear-gradient(to bottom, #f8f9fa, #fff); }
         .podium.rank-3 { height: 80px; border-top: 8px solid #CD7F32; z-index: 1; background: linear-gradient(to bottom, #fdf8f5, #fff); }
@@ -135,18 +142,19 @@
         .podium .score { color: var(--brand); font-weight: 900; font-size: 1rem; font-family: 'Fredoka', sans-serif; }
 
         .rank-list { display: flex; flex-direction: column; gap: 10px; }
-        .rank-row { display: flex; align-items: center; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); gap: 10px; border: 1px solid #f0f0f0; position: relative; overflow: hidden;}
+        .rank-row { display: flex; align-items: center; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); gap: 10px; border: 1px solid #f0f0f0; position: relative; overflow: hidden; transition: transform 0.2s;}
+        .rank-row:active { transform: scale(0.98); }
         .rank-row.prize-zone { background: #fffcf0; border-color: #ffeaa7; } 
         .rank-row.highlight { border: 3px solid var(--brand) !important; background: #f0fdf4 !important; box-shadow: 0 4px 12px rgba(84, 185, 124, 0.2); } 
         .podium.highlight { border-bottom: 4px solid var(--brand); background: #f0fdf4; }
 
         .rank-num { font-size: 1.2rem; font-weight: 900; color: #bbb; width: 25px; text-align: center; }
-        .rank-row .avatars { display: flex; width: 70px; justify-content: center; }
+        .rank-row .rank-avatars { display: flex; width: 70px; justify-content: center; }
         .rank-row img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); object-fit: cover; }
         .rank-row img:nth-child(2) { margin-left: -15px; }
-        .rank-info { flex: 1; display: flex; flex-direction: column; padding-left: 5px; }
-        .rank-info h4 { margin: 0; font-size: 0.95rem; color: #333; word-break: break-word; line-height: 1.2; max-width: 140px;}
-        .rank-info .score { font-size: 1.1rem; font-weight: 900; color: var(--brand); margin-top: 2px; font-family: 'Fredoka', sans-serif; }
+        .rank-names { flex: 1; display: flex; flex-direction: column; padding-left: 5px; }
+        .rank-names h4 { margin: 0; font-size: 0.95rem; color: #333; word-break: break-word; line-height: 1.2; max-width: 140px;}
+        .rank-score { font-size: 1.1rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; }
         
         .prize-tag { position: absolute; right: -20px; top: 8px; background: #FFD93D; color: #333; font-size: 0.65rem; font-weight: bold; padding: 2px 25px; transform: rotate(45deg); }
 
@@ -162,6 +170,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes pulseBtn { 0% { box-shadow: 0 6px 0 #3da065, 0 0 0 0 rgba(84,185,124,0.4); } 70% { box-shadow: 0 6px 0 #3da065, 0 0 0 10px rgba(84,185,124,0); } 100% { box-shadow: 0 6px 0 #3da065, 0 0 0 0 rgba(84,185,124,0); } }
+        @keyframes bounceInLeft { 0% { opacity: 0; transform: translateX(-50px) rotate(-15deg); } 100% { opacity: 1; transform: translateX(0) rotate(-6deg); } }
+        @keyframes bounceInRight { 0% { opacity: 0; transform: translateX(50px) rotate(15deg); } 100% { opacity: 1; transform: translateX(0) rotate(6deg); } }
         
         #loader { position: fixed; inset:0; background: rgba(255,255,255,0.95); z-index: 999; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
@@ -174,7 +184,7 @@
 
     <div id="loader">
         <div class="spinner">⚙️</div>
-        <h2 id="loader-text" style="color:#555; margin-top:20px;">大數據運算中...</h2>
+        <h2 id="loader-text" style="color:#555; margin-top:20px;">AI 正幫你哋搵出命中注定嘅相似度...</h2>
     </div>
 
     <div class="container">
@@ -234,12 +244,13 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS (修復顯示 100%) 🔥 -->
+        <!-- 🔥 VIEW 3: RESULTS 🔥 -->
         <div id="view-result" class="view">
             <div class="result-header">
                 <h2><span id="res-names" style="color:var(--brand);"></span> 的報告🏆</h2>
             </div>
             
+            <!-- 你加嘅互動排版！(而家有CSS配合啦) -->
             <div class="puzzle-arena">
                 <div class="puzzle-piece puzzle-human"><img id="res-img-h"></div>
                 <div class="puzzle-vs">VS</div>
@@ -249,10 +260,11 @@
             <div class="funny-verdict-box">
                 <div class="funny-label">AI 終極大會評語</div>
                 <div class="funny-text" id="res-comment">...</div>
+                <div class="sub-comment" id="res-subcomment"></div>
             </div>
 
             <div class="simple-score-box">
-                <div class="simple-score-label">人寵相似度</div>
+                <div class="simple-score-label">人寵神同步率</div>
                 <div class="simple-score-val" id="s-final">0%</div>
             </div>
 
@@ -342,7 +354,7 @@
     <div id="ig-gate-modal" class="modal-overlay">
         <div class="modal-content">
             <h2 style="margin-bottom:10px;">🔒 報告已生成！</h2>
-            <p>支持我們製作更多人寵遊戲，請 <b>Follow 動物之心</b>，解鎖睇結果。</p>
+            <p>有時你以為係你揀咗佢，其實可能係佢揀咗你。 <br><b>Follow 動物之心</b>，睇更多人寵故事，支持我哋解鎖結果。</p>
             <button class="main-btn action-btn" style="padding:15px; font-size:1.1rem;" id="btn-ig-unlock" onclick="unlockResult()">👉 去 Follow IG 解鎖</button>
         </div>
     </div>
@@ -384,10 +396,11 @@
         const urlParams = new URLSearchParams(window.location.search);
         if(urlParams.get('ref')) state.refSource = urlParams.get('ref');
 
+        // 🔥 AI 關鍵字清單 (修復咗「未定義」嘅 Bug) 🔥
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
         const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
+        const rejectKeywords =['cell phone','laptop','tv','remote','book','bottle','cup','chair','couch','dining table','potted plant','car','motorcycle'];
 
-        // 🔥 永不死圖假數據庫 (分數 80-96) 🔥
         const fakeLeaderboardData =[
             { humanName: "Jason", dogName: "Mochi", score: 96.314, humanImg: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=150&h=150&fit=crop", public: true },
             { humanName: "Ka Yan", dogName: "Coffee", score: 95.552, humanImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=150&h=150&fit=crop", public: true },
@@ -408,8 +421,8 @@
             const promoBoxLb = document.getElementById('promo-teaser-lb');
             if(!promoBox) return;
             const now = new Date();
-            const cutoffDate = new Date(2026, 4, 6, 23, 59, 59); // 5月6日
-            const phase2Date = new Date(2026, 4, 15, 0, 0, 0);   // 5月15日
+            const cutoffDate = new Date(2026, 4, 6, 23, 59, 59); 
+            const phase2Date = new Date(2026, 4, 15, 0, 0, 0);   
 
             let content = '';
             if (now >= phase2Date) {
@@ -442,7 +455,6 @@
         }
         updateCountdown();
 
-        // 🔥 AI 判斷機制 (寬鬆版：只封鎖明顯錯誤) 🔥
         async function checkImg(e, imgId, bubbleId, targetRole) {
             const file = e.target.files[0]; if(!file) return;
             const img = document.getElementById(imgId); const bubble = document.getElementById(bubbleId); const box = document.getElementById('box-' + imgId.replace('img-',''));
@@ -533,7 +545,6 @@
             try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
             setTimeout(async () => {
-                // 🔥 Try-Catch 終極防死機 🔥
                 try {
                     let colorS = genRandomScore(75); let eyeS = genRandomScore(80); let actionS = genRandomScore(80); let vibeS = genRandomScore(85); let funnyS = genRandomScore(88);
                     let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
@@ -541,7 +552,6 @@
                     if(finalAvg > 99.999) finalAvg = 99.999;
                     state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
-                    // 🔥 10 級全新搞笑評語 🔥
                     let comment = "";
                     if(finalAvg >= 98) comment = "👼 靈魂共振！根本係源自同一個靈魂本源吧";
                     else if(finalAvg >= 96) comment = "🧬 血濃於水！前世肯肯定係親生兄弟姊妹";
@@ -556,13 +566,51 @@
                     
                     state.comment = comment; 
 
+                    // 🔥 修正：刪除咗引致死機嗰行 subComment 🔥
                     document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
                     document.getElementById('res-comment').innerText = comment;
-                    document.getElementById('res-img-h').src = state.imgs.h1.src; document.getElementById('res-img-d').src = state.imgs.d1.src;
+
+                    const dynamicComments = {
+                        color:[
+                            '你哋最似，原來係第一眼就感覺到嗰種氣場。',
+                            '有啲似樣，唔一定係五官，可能係成個色調都對咗。',
+                            '一望埋去，已經有種「同一隊」嘅感覺。'
+                        ],
+                        eye:[
+                            '最似嘅地方，可能就係望人嗰一下。',
+                            '你哋個眼神，都有種「我知你想講乜」。',
+                            '最有靈魂共鳴嘅，可能係雙眼。'
+                         ],
+                         action:[
+                            '原來你哋連細微動作都幾有默契。',
+                            '你哋郁起上嚟，有種同一個節奏。',
+                            '同步唔一定係樣，可能係一舉一動。'
+                         ],
+                        vibe:[
+                            '最同步嘅，可能係你哋嗰份神態。',
+                            '你哋個 vibe，真係幾有默契。',
+                            '表情未必一樣，但感覺竟然幾接近。'
+                        ],
+                        funny:[
+                            '原來你哋最同步嘅，係見到食物嗰個反應。',
+                            '食嘢呢方面，你哋個靈魂幾一致。',
+                            '一講到食，默契值即刻升級。'
+                        ]
+                    };
+
+                    const scoreMap = { color: colorS, eye: eyeS, action: actionS, vibe: vibeS, funny: funnyS };
+                    const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
+                    const pool = dynamicComments[topKey];
+                    const dynamicComment = pool[Math.floor(Math.random() * pool.length)];
+
+                    // 🔥 呢度先係正確顯示子評語嘅地方 🔥
+                    document.getElementById('res-subcomment').innerText = dynamicComment;
+                    document.getElementById('res-img-h').src = state.imgs.h1.src; 
+                    document.getElementById('res-img-d').src = state.imgs.d1.src;
                     
                     let el = document.getElementById('s-final'); let start = finalAvg - 2.000;
                     let timer = setInterval(() => { start += 0.051; if(start >= finalAvg) { start = finalAvg; clearInterval(timer); } el.innerText = start.toFixed(3) + "%"; }, 30);
-
+                    
                     setTimeout(()=> { 
                         document.getElementById('val-color').innerText = colorS+'%'; 
                         document.getElementById('val-eye').innerText = eyeS+'%'; 
@@ -644,7 +692,6 @@
                     sCtx.fillStyle = '#fff'; sCtx.font = 'bold 30px "Fredoka", sans-serif'; sCtx.fillText('ANIMALSSUM.COM', 540, 1335);
                     
                     sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
-                    const shareDataURL = sCanvas.toDataURL('image/jpeg', 0.7);
 
                     state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                     
@@ -665,7 +712,26 @@
                         ip: userIP, petType: state.petType || 'Dog', refSource: state.refSource
                     };
                     
-                    if (db) { db.collection("certs").doc(state.docId).set(record).catch(e => { console.log(e); }); }
+                    if (db) {
+                        const docRef = db.collection("certs").doc(state.docId);
+
+                         docRef.get().then((docSnap) => {
+                     if (!docSnap.exists) {
+                        docRef.set(record).catch(e => console.log(e));
+                        return;
+                        }
+
+                        const oldData = docSnap.data();
+                        const oldScore = oldData.score || 0;
+
+                    if (record.score > oldScore) {
+                         docRef.set({
+                            ...oldData,
+                            ...record
+                            }).catch(e => console.log(e));
+                            }
+                         }).catch(e => console.log(e));
+                    }
                 } catch(error) {
                     console.error("Canvas Gen Error:", error);
                     alert("生成圖片時發生錯誤 (可能是圖片格式問題)，請嘗試使用另一張相片！");
