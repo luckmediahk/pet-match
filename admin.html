@@ -11,7 +11,7 @@
     <!-- SEO & Social Media Share -->
     <meta name="description" content="AI 神速合拍大比拚！立即測試你同毛孩有幾似樣，贏取龍角散等豐富大獎！">
     <meta property="og:title" content="🐾 AnimalsSum | AI 人寵相似度大測試">
-    <meta property="og:description" content="我同主子似唔似樣？立即參加 AI 神速合拍大比拚，頭50名贏取豐富大獎！">
+    <meta property="og:description" content="我同主子似唔似樣？立即參加 AI 神速合拍大比拚，頭20名贏取豐富大獎！">
     <meta property="og:image" content="https://luckmediahk.github.io/pet-match/og-image.jpg">
     <meta property="og:url" content="https://game.animalssum.com">
     <meta property="og:type" content="website">
@@ -39,6 +39,7 @@
         .logo-tag { background: var(--dark); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.9rem; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .ver-tag { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: 5px; vertical-align: super; }
         h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 10px 0 5px; color: var(--brand); text-shadow: 1px 1px 0px #eee; font-weight: 900; white-space: nowrap; letter-spacing: -1px;}
+        .subtitle { color: #555; font-size: 1.05rem; font-weight: bold; margin: 5px 0 15px 0; line-height: 1.4; }
 
         .view { display: none; animation: fadeIn 0.4s ease-out; }
         .view.active { display: block; }
@@ -51,7 +52,7 @@
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1rem; }
 
-        .home-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
+        .home-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
         .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 15px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #3da065; transition: transform 0.1s, box-shadow 0.1s; margin-top: 10px; }
         .main-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #3da065; animation: none; }
         .main-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; }
@@ -84,7 +85,6 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 新增修復嘅 Result 頁面 CSS 🔥 */
         .result-header { text-align: center; margin-bottom: 20px; }
         .result-header h2 { margin: 0; font-size: 1.5rem; color: #333; font-weight: 900; line-height: 1.3;}
         
@@ -189,8 +189,9 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v48.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v49.1</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
+            <p class="subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
         </header>
 
         <!-- VIEW 1: HOME -->
@@ -244,13 +245,12 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS 🔥 -->
+        <!-- VIEW 3: RESULTS -->
         <div id="view-result" class="view">
             <div class="result-header">
                 <h2><span id="res-names" style="color:var(--brand);"></span> 的報告🏆</h2>
             </div>
             
-            <!-- 你加嘅互動排版！(而家有CSS配合啦) -->
             <div class="puzzle-arena">
                 <div class="puzzle-piece puzzle-human"><img id="res-img-h"></div>
                 <div class="puzzle-vs">VS</div>
@@ -305,7 +305,7 @@
         <div id="view-leaderboard" class="view">
             <div class="warm-banner">
                 <h2>🏆 全港排行榜</h2>
-                <p style="margin:0; font-size:1rem; opacity:0.9;">頭 50 名將獲得豐富獎品！(5月6日截止)</p>
+                <p style="margin:0; font-size:1rem; opacity:0.9;">頭 20 名將獲得豐富獎品！(5月26日截止)</p>
                 <div class="avg-score-box">
                     <span style="font-size:0.9rem; color:#555; font-weight:bold; display:block; margin-bottom:5px;">全港平均相似度</span>
                     <span id="hk-avg-score">--.--%</span>
@@ -329,7 +329,8 @@
                 <p><b>無限次參與：</b> 每名參加者及其毛孩均可無限次進行遊戲。<br>
                 <b>最高排名計算：</b> 為確保公平，系統只會計算該名參加者與其毛孩組合中「得分/排名最高」之一次成績。<br>
                 <b>身份核實與獲獎限制：</b> 本公司將以參加者提交之「姓名、電郵地址及手機號碼」作為身份核對基準。每位參加者及其毛孩組合，最多只會獲得一次得獎資格。<br>
-                <b>名次順延機制：</b> 若系統發現重複得獎者，將自動取消其最高排名以外的名次，並按成績順延予下一位。</p>
+                <b>一人一寵限制：</b> 得獎者提交之相片必須為「一人一狗」或「一人一貓」的合照或拼圖。如發現不符合此條件（例如多人、多寵、或非指定動物），其得獎資格將會作廢，名次將自動順延予下一位合資格參加者。<br>
+                <b>名次順延機制：</b> 若系統發現重複得獎者或違反資格者，將自動取消其最高排名以外的名次，並按成績順延予下一位。</p>
 
                 <h3>2. 授權條款及資料宣傳用途</h3>
                 <p><b>明示同意：</b> 參加者一經發送或上載任何相片，即等同正式參與本遊戲；一經提交個人資料，即等同同意參與「公開排行榜」。<br>
@@ -362,7 +363,7 @@
     <div id="consent-modal" class="modal-overlay">
         <div class="modal-content" style="max-height: 90vh; overflow-y: auto; padding: 25px 20px;">
             <h2 style="color:var(--danger); margin-bottom: 5px; font-size:1.6rem;">🎁 登記贏取獎品</h2>
-            <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">全港排行榜 <b>頭 50 名</b> 將獲得豐富獎品！<br>請填寫聯絡資料，並發佈成績上榜！</p>
+            <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">全港排行榜 <b>頭 20 名</b> 將獲得豐富獎品！<br>請填寫聯絡資料，並發佈成績上榜！</p>
             
             <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 真實姓名 (領獎用)"></div>
             <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話"></div>
@@ -396,7 +397,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         if(urlParams.get('ref')) state.refSource = urlParams.get('ref');
 
-        // 🔥 AI 關鍵字清單 (修復咗「未定義」嘅 Bug) 🔥
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
         const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
         const rejectKeywords =['cell phone','laptop','tv','remote','book','bottle','cup','chair','couch','dining table','potted plant','car','motorcycle'];
@@ -421,22 +421,27 @@
             const promoBoxLb = document.getElementById('promo-teaser-lb');
             if(!promoBox) return;
             const now = new Date();
-            const cutoffDate = new Date(2026, 4, 6, 23, 59, 59); 
-            const phase2Date = new Date(2026, 4, 15, 0, 0, 0);   
+            
+            // 🔥 時間節點 🔥
+            const startDate = new Date(2026, 4, 13, 8, 0, 0);   // 5月13日 早上 8 點
+            const cutoffDate = new Date(2026, 4, 26, 23, 59, 59); // 5月26日 23:59:59 截止
+            const phase2Date = new Date(2026, 5, 10, 0, 0, 0);   // 6月10日 (預留比Phase 2用)
 
             let content = '';
             if (now >= phase2Date) {
                 content = "🔥 下一重磅製作：毛孩像你 即將面世，敬請預留幻想！";
             } else if (now >= cutoffDate) {
                 content = "🎁 【全城尋找 100% 餅印人寵】<br>現已截止，進入計算階段，可以主動在 IG 聯絡動物之心！";
+            } else if (now < startDate) {
+                content = `🎁 【全城尋找最餅印一對】<br>活動將於 5月13日 早上正式展開！<br><span style="color:#e74c3c; font-size:1.1rem; display:block; margin-top:5px;">敬請期待</span>`;
             } else {
                 const timeDiff = cutoffDate - now;
                 const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                let dayText = "2026年5月6日";
-                if(daysLeft <= 7 && daysLeft > 1) dayText = `最後 ${daysLeft} 天`;
-                if(daysLeft === 1) dayText = "最後今天";
+                let dayText = "5月26日截止";
+                if(daysLeft <= 7 && daysLeft > 1) dayText = `最後 ${daysLeft} 日倒數`;
+                if(daysLeft === 1) dayText = "最後今天！";
                 
-                content = `🎁 【全城尋找 100% 餅印人寵】<br>排行榜頭 50 名可獲得豐富獎品（包括寵物食品、養膚花水等）<br><span style="color:#e74c3c; font-size:1.1rem; display:block; margin-top:5px;">Cut-off Date: ${dayText}</span>`;
+                content = `🎁 【全城尋找最餅印一對】<br>排行榜頭 20 名可獲得豐富獎品（包括寵物食品、養膚花水等）<br><span style="color:#e74c3c; font-size:1.1rem; display:block; margin-top:5px;">活動進行中 (${dayText})</span>`;
             }
             promoBox.innerHTML = content;
             if(promoBoxLb) promoBoxLb.innerHTML = content;
@@ -519,16 +524,10 @@
             setTimeout(() => { document.getElementById('ig-gate-modal').style.display = 'none'; generateResults(); }, 3000);
         }
 
-        function drawCroppedCircle(ctx, img, cx, cy, radius, borderColor, borderWidth) {
-            ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2, true); ctx.closePath(); ctx.clip();
-            const nw = img.naturalWidth || img.width; const nh = img.naturalHeight || img.height;
-            const size = Math.min(nw, nh); const sx = (nw - size) / 2; const sy = (nh - size) / 2;
-            ctx.drawImage(img, sx, sy, size, size, cx - radius, cy - radius, radius * 2, radius * 2); ctx.restore();
-            if(borderWidth > 0) { ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.lineWidth = borderWidth; ctx.strokeStyle = borderColor; ctx.stroke(); }
-        }
         function drawStrokedText(ctx, text, x, y, font, fillColor, strokeColor, lineWidth) {
             ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
-            ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
+            if(lineWidth > 0) { ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); }
+            ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
         
         function genUniqueScore(min) {
@@ -566,7 +565,6 @@
                     
                     state.comment = comment; 
 
-                    // 🔥 修正：刪除咗引致死機嗰行 subComment 🔥
                     document.getElementById('res-names').innerText = `${state.hName} & ${state.dName}`;
                     document.getElementById('res-comment').innerText = comment;
 
@@ -603,7 +601,6 @@
                     const pool = dynamicComments[topKey];
                     const dynamicComment = pool[Math.floor(Math.random() * pool.length)];
 
-                    // 🔥 呢度先係正確顯示子評語嘅地方 🔥
                     document.getElementById('res-subcomment').innerText = dynamicComment;
                     document.getElementById('res-img-h').src = state.imgs.h1.src; 
                     document.getElementById('res-img-d').src = state.imgs.d1.src;
@@ -625,22 +622,25 @@
                         document.getElementById('bar-funny').style.width = funnyS+'%'; 
                     }, 100);
 
-                    // --- 畫 Share 圖 ---
+                    // --- 🔥 畫 Share 圖 (修復變形及排版問題) 🔥 ---
                     const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
                     let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
                     sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
                     sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 40; sCtx.strokeRect(20,20,1040,1310);
                     sCtx.strokeStyle = '#FFD93D'; sCtx.lineWidth = 10; sCtx.strokeRect(40,40,1000,1270);
                     
+                    // Logo 位置調正，唔再遮蓋或走位
                     const logoImg = document.getElementById('brand-logo');
                     try {
                         if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
-                            const r = logoImg.naturalWidth / logoImg.naturalHeight; let dW = 350; let dH = dW / r;
-                            if(dH > 100) { dH = 100; dW = dH * r; } sCtx.drawImage(logoImg, 540 - (dW/2), 60, dW, dH); 
+                            const r = logoImg.naturalWidth / logoImg.naturalHeight; 
+                            let dH = 85; let dW = dH * r;
+                            sCtx.drawImage(logoImg, 540 - (dW/2), 70, dW, dH); 
                         }
                     } catch(e) { console.log('Logo skip'); }
                     
-                    drawStrokedText(sCtx, '🐾 AI 人寵相似度大測試 🐾', 540, 200, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
+                    drawStrokedText(sCtx, '🐾 AI 人寵相似度大測試 🐾', 540, 215, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
+                    
                     sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 260, 920, 320, 40); sCtx.fill();
                     drawStrokedText(sCtx, 'AI 終極大會評語', 540, 320, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
                     
@@ -652,25 +652,33 @@
                     sCtx.fillStyle = '#54b97c'; sCtx.font = '900 150px "Fredoka", sans-serif'; sCtx.fillText(`${state.scores.final}%`, 540, 540);
 
                     try {
-                        let w = 400, h = 400; let y = 630;
-                        sCtx.save(); sCtx.translate(340, y + 200); sCtx.rotate(-4 * Math.PI / 180);
-                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.fill(); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
-                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, h-80, 10); sCtx.closePath(); sCtx.clip();
-                        let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1); 
-                        sCtx.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, -w/2 + 15, -h/2 + 15, w-30, h-80); sCtx.restore();
+                        // Polaroid 框架尺寸及相片防變形完美裁切
+                        let w = 380, h = 440; let y = 620; 
                         
-                        sCtx.save(); sCtx.translate(340, y + 200); sCtx.rotate(-4 * Math.PI / 180);
+                        // Human Image
+                        sCtx.save(); sCtx.translate(330, y + 200); sCtx.rotate(-4 * Math.PI / 180);
+                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
+                        
+                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, w-30, 10); sCtx.closePath(); sCtx.clip();
+                        let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1); 
+                        // 🔥 使用完美 1:1 正方形畫落 Canvas，解決拉長變形問題 🔥
+                        sCtx.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, -w/2 + 15, -h/2 + 15, w-30, w-30); sCtx.restore();
+                        
+                        sCtx.save(); sCtx.translate(330, y + 200); sCtx.rotate(-4 * Math.PI / 180);
                         sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.hName, 0, h/2 - 25); sCtx.restore();
 
-                        sCtx.save(); sCtx.translate(740, y + 200); sCtx.rotate(5 * Math.PI / 180);
-                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.fill(); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
-                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, h-80, 10); sCtx.closePath(); sCtx.clip();
-                        let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2); 
-                        sCtx.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, -w/2 + 15, -h/2 + 15, w-30, h-80); sCtx.restore();
+                        // Dog Image
+                        sCtx.save(); sCtx.translate(750, y + 200); sCtx.rotate(5 * Math.PI / 180);
+                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
                         
-                        sCtx.save(); sCtx.translate(740, y + 200); sCtx.rotate(5 * Math.PI / 180);
+                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, w-30, 10); sCtx.closePath(); sCtx.clip();
+                        let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2); 
+                        sCtx.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, -w/2 + 15, -h/2 + 15, w-30, w-30); sCtx.restore();
+                        
+                        sCtx.save(); sCtx.translate(750, y + 200); sCtx.rotate(5 * Math.PI / 180);
                         sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.dName, 0, h/2 - 25); sCtx.restore();
 
+                        // VS Sticker
                         sCtx.save(); sCtx.translate(540, 830); sCtx.rotate(-10 * Math.PI / 180);
                         sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.arc(0, 0, 75, 0, Math.PI*2); sCtx.fill();
                         sCtx.lineWidth = 6; sCtx.strokeStyle = '#e74c3c'; sCtx.stroke();
@@ -679,17 +687,24 @@
                         sCtx.restore();
                     } catch(e) {}
                     
-                    sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1080, 920, 210, 40); sCtx.fill();
-                    sCtx.fillStyle = '#555'; sCtx.font = 'bold 35px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
-                    sCtx.textAlign = 'left';
-                    sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1160);
-                    sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1230);
-                    sCtx.fillText(`👀 眼神: ${state.scores.e}%`, 580, 1160);
-                    sCtx.fillText(`🎭 神態: ${state.scores.v}%`, 580, 1230);
+                    // 🔥 細分成績表排版更新 🔥
+                    sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1060, 920, 240, 40); sCtx.fill();
+                    
+                    sCtx.fillStyle = '#e17055'; 
+                    sCtx.font = 'bold 28px "Noto Sans TC", sans-serif';
                     sCtx.textAlign = 'center';
-                    sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1280);
+                    sCtx.fillText('👇 你哋似嘅細位係 👇', 540, 1115);
 
-                    sCtx.fillStyle = '#fff'; sCtx.font = 'bold 30px "Fredoka", sans-serif'; sCtx.fillText('ANIMALSSUM.COM', 540, 1335);
+                    sCtx.fillStyle = '#555'; sCtx.font = 'bold 32px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
+                    sCtx.textAlign = 'left';
+                    sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1180);
+                    sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1245);
+                    sCtx.fillText(`👀 眼神: ${state.scores.e}%`, 580, 1180);
+                    sCtx.fillText(`🎭 神態: ${state.scores.v}%`, 580, 1245);
+                    sCtx.textAlign = 'center';
+                    sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1285);
+
+                    sCtx.fillStyle = '#fff'; sCtx.font = 'bold 26px "Fredoka", sans-serif'; sCtx.fillText('ANIMALSSUM.COM', 540, 1340);
                     
                     sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
 
@@ -799,7 +814,7 @@
             const listArea = document.getElementById('leaderboard-list');
             podiumArea.innerHTML = ''; listArea.innerHTML = '<p style="text-align:center;">載入中...</p>';
             
-            let combinedData = [...fakeLeaderboardData]; 
+            let combinedData =[...fakeLeaderboardData]; 
             
             if(db) {
                 try {
@@ -822,7 +837,7 @@
             const top100 = combinedData.slice(0, 100); 
             const top3 = top100.slice(0, 3);
             const displayOrder =[];
-            const showPrize = new Date() < new Date(2026, 4, 7, 0, 0, 0); 
+            const showPrize = new Date() < new Date(2026, 4, 27, 0, 0, 0); 
 
             if(top3[1]) displayOrder.push({ data: top3[1], class: 'rank-2', medal: '🥈' });
             if(top3[0]) displayOrder.push({ data: top3[0], class: 'rank-1', medal: '🥇' });
@@ -857,10 +872,11 @@
                 let isMe = (state.hName && state.dName && item.humanName === state.hName && item.dogName === state.dName);
                 let rowClass = "rank-row";
                 if (isMe) rowClass += " highlight";
-                else if (actualRank <= 50 && showPrize) rowClass += " prize-zone"; 
+                // 排行榜 Prize Zone 更新至 20名
+                else if (actualRank <= 20 && showPrize) rowClass += " prize-zone"; 
                 
                 let meTag = isMe ? `<p style="color:var(--brand); font-weight:bold; margin:0; font-size:0.8rem;">✨ 你的排名</p>` : '';
-                let prizeTag = (actualRank <= 50 && !isMe && showPrize) ? `<div class="prize-tag">🎁</div>` : '';
+                let prizeTag = (actualRank <= 20 && !isMe && showPrize) ? `<div class="prize-tag">🎁</div>` : '';
 
                 const div = document.createElement('div');
                 div.className = rowClass;
