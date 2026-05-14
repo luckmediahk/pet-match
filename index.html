@@ -31,17 +31,17 @@
 
     <style>
         :root { 
-            --brand: #54b97c; 
-            --brand-dark: #3da065; 
-            --accent: #FFD93D; 
+            --brand: #5ba36a; 
+            --brand-dark: #458251; 
+            --accent: #facc50; 
             --danger: #FF6B6B; 
-            --dark: #2d3436; 
-            --light: #f6fffa; 
+            --dark: #333; 
+            --bg-cream: #fffdf5; 
         }
         
         body { 
             font-family: 'Noto Sans TC', 'Fredoka', sans-serif; 
-            background: #eaf8f1; 
+            background: #eaf4eb; 
             margin: 0; 
             padding: 20px; 
             min-height: 100vh; 
@@ -78,88 +78,83 @@
         .names-col { flex: 1; min-width: 140px; }
         .names-col label { font-weight: bold; color: #555; display: block; margin-bottom: 5px; font-size: 0.9rem; text-align: center; }
         .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 1rem; box-sizing: border-box; text-align: center; transition: 0.3s; background: #fff; }
-        .form-input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 10px rgba(84,185,124,0.3); transform: scale(1.02);}
+        .form-input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 10px rgba(91,163,106,0.3); transform: scale(1.02);}
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1rem; }
 
         .home-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-        .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 15px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #3da065; transition: transform 0.1s, box-shadow 0.1s; margin-top: 10px; }
-        .main-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #3da065; animation: none; }
+        .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 15px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 var(--brand-dark); transition: transform 0.1s, box-shadow 0.1s; margin-top: 10px; }
+        .main-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--brand-dark); animation: none; }
         .main-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; }
         
         .btn-primary-home { padding: 20px; font-size: 1.5rem; animation: pulseBtn 2s infinite; }
-        .btn-secondary-home { background: #fff !important; color: var(--brand) !important; border: 2px solid var(--brand); padding: 15px; font-size: 1.3rem; box-shadow: 0 6px 0 var(--brand) !important; }
+        .btn-secondary-home { background: #fff !important; color: var(--brand) !important; border: 2px solid var(--brand); box-shadow: 0 6px 0 var(--brand) !important; }
         .sec-btn { background: #fff; color: var(--brand); border: 2px solid var(--brand); box-shadow: 0 4px 0 var(--brand); }
         .action-btn { background: var(--accent); color: var(--dark); box-shadow: 0 6px 0 #d4a000; }
 
         .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; margin-top: 10px; transition: 0.3s;}
-        .round-title { text-align: center; font-weight: 900; color: #fff; margin-bottom: 15px; font-size: 1rem; background: #54a0ff; display: inline-block; padding: 6px 20px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 4px 10px rgba(84,160,255,0.3); }
+        .round-title { text-align: center; font-weight: 900; color: #fff; margin-bottom: 15px; font-size: 1rem; background: var(--brand); display: inline-block; padding: 6px 20px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 4px 10px rgba(91,163,106,0.3); }
         .match-row { display: flex; gap: 10px; justify-content: center; align-items: stretch; }
         
         .photo-card { flex: 1; background: #f8f9fa; border-radius: 15px; padding: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); position: relative; cursor: pointer; text-align: center; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; }
-        .photo-card.has-img { border-color: var(--brand); background: #fff; box-shadow: 0 8px 20px rgba(84,185,124,0.15); }
+        .photo-card.has-img { border-color: var(--brand); background: #fff; box-shadow: 0 8px 20px rgba(91,163,106,0.15); }
         .img-box { width: 100%; flex-grow: 1; min-height: 140px; border-radius: 10px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #eee; }
         .img-box img.preview { width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; inset: 0; z-index: 2; }
         .demo-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.25; z-index: 0; mix-blend-mode: multiply; }
         .ui-elements { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
         .placeholder { font-size: 3rem; color: #555; margin-bottom: 5px; text-shadow: 0 0 10px #fff; }
-        .cam-icon { font-size: 0.8rem; color: #fff; font-weight: bold; background: #4a90e2; padding: 6px 12px; border-radius: 15px; box-shadow: 0 4px 10px rgba(74,144,226,0.4); }
+        .cam-icon { font-size: 0.8rem; color: #533500; font-weight: bold; background: var(--accent); padding: 6px 12px; border-radius: 15px; box-shadow: 0 4px 10px rgba(250,204,80,0.4); margin-top:5px;}
         
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
-        .bubble.err { background: var(--danger); } 
-        .bubble.ok { background: var(--brand); } 
-        .bubble.warn { background: var(--accent); color: #333; }
+        .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 v49.4 風格 Web 前台 UI 🔥 */
-        .result-card-new { background: #fefcf5; border-radius: 30px; padding: 25px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 2px solid #f2ead3; margin-top: -10px; text-align: center; position: relative;}
-        .res-top-text { font-size: 1.05rem; color: #555; font-weight: bold; margin-bottom: 5px; }
-        .res-score-huge { font-size: clamp(4.5rem, 15vw, 6rem); color: #4b6b4e; font-weight: 900; line-height: 1; font-family: 'Fredoka', sans-serif; letter-spacing: -2px; margin-bottom: 10px;}
+        /* 🔥 WEB Result 頁面 UI：加粗綠色邊框完美還原 AI Design 🔥 */
+        .ig-card-ui { background: var(--bg-cream); border-radius: 40px; padding: 30px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 14px solid var(--brand); text-align: center; position: relative; margin-top: -10px; }
         
-        /* 🔥 淺黃色 Comment Ribbon 🔥 */
+        .top-area { text-align: center; margin-bottom: 25px; }
+        .top-sub { font-size: 1.1rem; color: #6b4c3a; font-weight: 800; margin-bottom: 5px; }
+        .big-score { font-size: clamp(4.5rem, 15vw, 6rem); color: var(--brand); font-weight: 900; line-height: 1; font-family: 'Fredoka', sans-serif; letter-spacing: -2px; margin-bottom: 10px;}
+        
         .res-ribbon-container { position: relative; margin-bottom: 30px; display: flex; justify-content: center;}
-        .res-ribbon { background: #fff1b8; color: #4a3b20; font-size: 1.1rem; font-weight: 900; padding: 10px 30px; border-radius: 10px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: inline-block; z-index: 2;}
+        .res-ribbon { background: #fff1b8; color: #4a3b20; font-size: 1.05rem; font-weight: 900; padding: 10px 25px; border-radius: 10px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: inline-block; z-index: 2;}
         .res-ribbon::before, .res-ribbon::after { content: ''; position: absolute; top: 15px; border: 15px solid transparent; z-index: -1; }
         .res-ribbon::before { left: -20px; border-right-color: #dcb030; }
         .res-ribbon::after { right: -20px; border-left-color: #dcb030; }
 
-        /* 🔥 完美置中嘅心心 🔥 */
         .res-photos-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 25px; position: relative; }
-        .res-photo-wrap { width: clamp(145px, 45vw, 180px); aspect-ratio: 1; border-radius: 20px; overflow: hidden; border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); background: #eee;}
+        .res-photo-wrap { width: clamp(140px, 42vw, 170px); aspect-ratio: 1; border-radius: 20px; overflow: hidden; border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); background: #eee;}
         .res-photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
         .res-heart-badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 5; animation: popUp 0.5s 0.2s both;}
 
         .res-highlight-box { background: #fffaf0; border: 2px solid #f6a5a5; border-radius: 20px; padding: 20px; margin-bottom: 25px; text-align: left; box-shadow: 0 5px 15px rgba(246, 165, 165, 0.15); position: relative;}
-        .hl-title { color: #4b6b4e; font-weight: 900; font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;}
+        .hl-title { color: var(--brand); font-weight: 900; font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;}
         .hl-desc { color: #555; font-size: 0.95rem; font-weight: 600; line-height: 1.5; }
 
-        .res-bars-area { background: #f6f3eb; border-radius: 20px; padding: 20px; margin-bottom: 25px; }
-        .bars-header { font-size: 1rem; color: #666; font-weight: bold; text-align: left; margin-bottom: 15px; }
+        .res-bars-area { background: #e8f4eb; border-radius: 20px; padding: 25px 20px 15px; margin-bottom: 25px; text-align: left; position: relative;}
+        .bars-header { position: absolute; top: -15px; left: 20px; background: var(--brand); padding: 5px 20px; border-radius: 20px; font-size: 1rem; color: #fff; font-weight: 900; box-shadow: 0 4px 10px rgba(91,163,106,0.3); }
         .res-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.9rem;}
         .bar-name { width: 95px; color: #555; font-weight: bold; text-align: left; white-space: nowrap; font-size: 0.95rem;}
-        .bar-track { flex: 1; height: 12px; background: #e2e8e4; border-radius: 10px; overflow: hidden; position: relative;}
-        .bar-fill { height: 100%; background: #8db596; border-radius: 10px; width: 0%; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .bar-pct { width: 45px; text-align: right; font-weight: 900; color: #4b6b4e; font-family: 'Fredoka', sans-serif;}
+        .bar-track { flex: 1; height: 12px; background: #cce3d1; border-radius: 10px; overflow: hidden; position: relative;}
+        .bar-fill { height: 100%; background: var(--brand); border-radius: 10px; width: 0%; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .bar-pct { width: 45px; text-align: right; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif;}
 
         .action-btns-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn-green-light { background: #f0fdf4; color: #3da065; border: 2px solid #3da065; box-shadow: 0 4px 0 #3da065; }
-        .btn-green-light:active { box-shadow: 0 2px 0 #3da065; }
-        .btn-copy { background: #e1b12c; color: #fff; box-shadow: 0 6px 0 #c29927; font-size: 1.1rem; border: none;}
-        .btn-copy:active { box-shadow: 0 2px 0 #c29927; }
-        .btn-share { background: #4b6b4e; color: #fff; box-shadow: 0 6px 0 #324734; font-size: 1.1rem; border: none;}
-        .btn-share:active { box-shadow: 0 2px 0 #324734; }
+        .btn-copy { background: #f0fdf4; color: var(--brand); border: 2px solid var(--brand); box-shadow: 0 4px 0 var(--brand); }
+        .btn-copy:active { box-shadow: 0 2px 0 var(--brand); }
+        .btn-share { background: var(--accent); color: #533500; border: none; box-shadow: 0 6px 0 #d4a000; font-size: 1.1rem; }
+        .btn-share:active { box-shadow: 0 2px 0 #d4a000; }
 
         /* 排行榜 */
-        .warm-banner { background: linear-gradient(rgba(45,52,54,0.6), rgba(84,185,124,0.8)), url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1000&auto=format&fit=crop&q=80') center/cover; padding: 30px 15px; border-radius: 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .warm-banner { background: linear-gradient(rgba(45,52,54,0.6), rgba(91,163,106,0.8)), url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1000&auto=format&fit=crop&q=80') center/cover; padding: 30px 15px; border-radius: 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .warm-banner h2 { margin: 0 0 5px 0; font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
         .avg-score-box { background: rgba(255,255,255,0.95); display: inline-block; padding: 10px 20px; border-radius: 15px; color: #333; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .avg-score-box span { font-size: 2.2rem; color: var(--brand); font-weight: 900; display: block; font-family: 'Fredoka', sans-serif;}
         
         .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin: 40px 0 30px 0; height: 160px; }
         .podium { flex: 1; max-width: 110px; text-align: center; background: white; border-radius: 15px 15px 0 0; padding: 15px 5px 5px; position: relative; box-shadow: 0 -3px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: flex-end; transition: transform 0.3s;}
-        .podium:hover { transform: translateY(-5px); }
-        .podium.rank-1 { height: 140px; border-top: 8px solid #FFD700; z-index: 3; background: linear-gradient(to bottom, #fffdf0, #fff); }
-        .podium.rank-2 { height: 100px; border-top: 8px solid #C0C0C0; z-index: 2; background: linear-gradient(to bottom, #f8f9fa, #fff); }
-        .podium.rank-3 { height: 80px; border-top: 8px solid #CD7F32; z-index: 1; background: linear-gradient(to bottom, #fdf8f5, #fff); }
+        .podium.rank-1 { height: 140px; border-top: 8px solid #FFD700; z-index: 3;}
+        .podium.rank-2 { height: 100px; border-top: 8px solid #C0C0C0; z-index: 2;}
+        .podium.rank-3 { height: 80px; border-top: 8px solid #CD7F32; z-index: 1;}
         
         .podium .avatars { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; width: 100%; }
         .podium img { width: 45px; height: 45px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.15); object-fit: cover; background: #eee; }
@@ -170,29 +165,24 @@
 
         .rank-list { display: flex; flex-direction: column; gap: 10px; }
         .rank-row { display: flex; align-items: center; background: #fff; padding: 10px 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); gap: 10px; border: 1px solid #f0f0f0; position: relative; overflow: hidden; transition: transform 0.2s;}
-        .rank-row:active { transform: scale(0.98); }
         .rank-row.prize-zone { background: #fffcf0; border-color: #ffeaa7; } 
         .rank-row.highlight { border: 3px solid var(--brand) !important; background: #f0fdf4 !important; box-shadow: 0 4px 12px rgba(84, 185, 124, 0.2); } 
-        .podium.highlight { border-bottom: 4px solid var(--brand); background: #f0fdf4; }
 
         .rank-num { font-size: 1.2rem; font-weight: 900; color: #bbb; width: 25px; text-align: center; }
         .rank-row .rank-avatars { display: flex; width: 70px; justify-content: center; }
         .rank-row img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); object-fit: cover; }
         .rank-row img:nth-child(2) { margin-left: -15px; }
         .rank-names { flex: 1; display: flex; flex-direction: column; padding-left: 5px; }
-        .rank-names h4 { margin: 0; font-size: 0.95rem; color: #333; word-break: break-word; line-height: 1.2; max-width: 140px;}
+        .rank-names h4 { margin: 0; font-size: 0.95rem; color: #333; word-break: break-word; line-height: 1.2;}
         .rank-score { font-size: 1.1rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; }
         
         .prize-tag { position: absolute; right: -20px; top: 8px; background: #FFD93D; color: #333; font-size: 0.65rem; font-weight: bold; padding: 2px 25px; transform: rotate(45deg); }
-
         .tnc-content { background: #fff; padding: 20px; border-radius: 15px; text-align: left; color: #555; font-size: 0.85rem; line-height: 1.5; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .tnc-content h3 { color: #333; font-size: 1rem; margin-top: 15px; margin-bottom: 8px; }
         .tnc-link { display: block; text-align: center; margin-top: 25px; color: #aaa; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
-
-        .promo-box { text-align:center; color:#555; font-weight:bold; margin-top:25px; background:#fffcf0; border:2px solid #ffeaa7; padding:15px; border-radius:15px; line-height:1.5; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 0.95rem;}
-
+        .promo-box { text-align:center; color:#555; font-weight:bold; margin-top:25px; background:#fffcf0; border:2px solid #ffeaa7; padding:15px; border-radius:15px; line-height:1.5; font-size: 0.95rem;}
+        
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 20px; }
-        .modal-content { background: #fff; padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.3); animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto;}
+        .modal-content { background: #fff; padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.3); animation: popUp 0.3s ease-out; max-height: 90vh; overflow-y: auto;}
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -206,103 +196,97 @@
 </head>
 <body>
 
-    <!-- 🔥 v50.0 完美結合 bg-frame.png 的 Canvas 截圖區 🔥 -->
+    <!-- 🔥 v50.1 終極 Canvas 截圖區 (解決黑屏及出界問題) 🔥 -->
     <div id="share-card-container" style="position: absolute; left: -9999px; top: -9999px;">
-        
-        <!-- 使用 bg-frame.png 作為背景 (自動填滿) -->
-        <div id="share-card" style="width: 1080px; height: 1920px; background-image: url('./bg-frame.png'); background-size: cover; background-position: center; overflow: hidden; position: relative; font-family: 'Noto Sans TC', sans-serif; z-index: 1;">
+        <div id="share-card" style="width: 1080px; height: 1920px; position: relative; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background-color: #fffdf5;">
             
-            <!-- 內容區往下推，避開上方綠色及 Logo 區域 -->
-            <div style="padding-top: 250px; text-align: center;">
-                <div style="font-size: 50px; font-weight: 800; color: #6b4c3a;">我同主子嘅相似度高達</div>
-                
-                <!-- 大分數 -->
-                <div id="canvas-score" style="font-size: 260px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; text-shadow: 0 8px 0 rgba(0,0,0,0.05); margin-top: 10px; letter-spacing: -5px;">98.765%</div>
-                
-                <!-- 淺黃色彩帶 -->
-                <div style="margin-top: 40px; position: relative; display: inline-block;">
-                    <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 48px; font-weight: 900; padding: 22px 60px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
-                    <!-- 泥黃色摺角 -->
-                    <div style="position: absolute; top: 22px; left: -35px; border: 35px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
-                    <div style="position: absolute; top: 22px; right: -35px; border: 35px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
-                </div>
-            </div>
-
-            <!-- 相片區 (保證心心置中) -->
-            <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 70px; position: relative;">
-                
-                <div style="width: 400px; height: 400px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
-                    <img id="canvas-human" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                
-                <!-- 🔥 絕對定位置中心心 🔥 -->
-                <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 130px; height: 130px; border-radius: 50%; background: #fffcf5; display: flex; align-items: center; justify-content: center; font-size: 65px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 5;">❤️</div>
-                
-                <div style="width: 400px; height: 400px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
-                    <img id="canvas-pet" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-
-            </div>
-
-            <!-- 最似邊忽 Highlight Box -->
-            <div style="position: relative; margin: 60px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 40px 50px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
-                <div id="canvas-mini-title" style="font-size: 54px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
-                <div id="canvas-mini-sub" style="margin-top: 16px; color: #444; font-size: 38px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
-            </div>
-
-            <!-- 分析進度條 -->
-            <div style="width: 880px; margin: 50px auto 0; background: #e8f4eb; border-radius: 35px; padding: 50px; position: relative;">
-                
-                <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 36px; font-weight: 900; padding: 15px 40px; border-radius: 99px;">相似度分析</div>
-
-                <!-- 1 -->
-                <div style="margin-bottom: 36px; font-size: 40px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
-                    <span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span>
-                </div>
-                <div style="margin-top: -20px; margin-bottom: 36px; height: 26px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
-                    <div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
-                </div>
-                
-                <!-- 2 -->
-                <div style="margin-bottom: 36px; font-size: 40px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
-                    <span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span>
-                </div>
-                <div style="margin-top: -20px; margin-bottom: 36px; height: 26px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
-                    <div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
-                </div>
-                
-                <!-- 3 -->
-                <div style="margin-bottom: 36px; font-size: 40px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
-                    <span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span>
-                </div>
-                <div style="margin-top: -20px; margin-bottom: 36px; height: 26px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
-                    <div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
-                </div>
-                
-                <!-- 4 -->
-                <div style="margin-bottom: 36px; font-size: 40px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
-                    <span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span>
-                </div>
-                <div style="margin-top: -20px; margin-bottom: 36px; height: 26px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
-                    <div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
-                </div>
-                
-                <!-- 5 -->
-                <div style="margin-bottom: 36px; font-size: 40px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
-                    <span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span>
-                </div>
-                <div style="margin-top: -20px; margin-bottom: 0px; height: 26px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
-                    <div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
-                </div>
-            </div>
-
-            <!-- Footer 文字：確保唔會被底部綠色邊框遮住 -->
-            <div style="margin-top: 55px; text-align: center; font-size: 42px; color: #4a3b20; font-weight: 800;">原來有時唔係你揀寵物，係佢揀咗你。❤️</div>
-            <div style="margin-top: 15px; font-size: 36px; color: #5ba36a; font-weight: 900; text-align: center;">#你同主子有幾夾</div>
+            <!-- 使用 img 標籤墊底，徹底解決 html2canvas background-image 黑屏 Bug -->
+            <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: cover;" onerror="this.style.display='none'">
             
-            <!-- animalssum 網址 -->
-            <div style="position: absolute; bottom: 85px; width: 100%; text-align: center; color: #fff; font-size: 45px; font-weight: 900; letter-spacing: 2px;">立即測試：animalssum.com</div>
-            
+            <!-- 所有文字/圖片內容放喺 z-index: 1 -->
+            <div style="position: relative; z-index: 1;">
+                
+                <!-- TOP 區域：微調高度避免撞到你張圖嘅邊緣 -->
+                <div style="padding-top: 220px; text-align: center;">
+                    <div style="font-size: 50px; font-weight: 800; color: #6b4c3a;">我同主子嘅相似度高達</div>
+                    <div id="canvas-score" style="font-size: 240px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
+                    
+                    <!-- 淺黃色彩帶 -->
+                    <div style="margin-top: 30px; position: relative; display: inline-block;">
+                        <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 48px; font-weight: 900; padding: 22px 60px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
+                        <div style="position: absolute; top: 22px; left: -35px; border: 35px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
+                        <div style="position: absolute; top: 22px; right: -35px; border: 35px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
+                    </div>
+                </div>
+
+                <!-- 相片區 (Size 微縮確保唔出界) -->
+                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 50px; position: relative;">
+                    <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+                        <img id="canvas-human" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 110px; height: 110px; border-radius: 50%; background: #fffcf5; display: flex; align-items: center; justify-content: center; font-size: 55px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 5;">❤️</div>
+                    <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+                        <img id="canvas-pet" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                </div>
+
+                <!-- 最似邊忽 Highlight Box -->
+                <div style="position: relative; margin: 40px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
+                    <div id="canvas-mini-title" style="font-size: 48px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
+                    <div id="canvas-mini-sub" style="margin-top: 15px; color: #444; font-size: 34px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
+                </div>
+
+                <!-- 分析進度條 (收緊間距確保唔會踩到底部綠邊) -->
+                <div style="width: 880px; margin: 45px auto 0; background: #e8f4eb; border-radius: 35px; padding: 45px 50px 35px; box-sizing: border-box; position: relative;">
+                    <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 34px; font-weight: 900; padding: 15px 40px; border-radius: 99px;">相似度分析</div>
+
+                    <!-- 1 -->
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
+                        <span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span>
+                    </div>
+                    <div style="margin-top: -15px; margin-bottom: 25px; height: 22px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
+                        <div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
+                    </div>
+                    
+                    <!-- 2 -->
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
+                        <span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span>
+                    </div>
+                    <div style="margin-top: -15px; margin-bottom: 25px; height: 22px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
+                        <div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
+                    </div>
+                    
+                    <!-- 3 -->
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
+                        <span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span>
+                    </div>
+                    <div style="margin-top: -15px; margin-bottom: 25px; height: 22px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
+                        <div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
+                    </div>
+                    
+                    <!-- 4 -->
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
+                        <span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span>
+                    </div>
+                    <div style="margin-top: -15px; margin-bottom: 25px; height: 22px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
+                        <div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
+                    </div>
+                    
+                    <!-- 5 -->
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;">
+                        <span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span>
+                    </div>
+                    <div style="margin-top: -15px; margin-bottom: 0px; height: 22px; background: #cce3d1; border-radius: 999px; overflow: hidden;">
+                        <div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div>
+                    </div>
+                </div>
+
+                <!-- Footer (移除絕對定位 bottom 以免重疊) -->
+                <div style="margin-top: 40px; text-align: center; font-size: 40px; color: #4a3b20; font-weight: 800;">原來有時唔係你揀寵物，係佢揀咗你。❤️</div>
+                <div style="margin-top: 10px; margin-bottom: 25px; font-size: 34px; color: #5ba36a; font-weight: 900; text-align: center;">#你同主子有幾夾</div>
+                <div style="width: 100%; text-align: center; color: #fff; font-size: 42px; font-weight: 900; letter-spacing: 2px;">立即測試：animalssum.com</div>
+                
+            </div>
         </div>
     </div>
 
@@ -314,7 +298,7 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v50.0</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v50.1</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
@@ -384,20 +368,21 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS (套用 v49.4 佈局及淺黃色彩帶) 🔥 -->
+        <!-- 🔥 VIEW 3: RESULTS (完美網頁版 UI 呈現) 🔥 -->
         <div id="view-result" class="view">
-            <div class="result-card-new">
+            <div class="ig-card-ui">
                 
-                <div class="res-top-text">你同 <span id="res-pet-name" style="color:#4b6b4e;">主子</span> 嘅相似度高達</div>
-                <div class="res-score-huge" id="web-score">98.765%</div>
-                
-                <div class="res-ribbon-container">
-                    <div class="res-ribbon" id="web-badge">❤️ 超級心有靈犀！</div>
+                <div class="top-area">
+                    <div class="top-sub">你同 <span id="res-pet-name" style="color:var(--brand);">主子</span> 嘅相似度高達</div>
+                    <div class="big-score" id="web-score">98.765%</div>
+                    
+                    <div class="res-ribbon-container">
+                        <div class="res-ribbon" id="web-badge">❤️ 超級心有靈犀！</div>
+                    </div>
                 </div>
 
                 <div class="res-photos-container">
                     <div class="res-photo-wrap"><img id="web-human"></div>
-                    <!-- 🔥 絕對定位置中心心 🔥 -->
                     <div class="res-heart-badge">❤️</div>
                     <div class="res-photo-wrap"><img id="web-pet"></div>
                 </div>
@@ -437,13 +422,15 @@
                     </div>
                 </div>
 
+                <div class="footer-copy">原來有時唔係你揀寵物，係佢揀咗你。❤️</div>
+                <div class="footer-hash">#你同主子有幾夾</div>
+
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
                     <button class="main-btn btn-share" onclick="downloadShareImg()">📥 下載靚圖</button>
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="showConsentModal()">🚀 發佈成績贏取獎品！🎁</button>
-                    <button class="main-btn btn-green-light" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
+                    <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
                 </div>
-
             </div>
         </div>
 
@@ -744,7 +731,6 @@
             return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); 
         }
 
-        // 🔥 8. 核心 AI 分數及圖片生成引擎 🔥
         async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
 
@@ -794,7 +780,6 @@
                     const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
                     const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
-                    // 更新前台 WEB UI
                     document.getElementById('res-pet-name').innerText = state.dName;
                     document.getElementById('web-score').innerText = finalAvg + '%';
                     document.getElementById('web-badge').innerText = cText;
@@ -816,7 +801,7 @@
                         document.getElementById('web-bar-funny').style.width = funnyS+'%'; 
                     }, 100);
 
-                    // 更新隱藏 Canvas 專用 UI
+                    // 🔥 Canvas UI 數據更新 🔥
                     document.getElementById('canvas-score').innerText = finalAvg + '%';
                     document.getElementById('canvas-badge').innerText = cText;
                     document.getElementById('canvas-human').src = state.imgs.h1.src;
@@ -835,12 +820,12 @@
                     document.getElementById('canvas-val-funny').innerText = funnyS + '%'; 
                     document.getElementById('canvas-bar-funny').style.width = funnyS + '%';
 
-                    // 截圖轉換並儲存 Firebase
+                    // 截圖並儲存
                     setTimeout(() => {
                         html2canvas(document.querySelector("#share-card"), { 
                             scale: 2, 
                             useCORS: true, 
-                            backgroundColor: null 
+                            backgroundColor: '#fffdf5' // 🔥 解決黑屏問題 🔥
                         }).then(canvas => {
                             canvas.toBlob((b) => { 
                                 state.shareImgBlob = b; 
@@ -882,7 +867,6 @@
             }, 500); 
         }
 
-        // 下載 Share 圖
         function downloadShareImg() { 
             const url = URL.createObjectURL(state.shareImgBlob);
             const link = document.createElement('a'); 
@@ -891,7 +875,6 @@
             link.click(); 
         }
 
-        // 9. 排行榜及登記邏輯
         function showConsentModal() { document.getElementById('consent-modal').style.display = 'flex'; }
 
         async function publishToLeaderboard() {
