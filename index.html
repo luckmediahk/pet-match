@@ -211,7 +211,7 @@
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* 🔥 IG Share Card (Hidden for HTML2Canvas) - Expanded and Clean 🔥 */
+        /* 🔥 IG Share Card (Hidden for HTML2Canvas) 🔥 */
         #share-card-container { position: absolute; left: -9999px; top: -9999px; }
         #share-card { width: 1080px; height: 1920px; background: #58c27d; overflow: hidden; position: relative; font-family: 'Noto Sans TC', sans-serif; }
         #share-card::before { content: ''; position: absolute; left: 40px; right: 40px; top: 110px; bottom: 40px; background: #fffdf6; border-radius: 50px; }
@@ -243,7 +243,7 @@
 </head>
 <body>
 
-    <!-- 🔥 IG Share Card (Hidden for HTML2Canvas) 🔥 -->
+    <!-- 🔥 完美修正 ID：IG Share Card (Hidden for HTML2Canvas) 🔥 -->
     <div id="share-card-container">
         <div id="share-card">
             
@@ -326,7 +326,7 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v49.7</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v49.8</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
@@ -562,7 +562,7 @@
         const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
         const rejectKeywords =['cell phone','laptop','tv','remote','book','bottle','cup','chair','couch','dining table','potted plant','car','motorcycle'];
 
-        // 🔥 4. 排行榜還原：10 個假數據 🔥
+        // 4. 排行榜還原：10 個假數據
         const fakeLeaderboardData =[
             { humanName: "Jason", dogName: "Mochi", score: 96.314, humanImg: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=150&h=150&fit=crop", public: true },
             { humanName: "Ka Yan", dogName: "Coffee", score: 95.552, humanImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=150&h=150&fit=crop", public: true },
@@ -750,7 +750,7 @@
             return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); 
         }
 
-        // 8. 核心 AI 分數及圖片生成引擎
+        // 🔥 8. 核心 AI 分數及圖片生成引擎 (完美對接修正 ID) 🔥
         async function generateResults() {
             document.getElementById('loader').style.display = 'flex';
 
@@ -829,7 +829,7 @@
                         document.getElementById('web-bar-funny').style.width = funnyS+'%'; 
                     }, 100);
 
-                    // 更新隱藏 Canvas 專用 UI
+                    // 🔥 完美修復：更新隱藏 Canvas 專用 UI (#share-card) 🔥
                     document.getElementById('canvas-score').innerText = finalAvg + '%';
                     document.getElementById('canvas-badge').innerText = cText;
                     document.getElementById('canvas-human').src = state.imgs.h1.src;
@@ -852,9 +852,9 @@
                     document.getElementById('canvas-val-funny').innerText = funnyS + '%'; 
                     document.getElementById('canvas-bar-funny').style.width = funnyS + '%';
 
-                    // 截圖轉換並儲存 Firebase
+                    // 🔥 完美修復：確保 html2canvas 搵到 #share-card 🔥
                     setTimeout(() => {
-                        html2canvas(document.querySelector("#ig-card"), { 
+                        html2canvas(document.querySelector("#share-card"), { 
                             scale: 2, 
                             useCORS: true, 
                             backgroundColor: null 
@@ -900,7 +900,7 @@
             }, 500); 
         }
 
-        // 下載 Share 圖 (修正 File Name)
+        // 下載 Share 圖
         function downloadShareImg() { 
             const url = URL.createObjectURL(state.shareImgBlob);
             const link = document.createElement('a'); 
