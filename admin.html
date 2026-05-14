@@ -28,8 +28,8 @@
         th { background: #54b97c; color: white; position: sticky; top: 0; }
         tr:hover { background: #f9f9f9; }
         
-        .badge { background: #FFD93D; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; }
-        .img-preview { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; border: 1px solid #ddd; }
+        .badge { background: #FFD93D; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-left: 5px;}
+        .img-preview { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 8px;}
     </style>
 </head>
 <body>
@@ -56,7 +56,7 @@
                         <th>登記姓名</th>
                         <th>聯絡電話</th>
                         <th>電郵地址</th>
-                        <th>IP / 來源</th>
+                        <th>IP 地址</th>
                         <th>遊玩時間</th>
                     </tr>
                 </thead>
@@ -106,12 +106,12 @@
                     tr.innerHTML = `
                         <td><b>#${rank}</b></td>
                         <td style="color:#54b97c; font-weight:bold;">${data.score}%</td>
-                        <td><img src="${data.humanImg}" class="img-preview"> ${data.humanName}</td>
-                        <td><img src="${data.dogImg}" class="img-preview"> ${data.dogName}</td>
+                        <td><img src="${data.humanImg}" class="img-preview">${data.humanName}</td>
+                        <td><img src="${data.dogImg}" class="img-preview">${data.dogName}</td>
                         <td>${data.regName || '-'} ${regTag}</td>
                         <td>${data.regMobile || '-'}</td>
                         <td>${data.regEmail || '-'}</td>
-                        <td style="font-size:0.8rem; color:#888;">${data.ip || '未知'} <br>(${data.refSource || 'organic'})</td>
+                        <td style="font-size:0.8rem; color:#888;">${data.ip || '未知'}</td>
                         <td style="font-size:0.8rem;">${timeStr}</td>
                     `;
                     tbody.appendChild(tr);
@@ -137,7 +137,7 @@
                 const dateObj = new Date(row.timestamp);
                 const timeStr = isNaN(dateObj) ? "" : dateObj.toLocaleString('zh-HK');
                 
-                // 清理欄位入面可能出現嘅逗號
+                // 清理欄位入面可能出現嘅逗號，避免 Excel 走位
                 const clean = (str) => `"${(str || '').toString().replace(/"/g, '""')}"`;
                 
                 const rowData = [
