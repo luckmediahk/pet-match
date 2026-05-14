@@ -85,7 +85,7 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 全新 Result 頁面 UI (跟足 AI 設計圖) 🔥 */
+        /* 🔥 全新 Result 頁面 UI 🔥 */
         .result-card-new { background: #fefcf5; border-radius: 30px; padding: 25px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 2px solid #f2ead3; margin-top: -10px; text-align: center; position: relative;}
         .res-top-text { font-size: 1.05rem; color: #555; font-weight: bold; margin-bottom: 5px; }
         .res-score-huge { font-size: clamp(4.5rem, 15vw, 6rem); color: #4b6b4e; font-weight: 900; line-height: 1; font-family: 'Fredoka', sans-serif; letter-spacing: -2px; margin-bottom: 10px;}
@@ -96,8 +96,9 @@
         .res-ribbon::before { left: -20px; border-right-color: #cba87c; }
         .res-ribbon::after { right: -20px; border-left-color: #cba87c; }
 
-        .res-photos-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 25px; position: relative; }
-        .res-photo-wrap { width: clamp(120px, 40vw, 160px); aspect-ratio: 1; border-radius: 20px; overflow: hidden; border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); background: #eee;}
+        /* 🔥 放大相片且不走位 🔥 */
+        .res-photos-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 25px; position: relative; }
+        .res-photo-wrap { width: clamp(145px, 45vw, 180px); aspect-ratio: 1; border-radius: 20px; overflow: hidden; border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); background: #eee;}
         .res-photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
         .res-heart-badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 5; animation: popUp 0.5s 0.2s both;}
 
@@ -105,13 +106,14 @@
         .hl-title { color: #4b6b4e; font-weight: 900; font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;}
         .hl-desc { color: #555; font-size: 0.95rem; font-weight: 600; line-height: 1.5; }
 
+        /* 🔥 調整 Bar 排版 🔥 */
         .res-bars-area { background: #f6f3eb; border-radius: 20px; padding: 20px; margin-bottom: 25px; }
         .bars-header { font-size: 1rem; color: #666; font-weight: bold; text-align: left; margin-bottom: 15px; }
         .res-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.9rem;}
-        .bar-name { width: 75px; color: #555; font-weight: bold; text-align: left;}
+        .bar-name { width: 95px; color: #555; font-weight: bold; text-align: left; white-space: nowrap; font-size: 0.95rem;}
         .bar-track { flex: 1; height: 12px; background: #e2e8e4; border-radius: 10px; overflow: hidden; position: relative;}
         .bar-fill { height: 100%; background: #8db596; border-radius: 10px; width: 0%; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .bar-pct { width: 40px; text-align: right; font-weight: 900; color: #4b6b4e; font-family: 'Fredoka', sans-serif;}
+        .bar-pct { width: 45px; text-align: right; font-weight: 900; color: #4b6b4e; font-family: 'Fredoka', sans-serif;}
 
         .action-btns-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .btn-green-light { background: #f0fdf4; color: #3da065; border: 2px solid #3da065; box-shadow: 0 4px 0 #3da065; }
@@ -170,8 +172,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popUp { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes pulseBtn { 0% { box-shadow: 0 6px 0 #3da065, 0 0 0 0 rgba(84,185,124,0.4); } 70% { box-shadow: 0 6px 0 #3da065, 0 0 0 10px rgba(84,185,124,0); } 100% { box-shadow: 0 6px 0 #3da065, 0 0 0 0 rgba(84,185,124,0); } }
-        @keyframes bounceInLeft { 0% { opacity: 0; transform: translateX(-50px) rotate(-15deg); } 100% { opacity: 1; transform: translateX(0) rotate(-6deg); } }
-        @keyframes bounceInRight { 0% { opacity: 0; transform: translateX(50px) rotate(15deg); } 100% { opacity: 1; transform: translateX(0) rotate(6deg); } }
         
         #loader { position: fixed; inset:0; background: rgba(255,255,255,0.95); z-index: 999; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
@@ -189,13 +189,12 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v49.3</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v49.4</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
         <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
-            <!-- 完美隱藏：字幕只喺首頁出現 -->
             <p class="subtitle" style="text-align: center;">30秒測出你同毛孩有幾似？似喺邊個位？</p>
             
             <div class="home-btns">
@@ -247,7 +246,7 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS (全新設計) 🔥 -->
+        <!-- VIEW 3: RESULTS -->
         <div id="view-result" class="view">
             <div class="result-card-new">
                 
@@ -258,6 +257,7 @@
                     <div class="res-ribbon" id="res-comment">超級心有靈犀！</div>
                 </div>
 
+                <!-- 🔥 相片變大 🔥 -->
                 <div class="res-photos-container">
                     <div class="res-photo-wrap"><img id="res-img-h"></div>
                     <div class="res-heart-badge">❤️</div>
@@ -300,7 +300,8 @@
                 </div>
 
                 <div class="action-btns-grid">
-                    <button class="main-btn btn-copy" onclick="copyCaption()">📝 複製 IG Caption</button>
+                    <!-- 🔥 掣名更改 🔥 -->
+                    <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
                     <button class="main-btn btn-share" onclick="shareResultInstant()">📤 分享結果</button>
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="showConsentModal()">🚀 發佈成績贏取獎品！🎁</button>
                     <button class="main-btn btn-green-light" style="grid-column: 1 / -1;" onclick="location.reload()">🔄 再試一次</button>
@@ -384,8 +385,8 @@
         </div>
     </div>
 
-    <!-- IG Canvas -->
-    <canvas id="shareCanvas" width="1080" height="1350" style="display:none;"></canvas>
+    <!-- 🔥 IG Canvas 大升級：1080x1920 🔥 -->
+    <canvas id="shareCanvas" width="1080" height="1920" style="display:none;"></canvas>
 
     <script>
         const firebaseConfig = {
@@ -430,7 +431,8 @@
             if(!promoBox) return;
             const now = new Date();
             
-            const startDate = new Date(2026, 4, 13, 8, 0, 0);   
+            // 🔥 活動延遲至 5月18日 🔥
+            const startDate = new Date(2026, 4, 18, 12, 0, 0);   
             const cutoffDate = new Date(2026, 4, 26, 23, 59, 59); 
             const phase2Date = new Date(2026, 5, 10, 0, 0, 0);   
 
@@ -440,7 +442,7 @@
             } else if (now >= cutoffDate) {
                 content = "🎁 【全城尋找 100% 餅印人寵】<br>現已截止，進入計算階段，可以主動在 IG 聯絡動物之心！";
             } else if (now < startDate) {
-                content = `🎁 【全城尋找最餅印一對】<br>活動將於 5月13日 早上正式展開！<br><span style="color:#e74c3c; font-size:1.1rem; display:block; margin-top:5px;">敬請期待</span>`;
+                content = `🎁 【全城尋找最餅印一對】<br>活動將於 5月18日 正式展開！<br><span style="color:#e74c3c; font-size:1.1rem; display:block; margin-top:5px;">敬請期待</span>`;
             } else {
                 const timeDiff = cutoffDate - now;
                 const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
@@ -454,20 +456,18 @@
             if(promoBoxLb) promoBoxLb.innerHTML = content;
         }
 
-        async function loadAIinBackground() {
-            try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {}
-        }
-        loadAIinBackground();
-
-        // 🔥 補返呢度極重要嘅控制轉頁 Function！ 🔥
         function switchView(viewId) { 
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
             window.scrollTo(0,0); 
             if(viewId === 'view-home' || viewId === 'view-leaderboard') updateCountdown();
         }
-        // 第一次入網頁要啟動 Promo Box
         updateCountdown();
+
+        async function loadAIinBackground() {
+            try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {}
+        }
+        loadAIinBackground();
 
         async function checkImg(e, imgId, bubbleId, targetRole) {
             const file = e.target.files[0]; if(!file) return;
@@ -492,7 +492,6 @@
             if (targetRole === 'person') {
                 if (persons.length > 0) { 
                     status = "ok"; 
-                    // 搞笑 AI Comment (人類)
                     const msgs =["🏃‍♂️ 完美捕捉靚樣！", "📸 捕捉到你最索/型嘅一面！", "😎 呢個樣不得了，AI 都讚好！"];
                     msg = msgs[Math.floor(Math.random() * msgs.length)];
                 } 
@@ -516,7 +515,6 @@
                 else if (obviousPerson) { msg = "❌ 發現人類！請盡量裁走人樣，淨係留低主子！"; status = "err"; }
                 else { 
                     status = "ok"; 
-                    // 搞笑 AI Comment (毛孩)
                     const msgs =["🐾 毛孩確認 OK！", "🐶 主子駕到！AI 認出咗佢個可愛樣！", "✨ 呢位毛孩顏值極高，順利通過！"];
                     msg = msgs[Math.floor(Math.random() * msgs.length)];
                 }
@@ -543,7 +541,7 @@
             setTimeout(() => { document.getElementById('ig-gate-modal').style.display = 'none'; generateResults(); }, 3000);
         }
 
-        // 複製 Caption 神器
+        // 🔥 掣名更改及提示更新 🔥
         function copyCaption() {
             const text = `我同 ${state.dName} 竟然有 ${state.scores.final}% 相似。\n原來有時唔係你揀寵物，係佢揀咗你。\n你都試下：game.animalssum.com`;
             navigator.clipboard.writeText(text).then(() => {
@@ -552,19 +550,13 @@
                 btn.style.background = '#27ae60';
                 btn.style.boxShadow = '0 6px 0 #1e8449';
                 setTimeout(() => {
-                    btn.innerText = '📝 複製 IG Caption';
+                    btn.innerText = '🔗 分享鏈結';
                     btn.style.background = ''; 
                     btn.style.boxShadow = '';
                 }, 3000);
             }).catch(err => {
                 alert("複製失敗，請手動 Highlight 複製！");
             });
-        }
-
-        function drawStrokedText(ctx, text, x, y, font, fillColor, strokeColor, lineWidth) {
-            ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
-            if(lineWidth > 0) { ctx.lineWidth = lineWidth; ctx.strokeStyle = strokeColor; ctx.strokeText(text, x, y); }
-            ctx.fillStyle = fillColor; ctx.fillText(text, x, y);
         }
         
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
@@ -584,7 +576,7 @@
                     state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
                     let cText = ""; let cEmoji = "";
-                    if(finalAvg >= 98) { cEmoji="👼"; cText="靈魂共振！根本係源自同一個靈魂本源吧"; }
+                    if(finalAvg >= 98) { cEmoji="👼"; cText="超級心有靈犀！根本係源自同一個靈魂"; }
                     else if(finalAvg >= 96) { cEmoji="🧬"; cText="血濃於水！前世肯肯定係親生兄弟姊妹"; }
                     else if(finalAvg >= 94) { cEmoji="😱"; cText="失散多年嘅親生骨肉，連執相都唔使！"; }
                     else if(finalAvg >= 92) { cEmoji="😂"; cText="越養越似！連笑起上嚟個樣都一樣樣架喎"; }
@@ -596,12 +588,10 @@
                     else { cEmoji="🐶"; cText="最佳拍檔！互相陪伴、沿途有愛"; }
                     
                     state.commentText = cText; 
-                    state.commentEmoji = cEmoji;
 
                     document.getElementById('res-pet-name').innerText = state.dName;
                     document.getElementById('res-comment').innerText = cText;
 
-                    // 最新 Dynamic Comments
                     const dynamicComments = {
                         color:[
                             '你哋最似嘅係講不出但感覺到嗰份氣場。',
@@ -658,84 +648,155 @@
                         document.getElementById('bar-funny').style.width = funnyS+'%'; 
                     }, 100);
 
-                    // --- 畫 Share 圖 ---
+                    // --- 🔥 Canvas 終極重製 (1080x1920 IG Story 比例) 🔥 ---
                     const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
-                    let grd = sCtx.createLinearGradient(0, 0, 1080, 1350); grd.addColorStop(0, "#81ecec"); grd.addColorStop(1, "#54b97c");
-                    sCtx.fillStyle = grd; sCtx.fillRect(0,0,1080,1350);
-                    sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 40; sCtx.strokeRect(20,20,1040,1310);
-                    sCtx.strokeStyle = '#FFD93D'; sCtx.lineWidth = 10; sCtx.strokeRect(40,40,1000,1270);
+                    
+                    // 背景色
+                    sCtx.fillStyle = '#fffdf7';
+                    sCtx.fillRect(0, 0, 1080, 1920);
+
+                    // 綠色外框
+                    sCtx.lineWidth = 40;
+                    sCtx.strokeStyle = '#54b97c';
+                    sCtx.strokeRect(20, 20, 1040, 1880);
                     
                     const logoImg = document.getElementById('brand-logo');
                     try {
                         if(logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
                             const r = logoImg.naturalWidth / logoImg.naturalHeight; 
-                            let dH = 85; let dW = dH * r;
-                            sCtx.drawImage(logoImg, 540 - (dW/2), 70, dW, dH); 
+                            let dH = 100; let dW = dH * r;
+                            sCtx.drawImage(logoImg, 540 - (dW/2), 80, dW, dH); 
                         }
                     } catch(e) { console.log('Logo skip'); }
-                    
-                    drawStrokedText(sCtx, '🐾 AI 人寵相似度大測試 🐾', 540, 215, '900 70px "Noto Sans TC", sans-serif', '#fff', '#d35400', 15);
-                    
-                    sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 260, 920, 320, 40); sCtx.fill();
-                    drawStrokedText(sCtx, 'AI 終極大會評語', 540, 320, '900 35px "Noto Sans TC", sans-serif', '#888', '#fff', 0);
-                    
-                    let commentFontSize = '45px'; if(cText.length > 20) commentFontSize = '35px'; if(cText.length > 25) commentFontSize = '28px';
-                    
-                    // 完美移除 Canvas Emoji
-                    sCtx.lineWidth = 10; sCtx.strokeStyle = '#fff'; sCtx.strokeText(state.commentText, 540, 400, 880);
-                    sCtx.fillStyle = '#e74c3c'; sCtx.font = `900 ${commentFontSize} "Noto Sans TC", sans-serif`; sCtx.fillText(state.commentText, 540, 400, 880);
-                    
-                    sCtx.lineWidth = 20; sCtx.strokeStyle = '#fff'; sCtx.strokeText(`${state.scores.final}%`, 540, 540);
-                    sCtx.fillStyle = '#54b97c'; sCtx.font = '900 150px "Fredoka", sans-serif'; sCtx.fillText(`${state.scores.final}%`, 540, 540);
 
+                    // 標題字
+                    sCtx.fillStyle = '#6b4c3a';
+                    sCtx.font = '900 45px "Noto Sans TC", sans-serif';
+                    sCtx.textAlign = 'center';
+                    sCtx.fillText('我同主子嘅相似度高達', 540, 260);
+
+                    // 大分數
+                    sCtx.fillStyle = '#54b97c';
+                    sCtx.font = '900 240px "Fredoka", sans-serif';
+                    sCtx.fillText(`${state.scores.final}%`, 540, 480);
+
+                    // 彩帶 (Ribbon)
+                    sCtx.fillStyle = '#fcd34d';
+                    sCtx.beginPath();
+                    sCtx.roundRect(140, 520, 800, 90, 45);
+                    sCtx.fill();
+                    
+                    let commentFontSize = '42px'; if(state.commentText.length > 20) commentFontSize = '36px'; if(state.commentText.length > 25) commentFontSize = '28px';
+                    sCtx.fillStyle = '#6b4c3a';
+                    sCtx.font = `900 ${commentFontSize} "Noto Sans TC", sans-serif`;
+                    sCtx.fillText(state.commentText, 540, 582);
+
+                    // 兩張相片 (完美 1:1 防走位)
                     try {
-                        let w = 380, h = 440; let y = 620; 
+                        const imgSize = 420;
+                        const yPhoto = 700;
                         
-                        sCtx.save(); sCtx.translate(330, y + 200); sCtx.rotate(-4 * Math.PI / 180);
-                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
-                        
-                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, w-30, 10); sCtx.closePath(); sCtx.clip();
+                        sCtx.save();
+                        sCtx.beginPath();
+                        sCtx.roundRect(90, yPhoto, imgSize, imgSize, 40);
+                        sCtx.clip();
                         let nw1 = state.imgs.h1.naturalWidth || state.imgs.h1.width; let nh1 = state.imgs.h1.naturalHeight || state.imgs.h1.height; let sz1 = Math.min(nw1, nh1); 
-                        sCtx.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, -w/2 + 15, -h/2 + 15, w-30, w-30); sCtx.restore();
-                        
-                        sCtx.save(); sCtx.translate(330, y + 200); sCtx.rotate(-4 * Math.PI / 180);
-                        sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.hName, 0, h/2 - 25); sCtx.restore();
-
-                        sCtx.save(); sCtx.translate(750, y + 200); sCtx.rotate(5 * Math.PI / 180);
-                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.roundRect(-w/2, -h/2, w, h, 20); sCtx.shadowColor = "rgba(0,0,0,0.15)"; sCtx.shadowBlur = 20; sCtx.shadowOffsetY = 10; sCtx.fill(); sCtx.shadowColor = "transparent";
-                        
-                        sCtx.beginPath(); sCtx.roundRect(-w/2 + 15, -h/2 + 15, w-30, w-30, 10); sCtx.closePath(); sCtx.clip();
-                        let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2); 
-                        sCtx.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, -w/2 + 15, -h/2 + 15, w-30, w-30); sCtx.restore();
-                        
-                        sCtx.save(); sCtx.translate(750, y + 200); sCtx.rotate(5 * Math.PI / 180);
-                        sCtx.fillStyle = '#444'; sCtx.font = 'bold 35px "Noto Sans TC", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText(state.dName, 0, h/2 - 25); sCtx.restore();
-
-                        sCtx.save(); sCtx.translate(540, 830); sCtx.rotate(-10 * Math.PI / 180);
-                        sCtx.fillStyle = '#fff'; sCtx.beginPath(); sCtx.arc(0, 0, 75, 0, Math.PI*2); sCtx.fill();
-                        sCtx.lineWidth = 6; sCtx.strokeStyle = '#e74c3c'; sCtx.stroke();
-                        sCtx.fillStyle = '#e74c3c'; sCtx.font = 'italic 900 50px "Fredoka", sans-serif'; sCtx.textAlign = 'center'; sCtx.fillText('VS', 0, -5);
-                        sCtx.font = 'bold 22px "Noto Sans TC", sans-serif'; sCtx.fillText('神合體', 0, 25);
+                        sCtx.drawImage(state.imgs.h1, (nw1-sz1)/2, (nh1-sz1)/2, sz1, sz1, 90, yPhoto, imgSize, imgSize); 
                         sCtx.restore();
+
+                        sCtx.save();
+                        sCtx.beginPath();
+                        sCtx.roundRect(570, yPhoto, imgSize, imgSize, 40);
+                        sCtx.clip();
+                        let nw2 = state.imgs.d1.naturalWidth || state.imgs.d1.width; let nh2 = state.imgs.d1.naturalHeight || state.imgs.d1.height; let sz2 = Math.min(nw2, nh2); 
+                        sCtx.drawImage(state.imgs.d1, (nw2-sz2)/2, (nh2-sz2)/2, sz2, sz2, 570, yPhoto, imgSize, imgSize); 
+                        sCtx.restore();
+
+                        // 中間心心
+                        sCtx.fillStyle = '#fff';
+                        sCtx.beginPath();
+                        sCtx.arc(540, yPhoto + imgSize/2, 70, 0, Math.PI*2);
+                        sCtx.fill();
+                        sCtx.shadowColor = "rgba(0,0,0,0.15)";
+                        sCtx.shadowBlur = 15;
+                        sCtx.fill();
+                        sCtx.shadowColor = "transparent";
+                        sCtx.font = '70px Arial';
+                        sCtx.fillText('❤️', 540, yPhoto + imgSize/2 + 25);
                     } catch(e) {}
-                    
-                    sCtx.fillStyle = 'rgba(255,255,255,0.95)'; sCtx.beginPath(); sCtx.roundRect(80, 1060, 920, 240, 40); sCtx.fill();
-                    
-                    sCtx.fillStyle = '#e17055'; 
-                    sCtx.font = 'bold 28px "Noto Sans TC", sans-serif';
-                    sCtx.textAlign = 'center';
-                    sCtx.fillText('👇 你哋似嘅細位係 👇', 540, 1115);
 
-                    sCtx.fillStyle = '#555'; sCtx.font = 'bold 32px "Mochiy Pop One", "Noto Sans TC", sans-serif'; 
+                    // Highlight Box
+                    const yHL = 1200;
+                    sCtx.fillStyle = '#fffaf0';
+                    sCtx.beginPath();
+                    sCtx.roundRect(90, yHL, 900, 200, 30);
+                    sCtx.fill();
+                    sCtx.lineWidth = 4;
+                    sCtx.strokeStyle = '#e2e8e4';
+                    sCtx.stroke();
+
                     sCtx.textAlign = 'left';
-                    sCtx.fillText(`🎨 顏色: ${state.scores.c}%`, 150, 1180);
-                    sCtx.fillText(`🏃 動作: ${state.scores.a}%`, 150, 1245);
-                    sCtx.fillText(`👀 眼神: ${state.scores.e}%`, 580, 1180);
-                    sCtx.fillText(`🎭 神態: ${state.scores.v}%`, 580, 1245);
-                    sCtx.textAlign = 'center';
-                    sCtx.fillText(`🍖 貪食基因: ${state.scores.f}%`, 540, 1285);
+                    sCtx.fillStyle = '#54b97c';
+                    sCtx.font = '900 45px "Noto Sans TC", sans-serif';
+                    sCtx.fillText(`⭐ 你哋最似: ${labelMap[topKey]} ${scoreMap[topKey]}%`, 140, yHL + 75);
 
-                    sCtx.fillStyle = '#fff'; sCtx.font = 'bold 26px "Fredoka", sans-serif'; sCtx.fillText('ANIMALSSUM.COM', 540, 1340);
+                    sCtx.fillStyle = '#555';
+                    sCtx.font = 'bold 35px "Noto Sans TC", sans-serif';
+                    sCtx.fillText(dynamicComment, 140, yHL + 145);
+
+                    // Similarity Bars
+                    const yBars = 1450;
+                    sCtx.fillStyle = '#f0fdf4';
+                    sCtx.beginPath();
+                    sCtx.roundRect(90, yBars, 300, 60, 20);
+                    sCtx.fill();
+                    sCtx.fillStyle = '#3da065';
+                    sCtx.font = '900 35px "Noto Sans TC", sans-serif';
+                    sCtx.fillText('相似度分析', 130, yBars + 42);
+
+                    const barLabels = [
+                        { icon: '👀', text: '眼神交流', val: eyeS },
+                        { icon: '🎨', text: '毛色特徵', val: colorS },
+                        { icon: '🏃', text: '動作節奏', val: actionS },
+                        { icon: '✨', text: '氣質神態', val: vibeS },
+                        { icon: '🧁', text: '搞笑貪食', val: funnyS }
+                    ];
+
+                    barLabels.forEach((bar, i) => {
+                        let by = yBars + 110 + (i * 55);
+                        sCtx.fillStyle = '#555';
+                        sCtx.font = 'bold 35px "Noto Sans TC", sans-serif';
+                        sCtx.fillText(`${bar.icon} ${bar.text}`, 110, by);
+
+                        // Track
+                        sCtx.fillStyle = '#e2e8e4';
+                        sCtx.beginPath();
+                        sCtx.roundRect(360, by - 25, 460, 25, 12);
+                        sCtx.fill();
+
+                        // Fill
+                        sCtx.fillStyle = '#54b97c';
+                        sCtx.beginPath();
+                        sCtx.roundRect(360, by - 25, 460 * (bar.val/100), 25, 12);
+                        sCtx.fill();
+
+                        // Pct
+                        sCtx.fillStyle = '#3da065';
+                        sCtx.font = '900 35px "Fredoka", sans-serif';
+                        sCtx.textAlign = 'right';
+                        sCtx.fillText(`${bar.val}%`, 970, by);
+                        sCtx.textAlign = 'left';
+                    });
+
+                    // Bottom Banner
+                    sCtx.fillStyle = '#54b97c';
+                    sCtx.beginPath();
+                    sCtx.roundRect(140, 1800, 800, 80, 40);
+                    sCtx.fill();
+                    sCtx.fillStyle = '#fff';
+                    sCtx.font = 'bold 35px "Noto Sans TC", sans-serif';
+                    sCtx.textAlign = 'center';
+                    sCtx.fillText('立即測試：animalssum.com', 540, 1852);
                     
                     sCanvas.toBlob((b)=>{ state.shareImgBlob = b; }, 'image/jpeg', 0.8);
 
