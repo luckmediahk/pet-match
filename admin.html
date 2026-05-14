@@ -3,99 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ 排行榜</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>🐶 AnimalsSum | 後台管理系統</title>
+    
+    <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        header { background: #2d3436; color: white; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 1.8rem; }
-        .status { background: #00b894; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; animation: pulse 2s infinite; }
+        body { font-family: 'Noto Sans TC', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; color: #333; }
+        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        h1 { color: #54b97c; margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
+        .export-btn { background: #e74c3c; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .export-btn:hover { background: #c0392b; }
         
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { padding: 12px 25px; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; background: #ddd; color: #555; transition: 0.3s; }
-        .tab-btn.active { background: #54b97c; color: white; box-shadow: 0 5px 15px rgba(84, 185, 124, 0.3); }
+        .stat-box { display: flex; gap: 20px; margin-bottom: 20px; }
+        .stat-card { background: #f0fdf4; border: 1px solid #54b97c; padding: 15px 20px; border-radius: 10px; flex: 1; text-align: center; }
+        .stat-card h3 { margin: 0 0 5px 0; font-size: 1rem; color: #3da065; }
+        .stat-card span { font-size: 2rem; font-weight: 900; color: #2d3436; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #54b97c; color: white; position: sticky; top: 0; }
+        tr:hover { background: #f9f9f9; }
         
-        .view { display: none; }
-        .view.active { display: block; }
-
-        .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; vertical-align: middle; font-size: 0.95rem; }
-        th { background: #f8f9fa; font-weight: bold; color: #333; position: sticky; top: 0; }
-        tr:hover { background: #f1f8f5; }
-        .dl-csv-btn { background: #FFD93D; color: #333; border: none; padding: 10px 20px; font-size: 1rem; font-weight: bold; border-radius: 10px; cursor: pointer; float: right; margin-bottom: 15px; }
-        .admin-avatars img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
-
-        .filter-bar { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); flex-wrap: wrap;}
-        .filter-bar input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
-        .filter-bar button { background: #0984e3; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        
-        .stats-row { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stat-card { background: white; padding: 20px; border-radius: 15px; flex: 1; min-width: 150px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-left: 5px solid #54b97c; }
-        .stat-card h3 { margin: 0 0 10px 0; color: #555; font-size: 1.1rem; }
-        .stat-card .num { font-size: 2.5rem; font-weight: 900; color: #2d3436; }
-
-        /* 🔥 Partner Tag 🔥 */
-        .partner-tag { background: #ffeaa7; color: #d35400; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase;}
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .badge { background: #FFD93D; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; }
+        .img-preview { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>⚙️ 排行榜</h1>
-        <div class="status">🟢 即時連線中 (Live Sync)</div>
-    </header>
-
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('data-view', this)">📋 參加者數據分析</button>
-    </div>
-
-    <div id="data-view" class="view active">
+    <div class="admin-container">
+        <h1>
+            🐾 遊戲後台管理系統
+            <button class="export-btn" onclick="exportToCSV()">📥 匯出 Excel (CSV)</button>
+        </h1>
         
-        <div class="filter-bar">
-            <label><strong>截至時間篩選：</strong></label>
-            <input type="datetime-local" id="filter-end-time">
-            <button onclick="fetchAndRenderData()">🔍 套用篩選</button>
+        <div class="stat-box">
+            <div class="stat-card"><h3>總遊玩記錄</h3><span id="total-plays">0</span></div>
+            <div class="stat-card"><h3>已登記抽獎人數</h3><span id="total-regs">0</span></div>
         </div>
 
-        <div class="stats-row">
-            <div class="stat-card">
-                <h3>👥 總參與人數</h3>
-                <div class="num" id="stat-total">0</div>
-            </div>
-            <div class="stat-card" style="border-color:#e84393;">
-                <h3>🐱 貓貓玩家</h3>
-                <div class="num" id="stat-cats" style="color:#e84393;">0</div>
-            </div>
-            <div class="stat-card" style="border-color:#0984e3;">
-                <h3>🐶 狗狗玩家</h3>
-                <div class="num" id="stat-dogs" style="color:#0984e3;">0</div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <button class="dl-csv-btn" onclick="downloadCSV()">⬇️ 下載 Excel (CSV)</button>
+        <div style="overflow-x: auto; max-height: 70vh;">
             <table id="data-table">
                 <thead>
                     <tr>
-                        <th>名次</th><th>相片</th><th>人類名 (毛孩名)</th>
-                        <th>寵物類型</th><th>IP 地區</th>
-                        <!-- 🔥 新增引流來源 🔥 -->
-                        <th>引流來源</th>
-                        <th>AI 分數</th><th>真實姓名</th><th>電話</th><th>Email</th><th>上榜時間</th>
+                        <th>排名</th>
+                        <th>分數</th>
+                        <th>人類</th>
+                        <th>主子</th>
+                        <th>登記姓名</th>
+                        <th>聯絡電話</th>
+                        <th>電郵地址</th>
+                        <th>IP / 來源</th>
+                        <th>遊玩時間</th>
                     </tr>
                 </thead>
-                <tbody id="table-body"></tbody>
+                <tbody id="table-body">
+                    <tr><td colspan="9" style="text-align:center;">載入數據中...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 
     <script>
+        // 初始化 Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyAZNLy_ujHrFQQPmv5C_r2wlvptgXb2Enw",
           authDomain: "pet-human-alike.firebaseapp.com",
@@ -104,113 +77,89 @@
           messagingSenderId: "285758735120",
           appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95"
         };
-        firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); 
-        
-        let allData =[]; 
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        function switchTab(viewId, btn) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active'); btn.classList.add('active');
-        }
+        let allData = [];
 
-        async function fetchAndRenderData() {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">⏳ 載入中...</td></tr>';
-            allData =[];
-
+        async function loadData() {
             try {
-                const snap = await db.collection("certs").where("public", "==", true).get();
-                snap.forEach(doc => { allData.push(doc.data()); });
-            } catch(e) { console.error(e); }
-
-            const endTimeVal = document.getElementById('filter-end-time').value;
-            let filteredData = allData;
-            if(endTimeVal) {
-                const endTimestamp = new Date(endTimeVal).getTime();
-                filteredData = filteredData.filter(d => d.timestamp <= endTimestamp);
-            }
-
-            filteredData.sort((a,b) => {
-                if(b.score !== a.score) return b.score - a.score;
-                return (a.timestamp || 0) - (b.timestamp || 0);
-            });
-
-            document.getElementById('stat-total').innerText = filteredData.length;
-            let cats = 0; let dogs = 0;
-            filteredData.forEach(d => {
-                if(d.petType === 'Cat') cats++;
-                else if (d.petType === 'Dog') dogs++;
-                else if (d.dogName && (d.dogName.includes('貓') || d.dogName.includes('喵'))) cats++; 
-                else dogs++; 
-            });
-            document.getElementById('stat-cats').innerText = cats;
-            document.getElementById('stat-dogs').innerText = dogs;
-
-            tbody.innerHTML = '';
-            if(filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">暫無符合條件之數據</td></tr>'; return;
-            }
-
-            filteredData.slice(0, 100).forEach((data, index) => {
-                const rankStr = index + 1;
-                const emailText = data.regEmail ? data.regEmail : "<span style='color:red;'>未提供</span>";
-                const phoneText = data.regMobile ? data.regMobile : "<span style='color:red;'>未提供</span>";
-                const realNameText = data.regName ? data.regName : "<span style='color:red;'>未提供</span>";
-                const timeStr = (data.timestamp ? new Date(data.timestamp) : new Date()).toLocaleString('zh-HK');
+                const snapshot = await db.collection("certs").orderBy("score", "desc").get();
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = '';
                 
-                const petTypeStr = data.petType || 'Dog';
-                const ipStr = data.ip || '未記錄';
-                
-                // 🔥 處理 Partner 來源顯示 🔥
-                const sourceStr = (data.refSource && data.refSource !== 'organic') ? `<span class="partner-tag">${data.refSource}</span>` : 'Organic (自然)';
+                let rank = 1;
+                let regCount = 0;
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${rankStr}</strong></td>
-                    <td class="admin-avatars"><img src="${data.humanImg || ''}"> <img src="${data.dogImg || ''}" style="margin-left:-15px;"></td>
-                    <td>${data.humanName} & ${data.dogName}</td>
-                    <td>${petTypeStr}</td>
-                    <td>${ipStr}</td>
-                    <td>${sourceStr}</td>
-                    <td style="color:#54b97c; font-weight:bold; font-size:1.1rem;">${data.score}%</td>
-                    <td>${realNameText}</td>
-                    <td>${phoneText}</td>
-                    <td>${emailText}</td>
-                    <td style="color:#888; font-size:0.85rem;">${timeStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    allData.push(data);
+                    
+                    if(data.regMobile) regCount++;
+
+                    const dateObj = new Date(data.timestamp);
+                    const timeStr = isNaN(dateObj) ? "未知" : dateObj.toLocaleString('zh-HK');
+
+                    const regTag = data.regMobile ? `<span class="badge">已登記</span>` : '';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>#${rank}</b></td>
+                        <td style="color:#54b97c; font-weight:bold;">${data.score}%</td>
+                        <td><img src="${data.humanImg}" class="img-preview"> ${data.humanName}</td>
+                        <td><img src="${data.dogImg}" class="img-preview"> ${data.dogName}</td>
+                        <td>${data.regName || '-'} ${regTag}</td>
+                        <td>${data.regMobile || '-'}</td>
+                        <td>${data.regEmail || '-'}</td>
+                        <td style="font-size:0.8rem; color:#888;">${data.ip || '未知'} <br>(${data.refSource || 'organic'})</td>
+                        <td style="font-size:0.8rem;">${timeStr}</td>
+                    `;
+                    tbody.appendChild(tr);
+                    rank++;
+                });
+
+                document.getElementById('total-plays').innerText = allData.length;
+                document.getElementById('total-regs').innerText = regCount;
+
+            } catch(e) {
+                console.error("載入失敗:", e);
+                document.getElementById('table-body').innerHTML = `<tr><td colspan="9" style="color:red; text-align:center;">讀取資料失敗，請檢查權限或網絡連線。</td></tr>`;
+            }
         }
 
-        fetchAndRenderData();
-
-        function downloadCSV() {
-            if(allData.length === 0) return alert("無數據可供下載！");
-            let csvContent = "\uFEFF名次,人類名,毛孩名,寵物類型,IP地區,引流來源(Partner),AI分數(%),真實姓名,電話,聯絡Email,遊玩時間\n";
+        function exportToCSV() {
+            if(allData.length === 0) return alert("無數據可匯出！");
             
-            const endTimeVal = document.getElementById('filter-end-time').value;
-            let filteredData = allData;
-            if(endTimeVal) {
-                const endTimestamp = new Date(endTimeVal).getTime();
-                filteredData = filteredData.filter(d => d.timestamp <= endTimestamp);
-            }
-            filteredData.sort((a,b) => {
-                if(b.score !== a.score) return b.score - a.score;
-                return (a.timestamp || 0) - (b.timestamp || 0);
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // 加入 BOM 防止中文亂碼
+            csvContent += "排名,分數,人類名稱,毛孩名稱,動物種類,是否公開,登記姓名,登記電話,登記Email,來源,IP,遊玩時間\n";
+
+            allData.forEach((row, index) => {
+                const dateObj = new Date(row.timestamp);
+                const timeStr = isNaN(dateObj) ? "" : dateObj.toLocaleString('zh-HK');
+                
+                // 清理欄位入面可能出現嘅逗號
+                const clean = (str) => `"${(str || '').toString().replace(/"/g, '""')}"`;
+                
+                const rowData = [
+                    index + 1, row.score, clean(row.humanName), clean(row.dogName), 
+                    clean(row.petType), row.public ? "是" : "否", 
+                    clean(row.regName), clean(row.regMobile), clean(row.regEmail),
+                    clean(row.refSource), clean(row.ip), clean(timeStr)
+                ];
+                csvContent += rowData.join(",") + "\n";
             });
 
-            filteredData.forEach((row, index) => {
-                const timeStr = (row.timestamp ? new Date(row.timestamp) : new Date()).toLocaleString('zh-HK').replace(/,/g, ''); 
-                const pType = row.petType || 'Dog';
-                const ipLoc = row.ip || '未記錄';
-                const source = row.refSource || 'Organic'; // 寫入 CSV
-                csvContent += `${index+1},${row.humanName},${row.dogName},${pType},${ipLoc},${source},${row.score},${row.regName||''},${row.regMobile||''},${row.regEmail||''},${timeStr}\n`;
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `AnimalsSum_TopList_${new Date().getTime()}.csv`;
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `AnimalsSum_玩家名單_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
+
+        // 啟動載入
+        loadData();
     </script>
 </body>
 </html>

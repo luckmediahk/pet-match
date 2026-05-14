@@ -866,7 +866,7 @@
         function downloadShareImg() { 
             const url = URL.createObjectURL(state.shareImgBlob);
             window.open(url, '_blank');
-            const link = document.createElement('a'); link.download = `AnimalsSum_${state.hName}.jpg`; link.href = url;
+            const link = document.createElement('a'); link.download = `AnimalsSum_${state.hName}&${state.dName}.jpg`; link.href = url;
             alert("iPhone 用家請直接長按圖片 -> 儲存至相片！");
             link.click(); 
         }
