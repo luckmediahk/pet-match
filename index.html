@@ -189,7 +189,7 @@
 
     <div class="container">
         <header>
-            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v49.2</span></div>
+            <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v49.3</span></div>
             <h1>🐾 AI 人寵相似度大測試</h1>
         </header>
 
@@ -459,6 +459,16 @@
         }
         loadAIinBackground();
 
+        // 🔥 補返呢度極重要嘅控制轉頁 Function！ 🔥
+        function switchView(viewId) { 
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
+            document.getElementById(viewId).classList.add('active'); 
+            window.scrollTo(0,0); 
+            if(viewId === 'view-home' || viewId === 'view-leaderboard') updateCountdown();
+        }
+        // 第一次入網頁要啟動 Promo Box
+        updateCountdown();
+
         async function checkImg(e, imgId, bubbleId, targetRole) {
             const file = e.target.files[0]; if(!file) return;
             const img = document.getElementById(imgId); const bubble = document.getElementById(bubbleId); const box = document.getElementById('box-' + imgId.replace('img-',''));
@@ -482,7 +492,7 @@
             if (targetRole === 'person') {
                 if (persons.length > 0) { 
                     status = "ok"; 
-                    // 🔥 搞笑 AI Comment (人類) 🔥
+                    // 搞笑 AI Comment (人類)
                     const msgs =["🏃‍♂️ 完美捕捉靚樣！", "📸 捕捉到你最索/型嘅一面！", "😎 呢個樣不得了，AI 都讚好！"];
                     msg = msgs[Math.floor(Math.random() * msgs.length)];
                 } 
@@ -506,7 +516,7 @@
                 else if (obviousPerson) { msg = "❌ 發現人類！請盡量裁走人樣，淨係留低主子！"; status = "err"; }
                 else { 
                     status = "ok"; 
-                    // 🔥 搞笑 AI Comment (毛孩) 🔥
+                    // 搞笑 AI Comment (毛孩)
                     const msgs =["🐾 毛孩確認 OK！", "🐶 主子駕到！AI 認出咗佢個可愛樣！", "✨ 呢位毛孩顏值極高，順利通過！"];
                     msg = msgs[Math.floor(Math.random() * msgs.length)];
                 }
@@ -591,7 +601,7 @@
                     document.getElementById('res-pet-name').innerText = state.dName;
                     document.getElementById('res-comment').innerText = cText;
 
-                    // 🔥 更新版專屬 Dynamic Comments 🔥
+                    // 最新 Dynamic Comments
                     const dynamicComments = {
                         color:[
                             '你哋最似嘅係講不出但感覺到嗰份氣場。',
@@ -671,7 +681,7 @@
                     
                     let commentFontSize = '45px'; if(cText.length > 20) commentFontSize = '35px'; if(cText.length > 25) commentFontSize = '28px';
                     
-                    // 🔥 完美移除了 Canvas 上的 Emoji 🔥
+                    // 完美移除 Canvas Emoji
                     sCtx.lineWidth = 10; sCtx.strokeStyle = '#fff'; sCtx.strokeText(state.commentText, 540, 400, 880);
                     sCtx.fillStyle = '#e74c3c'; sCtx.font = `900 ${commentFontSize} "Noto Sans TC", sans-serif`; sCtx.fillText(state.commentText, 540, 400, 880);
                     
