@@ -6,11 +6,11 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>🐾 AnimalsSum | 神速合拍大比拚</title>
+    <title>🐾 AnimalsSum | AI 人寵相似度大測試</title>
     
-    <meta name="description" content="AI 神速合拍大比拚！立即測試你同毛孩有幾似樣！">
+    <meta name="description" content="AI 人寵相似度大測試！立即測試你同毛孩有幾似樣！">
     <meta property="og:title" content="🐾 AnimalsSum | AI 人寵相似度大測試">
-    <meta property="og:description" content="我同主子似唔似樣？立即參加 AI 神速合拍大比拚，睇下你哋有幾似家人！">
+    <meta property="og:description" content="我同主子似唔似樣？立即參加 AI 人寵相似度大測試，睇下你哋有幾似家人！">
     <meta property="og:image" content="https://luckmediahk.github.io/pet-match/og-image.jpg">
     <meta property="og:url" content="https://game.animalssum.com">
     <meta property="og:type" content="website">
@@ -26,6 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- Version: v52.0 -->
     <style>
         :root { 
             --brand: #5ba36a; 
@@ -60,8 +61,7 @@
         }
         
         header { text-align: center; margin-bottom: 20px; }
-        .logo-tag { background: var(--dark); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.9rem; display: inline-block; }
-        .ver-tag { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: 5px; vertical-align: super; }
+        .header-logo { height: 75px; margin-bottom: 5px; object-fit: contain; }
         h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 10px 0 5px; color: var(--brand); text-shadow: 1px 1px 0px #eee; font-weight: 900; letter-spacing: -1px;}
         .subtitle { color: #555; font-size: 1.05rem; font-weight: bold; margin: 5px 0 15px 0; line-height: 1.4; text-align: center; }
 
@@ -148,15 +148,16 @@
         .btn-share { background: var(--accent); color: #533500; border: none; box-shadow: 0 6px 0 #d4a000; font-size: 1.1rem; }
         .btn-share:active { box-shadow: 0 2px 0 #d4a000; }
 
-        /* 🔥 排行榜 (皇冠完美修復) 🔥 */
+        /* 🔥 排行榜 🔥 */
         .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 50px 0 30px 0; height: 180px; }
         .podium { flex: 1; max-width: 110px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;}
         
-        .podium-crown { font-size: 3.5rem; position: absolute; top: -115px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
+        .podium-crown { font-size: 2.2rem; position: absolute; top: -85px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
+        .rank-1 .podium-crown { font-size: 3.5rem; top: -115px; }
         
         .podium .avatars { position: absolute; top: -50px; display: flex; justify-content: center; width: 100%; z-index: 5;}
         .rank-1 .avatars { top: -65px; }
-        .podium img { width: 55px; height: 55px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.15); object-fit: cover; background: #eee; }
+        .podium img { width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.15); object-fit: cover; background: #eee; }
         .rank-1 img { width: 70px; height: 70px; border: 4px solid #fff;}
         .podium img:nth-child(2) { margin-left: -20px; }
         .rank-1 img:nth-child(2) { margin-left: -25px; }
@@ -204,6 +205,7 @@
 </head>
 <body>
 
+    <!-- 🔥 IG Share Card (Hidden for HTML2Canvas) 🔥 -->
     <div id="share-card-container" style="position: absolute; left: -9999px; top: -9999px;">
         <div id="share-card" style="width: 1080px; height: 1920px; position: relative; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background-color: #fffdf5;">
             
@@ -258,20 +260,23 @@
         </div>
     </div>
 
+
     <div id="loader">
         <div class="spinner">⚙️</div>
         <h2 id="loader-text" style="color:#555; margin-top:20px;">AI 正幫你哋搵出命中注定嘅相似度...</h2>
     </div>
 
     <div class="container">
+        <!-- 🔥 Logo 及 Title 更新 🔥 -->
         <div id="default-header">
             <header>
-                <div class="logo-tag">ANIMALSSUM.COM <span class="ver-tag">v51.0</span></div>
+                <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
                 <h1>🐾 AI 人寵相似度大測試</h1>
                 <p class="subtitle" id="home-subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
             </header>
         </div>
 
+        <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
             <div class="home-btns">
                 <button class="main-btn btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
@@ -281,6 +286,7 @@
             <span class="tnc-link" onclick="switchView('view-tnc')">📜 條款及免責聲明</span>
         </div>
 
+        <!-- VIEW 2: UPLOAD -->
         <div id="view-upload" class="view">
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
@@ -307,6 +313,7 @@
             <button class="main-btn sec-btn" style="border:none; box-shadow:none; color:#999; margin-top:10px;" onclick="location.reload()">🏠 返回主頁</button>
         </div>
 
+        <!-- 🔥 VIEW 3: RESULTS 🔥 -->
         <div id="view-result" class="view">
             <div class="framed-container">
                 <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
@@ -346,6 +353,7 @@
             </div>
         </div>
 
+        <!-- 🔥 VIEW 4: LEADERBOARD 🔥 -->
         <div id="view-leaderboard" class="view">
             <div class="framed-container">
                 <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
@@ -365,6 +373,7 @@
             </div>
         </div>
 
+        <!-- VIEW 5: T&C -->
         <div id="view-tnc" class="view">
             <h2 style="text-align:center; color:var(--brand); margin-bottom:15px; font-size:1.6rem;">📜 條款及細則與免責聲明</h2>
             <div class="tnc-content">
@@ -406,8 +415,8 @@
         </div>
     </div>
 
-    <!-- 🔥 JAVASCRIPT LOGIC 🔥 -->
     <script>
+        // 1. Firebase 初始化
         const firebaseConfig = { apiKey: "AIzaSyAZNLy_ujHrFQQPmv5C_r2wlvptgXb2Enw", authDomain: "pet-human-alike.firebaseapp.com", projectId: "pet-human-alike", storageBucket: "pet-human-alike.firebasestorage.app", messagingSenderId: "285758735120", appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95" };
         let db = null; 
         try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); } catch(e) {}
@@ -422,6 +431,7 @@
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
         const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
 
+        // 🔥 UI 及轉頁邏輯 🔥
         function updateCountdown() {
             const pb = document.getElementById('promo-teaser'); if(!pb) return;
             const now = new Date(); const startDate = new Date(2026, 4, 18, 12, 0, 0); const cutoffDate = new Date(2026, 4, 26, 23, 59, 59); 
@@ -445,8 +455,9 @@
             updateCountdown(); 
         }
         
-        switchView('view-home');
+        switchView('view-home'); // 初始化
 
+        // AI 載入及圖片檢測
         async function loadAIinBackground() { try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {} }
         loadAIinBackground();
 
@@ -490,98 +501,107 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
+        // 🔥 核心運算 (修復舊 ID 引起嘅 null 錯誤) 🔥
         window.generateResults = async function() {
             document.getElementById('loader').style.display = 'flex';
             let userIP = "Unknown"; try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
             setTimeout(async () => {
-                let colorS = genRandomScore(75), eyeS = genRandomScore(80), actionS = genRandomScore(80), vibeS = genRandomScore(85), funnyS = genRandomScore(88);
-                let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
-                finalAvg = parseFloat((finalAvg + (Date.now() % 100) / 10000).toFixed(3)); 
-                if(finalAvg > 99.999) finalAvg = 99.999;
-                
-                state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
+                try {
+                    let colorS = genRandomScore(75), eyeS = genRandomScore(80), actionS = genRandomScore(80), vibeS = genRandomScore(85), funnyS = genRandomScore(88);
+                    let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
+                    finalAvg = parseFloat((finalAvg + (Date.now() % 100) / 10000).toFixed(3)); 
+                    if(finalAvg > 99.999) finalAvg = 99.999;
+                    
+                    state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
-                let cText = "";
-                if(finalAvg >= 98) cText="❤️ 超級心有靈犀！";
-                else if(finalAvg >= 96) cText="❤️ 前世肯定係親生兄弟姊妹";
-                else if(finalAvg >= 94) cText="❤️ 失散多年嘅親生骨肉！";
-                else if(finalAvg >= 92) cText="❤️ 越養越似！連笑起上嚟都一樣樣";
-                else if(finalAvg >= 90) cText="❤️ 親緣天定！咁似樣注定做你仔女";
-                else if(finalAvg >= 88) cText="❤️ 似過同一個祖宗，出街肯定畀人認錯！";
-                else if(finalAvg >= 86) cText="❤️ 上世住隔離村，今世做埋一家人！";
-                else if(finalAvg >= 84) cText="❤️ 似似哋，但貪食基因強過主子！";
-                else cText="❤️ 最佳拍檔！沿途有愛";
-                
-                const dynamicComments = {
-                    color: ['你哋最似嘅係講不出但感覺到嗰份氣場。', '一望埋去，人人都知你哋係同色系嘅「一家人」。'],
-                    eye: ['最似嘅地方，就係望人嗰個有戲眼神。', '一對眼已經出賣咗你哋。'],
-                    action: ['原來你哋連細微動作都有默契。', '神同步唔一定係表情，可以係一舉手一投足。'],
-                    vibe: ['最同步嘅，可能係你哋嘅神態同微表情。', '表情未必一樣，但感覺到係有親屬關係。'],
-                    funny: ['原來你哋最同步嘅，係見到食物嗰個反應。', '食嘢呢方面，你哋個靈魂係高度一致。']
-                };
+                    let cText = "";
+                    if(finalAvg >= 98) cText="❤️ 超級心有靈犀！";
+                    else if(finalAvg >= 96) cText="❤️ 前世肯定係親生兄弟姊妹";
+                    else if(finalAvg >= 94) cText="❤️ 失散多年嘅親生骨肉！";
+                    else if(finalAvg >= 92) cText="❤️ 越養越似！連笑起上嚟都一樣樣";
+                    else if(finalAvg >= 90) cText="❤️ 親緣天定！咁似樣注定做你仔女";
+                    else if(finalAvg >= 88) cText="❤️ 似過同一個祖宗，出街肯定畀人認錯！";
+                    else if(finalAvg >= 86) cText="❤️ 上世住隔離村，今世做埋一家人！";
+                    else if(finalAvg >= 84) cText="❤️ 似似哋，但貪食基因強過主子！";
+                    else cText="❤️ 最佳拍檔！沿途有愛";
+                    
+                    const dynamicComments = {
+                        color: ['你哋最似嘅係講不出但感覺到嗰份氣場。', '一望埋去，人人都知你哋係同色系嘅「一家人」。'],
+                        eye: ['最似嘅地方，就係望人嗰個有戲眼神。', '一對眼已經出賣咗你哋。'],
+                        action: ['原來你哋連細微動作都有默契。', '神同步唔一定係表情，可以係一舉手一投足。'],
+                        vibe: ['最同步嘅，可能係你哋嘅神態同微表情。', '表情未必一樣，但感覺到係有親屬關係。'],
+                        funny: ['原來你哋最同步嘅，係見到食物嗰個反應。', '食嘢呢方面，你哋個靈魂係高度一致。']
+                    };
 
-                const scoreMap = { color: colorS, eye: eyeS, action: actionS, vibe: vibeS, funny: funnyS };
-                const labelMap = { color: '毛色特徵', eye: '眼神交流', action: '動作節奏', vibe: '氣質神態', funny: '貪食基因' };
-                
-                const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
-                const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
+                    const scoreMap = { color: colorS, eye: eyeS, action: actionS, vibe: vibeS, funny: funnyS };
+                    const labelMap = { color: '毛色特徵', eye: '眼神交流', action: '動作節奏', vibe: '氣質神態', funny: '貪食基因' };
+                    
+                    const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
+                    const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
-                document.getElementById('web-human-name').innerText = state.hName;
-                document.getElementById('res-pet-name').innerText = state.dName;
-                document.getElementById('web-score').innerText = finalAvg + '%';
-                document.getElementById('web-badge').innerText = cText;
-                document.getElementById('web-human').src = state.imgs.h1.src; document.getElementById('web-pet').src = state.imgs.d1.src;
-                document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
-                document.getElementById('web-mini-sub').innerText = dynamicComment;
+                    // 🔥 完美修正 ID 對接 🔥
+                    document.getElementById('web-human-name').innerText = state.hName;
+                    document.getElementById('web-pet-name').innerText = state.dName; // 之前呢度寫錯咗 res-pet-name
+                    document.getElementById('web-score').innerText = finalAvg + '%';
+                    document.getElementById('web-badge').innerText = cText;
+                    document.getElementById('web-human').src = state.imgs.h1.src; 
+                    document.getElementById('web-pet').src = state.imgs.d1.src;
+                    document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
+                    document.getElementById('web-mini-sub').innerText = dynamicComment;
 
-                document.getElementById('canvas-human-name').innerText = state.hName;
-                document.getElementById('canvas-pet-name').innerText = state.dName;
-                document.getElementById('canvas-score').innerText = finalAvg + '%';
-                document.getElementById('canvas-badge').innerText = cText;
-                document.getElementById('canvas-human').src = state.imgs.h1.src; document.getElementById('canvas-pet').src = state.imgs.d1.src;
-                document.getElementById('canvas-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
-                document.getElementById('canvas-mini-sub').innerText = dynamicComment;
+                    document.getElementById('canvas-human-name').innerText = state.hName;
+                    document.getElementById('canvas-pet-name').innerText = state.dName;
+                    document.getElementById('canvas-score').innerText = finalAvg + '%';
+                    document.getElementById('canvas-badge').innerText = cText;
+                    document.getElementById('canvas-human').src = state.imgs.h1.src; 
+                    document.getElementById('canvas-pet').src = state.imgs.d1.src;
+                    document.getElementById('canvas-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
+                    document.getElementById('canvas-mini-sub').innerText = dynamicComment;
 
-                const ids = ['eye','color','action','vibe','funny'];
-                ids.forEach(id => {
-                    document.getElementById(`web-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`web-bar-${id}`).style.width = scoreMap[id]+'%';
-                    document.getElementById(`canvas-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`canvas-bar-${id}`).style.width = scoreMap[id]+'%';
-                });
-
-                setTimeout(() => {
-                    html2canvas(document.querySelector("#share-card"), { scale: 2, useCORS: true, backgroundColor: '#fffdf5' }).then(canvas => {
-                        canvas.toBlob((b) => { 
-                            state.shareImgBlob = b; 
-                            
-                            state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
-                            const hC = document.createElement('canvas'); hC.width=150; hC.height=150; const c1 = hC.getContext('2d');
-                            let sz1 = Math.min(state.imgs.h1.naturalWidth, state.imgs.h1.naturalHeight);
-                            c1.drawImage(state.imgs.h1, (state.imgs.h1.naturalWidth-sz1)/2, (state.imgs.h1.naturalHeight-sz1)/2, sz1, sz1, 0, 0, 150, 150);
-                            
-                            const dC = document.createElement('canvas'); dC.width=150; dC.height=150; const c2 = dC.getContext('2d');
-                            let sz2 = Math.min(state.imgs.d1.naturalWidth, state.imgs.d1.naturalHeight);
-                            c2.drawImage(state.imgs.d1, (state.imgs.d1.naturalWidth-sz2)/2, (state.imgs.d1.naturalHeight-sz2)/2, sz2, sz2, 0, 0, 150, 150);
-
-                            if(db) {
-                                db.collection("certs").doc(state.docId).get().then(snap => {
-                                    if(!snap.exists || finalAvg > (snap.data().score || 0)) {
-                                        db.collection("certs").doc(state.docId).set({
-                                            ...snap.data(),
-                                            dogName: state.dName, humanName: state.hName, score: finalAvg,
-                                            humanImg: hC.toDataURL('image/jpeg', 0.5), dogImg: dC.toDataURL('image/jpeg', 0.5),
-                                            public: false, timestamp: new Date().getTime()
-                                        });
-                                    }
-                                });
-                            }
-                            
-                            document.getElementById('loader').style.display = 'none'; 
-                            switchView('view-result'); 
-                            confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
-                        }, 'image/jpeg', 0.8);
+                    const ids = ['eye','color','action','vibe','funny'];
+                    ids.forEach(id => {
+                        document.getElementById(`web-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`web-bar-${id}`).style.width = scoreMap[id]+'%';
+                        document.getElementById(`canvas-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`canvas-bar-${id}`).style.width = scoreMap[id]+'%';
                     });
-                }, 200);
+
+                    setTimeout(() => {
+                        html2canvas(document.querySelector("#share-card"), { scale: 2, useCORS: true, backgroundColor: '#fffdf5' }).then(canvas => {
+                            canvas.toBlob((b) => { 
+                                state.shareImgBlob = b; 
+                                
+                                state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
+                                const hC = document.createElement('canvas'); hC.width=150; hC.height=150; const c1 = hC.getContext('2d');
+                                let sz1 = Math.min(state.imgs.h1.naturalWidth, state.imgs.h1.naturalHeight);
+                                c1.drawImage(state.imgs.h1, (state.imgs.h1.naturalWidth-sz1)/2, (state.imgs.h1.naturalHeight-sz1)/2, sz1, sz1, 0, 0, 150, 150);
+                                
+                                const dC = document.createElement('canvas'); dC.width=150; dC.height=150; const c2 = dC.getContext('2d');
+                                let sz2 = Math.min(state.imgs.d1.naturalWidth, state.imgs.d1.naturalHeight);
+                                c2.drawImage(state.imgs.d1, (state.imgs.d1.naturalWidth-sz2)/2, (state.imgs.d1.naturalHeight-sz2)/2, sz2, sz2, 0, 0, 150, 150);
+
+                                if(db) {
+                                    db.collection("certs").doc(state.docId).get().then(snap => {
+                                        if(!snap.exists || finalAvg > (snap.data().score || 0)) {
+                                            db.collection("certs").doc(state.docId).set({
+                                                ...snap.data(),
+                                                dogName: state.dName, humanName: state.hName, score: finalAvg,
+                                                humanImg: hC.toDataURL('image/jpeg', 0.5), dogImg: dC.toDataURL('image/jpeg', 0.5),
+                                                public: false, timestamp: new Date().getTime()
+                                            });
+                                        }
+                                    });
+                                }
+                                
+                                document.getElementById('loader').style.display = 'none'; 
+                                switchView('view-result'); 
+                                confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
+                            }, 'image/jpeg', 0.8);
+                        });
+                    }, 200);
+                } catch(error) {
+                    alert("生成圖片錯誤，請試另一張相！");
+                    document.getElementById('loader').style.display = 'none';
+                }
             }, 500); 
         }
 
@@ -651,6 +671,7 @@
             renderLeaderboard();
         }
 
+        // 排行榜渲染
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -664,9 +685,7 @@
                     const snap = await db.collection("certs").where("public", "==", true).get();
                     snap.forEach(doc => {
                         let d = doc.data();
-                        if (d.humanName !== 'iris') {
-                            combinedData.push(d);
-                        }
+                        if (d.humanName !== 'iris') { combinedData.push(d); }
                     });
                 } catch(e) {}
             }
