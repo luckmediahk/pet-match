@@ -26,7 +26,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v51.1 -->
     <style>
         :root { 
             --brand: #5ba36a; 
@@ -47,23 +46,28 @@
             overflow-x: hidden; 
         }
         
+        /* 🔥 全局統一外框設計 🔥 */
         .container { 
             width: 100%; 
             max-width: 600px; 
             margin: 0 auto; 
-            background: #ffffff; 
-            border-radius: 35px; 
-            padding: 25px 15px; 
+            background-color: var(--bg-cream); 
+            background-image: url('./bg-top.png'), url('./bg-bottom.png');
+            background-position: top center, bottom center;
+            background-repeat: no-repeat, no-repeat;
+            background-size: 100% auto, 100% auto;
+            border-radius: 40px; 
+            padding: 130px 15px 140px; /* 留白避開天地圖案 */
             box-sizing: border-box; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.08); 
             position: relative; 
             z-index: 1;
+            border: 4px solid var(--brand); /* 萬一圖未 Load 到嘅後備框 */
+            min-height: 70vh;
         }
-        
-        header { text-align: center; margin-bottom: 20px; }
-        .header-logo { height: 75px; margin-bottom: 5px; object-fit: contain; }
-        h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 10px 0 5px; color: var(--brand); text-shadow: 1px 1px 0px #eee; font-weight: 900; letter-spacing: -1px;}
-        .subtitle { color: #555; font-size: 1.05rem; font-weight: bold; margin: 5px 0 15px 0; line-height: 1.4; text-align: center; }
+
+        .framed-title { font-size: 1.8rem; color: var(--brand); font-weight: 900; margin: 0 0 15px 0; text-align: center; letter-spacing: -1px; text-shadow: 1px 1px 0px #fff;}
+        .subtitle { color: #555; font-size: 1.05rem; font-weight: bold; margin: 5px 0 20px 0; line-height: 1.4; text-align: center; }
 
         .view { display: none; animation: fadeIn 0.4s ease-out; }
         .view.active { display: block; }
@@ -96,25 +100,7 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 WEB 前台分離式框框 🔥 */
-        .framed-container { 
-            background-color: var(--bg-cream); 
-            background-image: url('./bg-top.png'), url('./bg-bottom.png');
-            background-position: top center, bottom center;
-            background-repeat: no-repeat, no-repeat;
-            background-size: 100% auto, 100% auto;
-            border-radius: 40px; 
-            padding: 130px 15px 140px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
-            text-align: center; 
-            position: relative; 
-            margin-top: -10px; 
-            border: 4px solid var(--brand); 
-            min-height: 70vh;
-        }
-
-        .framed-title { font-size: 1.8rem; color: var(--brand); font-weight: 900; margin: 0 0 20px 0; text-align: center; letter-spacing: -1px; text-shadow: 1px 1px 0px #fff;}
-
+        /* 🔥 Result 頁面 UI 🔥 */
         .top-area { text-align: center; margin-bottom: 25px; }
         .top-sub { font-size: 1.15rem; color: #6b4c3a; font-weight: 800; margin-bottom: 5px; }
         .big-score { font-size: clamp(4.5rem, 15vw, 6rem); color: var(--brand); font-weight: 900; line-height: 1; font-family: 'Fredoka', sans-serif; letter-spacing: -2px; margin-bottom: 10px;}
@@ -148,13 +134,12 @@
         .btn-share { background: var(--accent); color: #533500; border: none; box-shadow: 0 6px 0 #d4a000; font-size: 1.1rem; }
         .btn-share:active { box-shadow: 0 2px 0 #d4a000; }
 
-        /* 🔥 排行榜 (皇冠與頭三名專屬設計) 🔥 */
-        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 60px 0 45px 0; height: 180px; }
+        /* 🔥 排行榜 🔥 */
+        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 40px 0 20px 0; height: 180px; }
         .podium { flex: 1; max-width: 110px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;}
         
-        /* 皇冠高度提升避免遮臉 */
-        .podium-crown { font-size: 2.2rem; position: absolute; top: -90px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
-        .rank-1 .podium-crown { font-size: 3.5rem; top: -130px; }
+        .podium-crown { font-size: 2.2rem; position: absolute; top: -85px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
+        .rank-1 .podium-crown { font-size: 3.5rem; top: -115px; }
         
         .podium .avatars { position: absolute; top: -50px; display: flex; justify-content: center; width: 100%; z-index: 5;}
         .rank-1 .avatars { top: -65px; }
@@ -174,7 +159,6 @@
         
         .podium h4 { margin: 15px 0 0 0; font-size: 0.8rem; color: #5a4025; line-height: 1.2; word-break: break-word; font-weight: 800;}
         
-        /* 🔥 頭三名自己 Highlight 特效 🔥 */
         .podium.highlight { transform: translateY(-5px); }
         .podium.highlight .avatars img { border-color: var(--brand); border-width: 4px; box-shadow: 0 0 15px rgba(91,163,106,0.5); }
         .podium.highlight .podium-rank-badge { background: var(--brand); color: white; border-color: white; }
@@ -191,7 +175,6 @@
         .rank-row img:nth-child(2) { margin-left: -20px; }
         .rank-names { flex: 1; display: flex; flex-direction: column; padding-left: 5px; }
         .rank-names h4 { margin: 0; font-size: 1rem; color: #4a3b20; font-weight: 800;}
-        .rank-names p { margin: 3px 0 0 0; font-size: 0.75rem; color: #888; font-weight: bold;}
         .rank-score { font-size: 1.2rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; display: flex; align-items: center; gap: 5px;}
         .rank-score::after { content: '⭐'; font-size: 1rem; }
 
@@ -219,8 +202,7 @@
             <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: cover;" onerror="this.style.display='none'">
             
             <div style="position: relative; z-index: 1;">
-                <!-- 🔥 Padding-top 調整，完美避開綠色頂部 🔥 -->
-                <div style="padding-top: 380px; text-align: center;">
+                <div style="padding-top: 280px; text-align: center;">
                     <div style="font-size: 50px; font-weight: 800; color: #6b4c3a;"><span id="canvas-human-name"></span> 同 <span id="canvas-pet-name" style="color: #5ba36a;"></span> 嘅相似度高達</div>
                     <div id="canvas-score" style="font-size: 240px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
                     
@@ -231,7 +213,7 @@
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 60px; position: relative;">
+                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 70px; position: relative;">
                     <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
                         <img id="canvas-human" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
@@ -241,12 +223,12 @@
                     </div>
                 </div>
 
-                <div style="position: relative; margin: 40px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
+                <div style="position: relative; margin: 60px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
                     <div id="canvas-mini-title" style="font-size: 48px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
                     <div id="canvas-mini-sub" style="margin-top: 15px; color: #444; font-size: 34px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
                 </div>
 
-                <div style="width: 880px; margin: 40px auto 0; background: #e8f4eb; border-radius: 35px; padding: 45px 50px 35px; box-sizing: border-box; position: relative;">
+                <div style="width: 880px; margin: 45px auto 0; background: #e8f4eb; border-radius: 35px; padding: 45px 50px 35px; box-sizing: border-box; position: relative;">
                     <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 34px; font-weight: 900; padding: 15px 40px; border-radius: 99px;">相似度分析</div>
 
                     <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
@@ -268,23 +250,19 @@
         </div>
     </div>
 
+
     <div id="loader">
         <div class="spinner">⚙️</div>
         <h2 id="loader-text" style="color:#555; margin-top:20px;">AI 正幫你哋搵出命中注定嘅相似度...</h2>
     </div>
 
+    <!-- 🔥 統一外框容器 🔥 -->
     <div class="container">
-        <!-- 首頁及上傳頁先有呢個 Default Header -->
-        <div id="default-header">
-            <header>
-                <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
-                <h1>🐾 AI 人寵相似度大測試</h1>
-                <p class="subtitle" id="home-subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
-            </header>
-        </div>
-
+        
         <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
+            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
+            <p class="subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
             <div class="home-btns">
                 <button class="main-btn btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
                 <button class="main-btn btn-secondary-home" onclick="renderLeaderboard()">🏆 睇全港排行榜</button>
@@ -295,6 +273,8 @@
 
         <!-- VIEW 2: UPLOAD -->
         <div id="view-upload" class="view">
+            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
+            <p class="subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
                 <div class="names-col"><label>🐾 毛孩名字</label><input type="text" id="dog-name" class="form-input" placeholder="例: 旺財" oninput="checkAllReady()"></div>
@@ -320,70 +300,63 @@
             <button class="main-btn sec-btn" style="border:none; box-shadow:none; color:#999; margin-top:10px;" onclick="location.reload()">🏠 返回主頁</button>
         </div>
 
-        <!-- 🔥 VIEW 3: RESULTS 🔥 -->
+        <!-- VIEW 3: RESULTS -->
         <div id="view-result" class="view">
-            <div class="framed-container">
-                <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
-                
-                <div class="top-area">
-                    <div class="top-sub"><span id="web-human-name" style="color:#555;">人類</span> 同 <span id="web-pet-name" style="color:var(--brand);">主子</span> 嘅相似度高達</div>
-                    <div class="big-score" id="web-score">98.765%</div>
-                    <div class="res-ribbon-container"><div class="res-ribbon" id="web-badge">⭐ 超級心有靈犀！</div></div>
-                </div>
+            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
+            <div class="top-area">
+                <div class="top-sub"><span id="web-human-name" style="color:#555;">人類</span> 同 <span id="web-pet-name" style="color:var(--brand);">主子</span> 嘅相似度高達</div>
+                <div class="big-score" id="web-score">98.765%</div>
+                <div class="res-ribbon-container"><div class="res-ribbon" id="web-badge">⭐ 超級心有靈犀！</div></div>
+            </div>
 
-                <div class="res-photos-container">
-                    <div class="res-photo-wrap"><img id="web-human"></div>
-                    <div class="res-heart-badge">❤️</div>
-                    <div class="res-photo-wrap"><img id="web-pet"></div>
-                </div>
+            <div class="res-photos-container">
+                <div class="res-photo-wrap"><img id="web-human"></div>
+                <div class="res-heart-badge">❤️</div>
+                <div class="res-photo-wrap"><img id="web-pet"></div>
+            </div>
 
-                <div class="res-highlight-box">
-                    <div class="hl-title">⭐ 你哋最似：<span id="web-mini-title">眼神交流 0%</span></div>
-                    <div class="hl-desc" id="web-mini-sub">...</div>
-                </div>
+            <div class="res-highlight-box">
+                <div class="hl-title">⭐ 你哋最似：<span id="web-mini-title">眼神交流 0%</span></div>
+                <div class="hl-desc" id="web-mini-sub">...</div>
+            </div>
 
-                <div class="res-bars-area">
-                    <div class="bars-header">相似度分析</div>
-                    <div class="res-bar-row"><span class="bar-name">👀 眼神交流</span><div class="bar-track"><div class="bar-fill" id="web-bar-eye"></div></div><span class="bar-pct" id="web-val-eye">0%</span></div>
-                    <div class="res-bar-row"><span class="bar-name">🎨 毛色特徵</span><div class="bar-track"><div class="bar-fill" id="web-bar-color"></div></div><span class="bar-pct" id="web-val-color">0%</span></div>
-                    <div class="res-bar-row"><span class="bar-name">🏃 動作節奏</span><div class="bar-track"><div class="bar-fill" id="web-bar-action"></div></div><span class="bar-pct" id="web-val-action">0%</span></div>
-                    <div class="res-bar-row"><span class="bar-name">✨ 氣質神態</span><div class="bar-track"><div class="bar-fill" id="web-bar-vibe"></div></div><span class="bar-pct" id="web-val-vibe">0%</span></div>
-                    <div class="res-bar-row"><span class="bar-name">🧁 貪食基因</span><div class="bar-track"><div class="bar-fill" id="web-bar-funny"></div></div><span class="bar-pct" id="web-val-funny">0%</span></div>
-                </div>
+            <div class="res-bars-area">
+                <div class="bars-header">相似度分析</div>
+                <div class="res-bar-row"><span class="bar-name">👀 眼神交流</span><div class="bar-track"><div class="bar-fill" id="web-bar-eye"></div></div><span class="bar-pct" id="web-val-eye">0%</span></div>
+                <div class="res-bar-row"><span class="bar-name">🎨 毛色特徵</span><div class="bar-track"><div class="bar-fill" id="web-bar-color"></div></div><span class="bar-pct" id="web-val-color">0%</span></div>
+                <div class="res-bar-row"><span class="bar-name">🏃 動作節奏</span><div class="bar-track"><div class="bar-fill" id="web-bar-action"></div></div><span class="bar-pct" id="web-val-action">0%</span></div>
+                <div class="res-bar-row"><span class="bar-name">✨ 氣質神態</span><div class="bar-track"><div class="bar-fill" id="web-bar-vibe"></div></div><span class="bar-pct" id="web-val-vibe">0%</span></div>
+                <div class="res-bar-row"><span class="bar-name">🧁 貪食基因</span><div class="bar-track"><div class="bar-fill" id="web-bar-funny"></div></div><span class="bar-pct" id="web-val-funny">0%</span></div>
+            </div>
 
-                <div class="action-btns-grid">
-                    <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
-                    <!-- 🔥 轉做分享按鈕 🔥 -->
-                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交媒體</button>
-                    <!-- 🔥 發佈掣改名 🔥 -->
-                    <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
-                    <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
-                </div>
+            <div class="action-btns-grid">
+                <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
+                <button class="main-btn btn-share" id="btn-share-trigger" onclick="shareResultInstant()">📤 分享至社交媒體</button>
+                <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
+                <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
             </div>
         </div>
 
-        <!-- 🔥 VIEW 4: LEADERBOARD 🔥 -->
+        <!-- VIEW 4: LEADERBOARD -->
         <div id="view-leaderboard" class="view">
-            <div class="framed-container">
-                <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
-                
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 2rem; color: #5a4025; font-weight: 900; margin-bottom: 5px;">AI 人寵相似度排行榜</div>
-                    <div style="font-size: 0.95rem; color: #666; font-weight: bold;">睇下邊對主人同主子最有家人樣！</div>
-                </div>
-                
-                <div class="podium-container" id="podium-area"></div>
-                <div class="rank-list" id="leaderboard-list">
-                    <p style="text-align:center;">載入中...</p>
-                </div>
-
-                <button class="main-btn action-btn" style="margin-top:30px; padding:15px; font-size: 1.3rem; border-radius: 30px; box-shadow: 0 6px 0 #d4a000;" onclick="switchView('view-upload')">🐾 我都要參加！</button>
-                <button class="main-btn sec-btn" style="margin-top:15px; padding:15px; border-radius: 30px; background: transparent; border: none; color: #888;" onclick="switchView('view-home')">🏠 返回主頁</button>
+            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 2rem; color: #5a4025; font-weight: 900; margin-bottom: 5px;">AI 人寵相似度排行榜</div>
+                <div style="font-size: 0.95rem; color: #666; font-weight: bold;">睇下邊對主人同主子最有家人樣！</div>
             </div>
+            
+            <div class="podium-container" id="podium-area"></div>
+            <div class="rank-list" id="leaderboard-list">
+                <p style="text-align:center;">載入中...</p>
+            </div>
+
+            <button class="main-btn action-btn" style="margin-top:30px; padding:15px; font-size: 1.3rem; border-radius: 30px; box-shadow: 0 6px 0 #d4a000;" onclick="switchView('view-upload')">🐾 我都要參加！</button>
+            <button class="main-btn sec-btn" style="margin-top:15px; padding:15px; border-radius: 30px; background: transparent; border: none; color: #888;" onclick="switchView('view-home')">🏠 返回主頁</button>
         </div>
 
         <!-- VIEW 5: T&C -->
         <div id="view-tnc" class="view">
+            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
             <h2 style="text-align:center; color:var(--brand); margin-bottom:15px; font-size:1.6rem;">📜 條款及細則與免責聲明</h2>
             <div class="tnc-content">
                 <p>歡迎參與由 Animals Sum（動物之心）（下稱「本公司」）舉辦的網上遊戲。參加者一經進行遊戲（或生成報告），即代表已閱讀、明白並完全同意遵守以下條款及細則：</p>
@@ -440,7 +413,6 @@
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
         const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
 
-        // 🔥 假數據庫 (留低 10 個，方便你睇排版，唔鍾意可隨時刪) 🔥
         const fakeLeaderboardData =[
             { humanName: "Peanut同媽咪", dogName: "", score: 98.765, label: "眼神交流", val: "96%", humanImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=150&h=150&fit=crop", public: true },
             { humanName: "Golden哥哥", dogName: "", score: 97.432, label: "眼神交流", val: "95%", humanImg: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop", public: true },
@@ -465,14 +437,6 @@
         window.switchView = function(id) { 
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
             document.getElementById(id).classList.add('active'); 
-            
-            const defaultHeader = document.getElementById('default-header');
-            if (id === 'view-result' || id === 'view-leaderboard') {
-                defaultHeader.style.display = 'none';
-            } else {
-                defaultHeader.style.display = 'block';
-            }
-            
             window.scrollTo(0,0); 
             updateCountdown(); 
         }
@@ -522,7 +486,6 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
-        // 🔥 核心運算：極速 UI + 後台 Canvas 生成 🔥
         window.generateResults = async function() {
             document.getElementById('loader').style.display = 'flex';
             let userIP = "Unknown"; try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
@@ -560,7 +523,6 @@
                 const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
                 const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
-                // 第一步：先極速更新 UI 並切換畫面
                 document.getElementById('web-human-name').innerText = state.hName;
                 document.getElementById('web-pet-name').innerText = state.dName;
                 document.getElementById('web-score').innerText = finalAvg + '%';
@@ -590,14 +552,12 @@
                 switchView('view-result'); 
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
 
-                // 第二步：UI 出咗之後，背後慢慢畫圖，完全唔會卡住 User！
                 setTimeout(() => {
                     html2canvas(document.querySelector("#share-card"), { scale: 2, useCORS: true, backgroundColor: '#fffdf5' }).then(canvas => {
                         canvas.toBlob((b) => { 
                             state.shareImgBlob = b; 
-                            document.getElementById('btn-share-trigger').innerText = "📤 分享至社交媒體"; // 畫完圖就解鎖個掣
+                            document.getElementById('btn-share-trigger').innerText = "📤 分享至社交媒體"; 
                             
-                            // 儲存至 Firebase
                             state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                             const hC = document.createElement('canvas'); hC.width=150; hC.height=150; const c1 = hC.getContext('2d');
                             let sz1 = Math.min(state.imgs.h1.naturalWidth, state.imgs.h1.naturalHeight);
@@ -621,7 +581,7 @@
                             }
                         }, 'image/jpeg', 0.8);
                     });
-                }, 800); // 畀瀏覽器 0.8 秒時間 Render UI 先，極致順滑
+                }, 800); 
             }, 500); 
         }
 
