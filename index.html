@@ -26,7 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v52.0 -->
+    <!-- Version: v51.1 -->
     <style>
         :root { 
             --brand: #5ba36a; 
@@ -96,7 +96,7 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 WEB 前台分離式框框 (bg-top / bg-bottom) 🔥 */
+        /* 🔥 WEB 前台分離式框框 🔥 */
         .framed-container { 
             background-color: var(--bg-cream); 
             background-image: url('./bg-top.png'), url('./bg-bottom.png');
@@ -148,16 +148,17 @@
         .btn-share { background: var(--accent); color: #533500; border: none; box-shadow: 0 6px 0 #d4a000; font-size: 1.1rem; }
         .btn-share:active { box-shadow: 0 2px 0 #d4a000; }
 
-        /* 🔥 排行榜 🔥 */
-        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 50px 0 30px 0; height: 180px; }
+        /* 🔥 排行榜 (皇冠與頭三名專屬設計) 🔥 */
+        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 60px 0 45px 0; height: 180px; }
         .podium { flex: 1; max-width: 110px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;}
         
-        .podium-crown { font-size: 2.2rem; position: absolute; top: -85px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
-        .rank-1 .podium-crown { font-size: 3.5rem; top: -115px; }
+        /* 皇冠高度提升避免遮臉 */
+        .podium-crown { font-size: 2.2rem; position: absolute; top: -90px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
+        .rank-1 .podium-crown { font-size: 3.5rem; top: -130px; }
         
         .podium .avatars { position: absolute; top: -50px; display: flex; justify-content: center; width: 100%; z-index: 5;}
         .rank-1 .avatars { top: -65px; }
-        .podium img { width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.15); object-fit: cover; background: #eee; }
+        .podium img { width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.15); object-fit: cover; background: #eee; transition: 0.3s;}
         .rank-1 img { width: 70px; height: 70px; border: 4px solid #fff;}
         .podium img:nth-child(2) { margin-left: -20px; }
         .rank-1 img:nth-child(2) { margin-left: -25px; }
@@ -172,7 +173,13 @@
         .rank-3 .podium-score-ribbon { background: #d35400; }
         
         .podium h4 { margin: 15px 0 0 0; font-size: 0.8rem; color: #5a4025; line-height: 1.2; word-break: break-word; font-weight: 800;}
-        .podium p { margin: 3px 0 0 0; font-size: 0.65rem; color: #5ba36a; font-weight: bold; border: 1px solid #5ba36a; padding: 2px 5px; border-radius: 10px;}
+        
+        /* 🔥 頭三名自己 Highlight 特效 🔥 */
+        .podium.highlight { transform: translateY(-5px); }
+        .podium.highlight .avatars img { border-color: var(--brand); border-width: 4px; box-shadow: 0 0 15px rgba(91,163,106,0.5); }
+        .podium.highlight .podium-rank-badge { background: var(--brand); color: white; border-color: white; }
+        .podium.highlight h4 { color: var(--brand); font-weight: 900; }
+        .podium.highlight::after { content: '✨ 你的排名'; position: absolute; bottom: -25px; left: 0; right: 0; font-size: 0.8rem; color: var(--brand); font-weight: 900; text-align: center; white-space: nowrap; }
 
         .rank-list { display: flex; flex-direction: column; gap: 12px; }
         .rank-row { display: flex; align-items: center; background: #fffdf5; padding: 12px 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); gap: 10px; border: 2px solid #f2ead3; position: relative; overflow: hidden;}
@@ -212,7 +219,8 @@
             <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: cover;" onerror="this.style.display='none'">
             
             <div style="position: relative; z-index: 1;">
-                <div style="padding-top: 280px; text-align: center;">
+                <!-- 🔥 Padding-top 調整，完美避開綠色頂部 🔥 -->
+                <div style="padding-top: 380px; text-align: center;">
                     <div style="font-size: 50px; font-weight: 800; color: #6b4c3a;"><span id="canvas-human-name"></span> 同 <span id="canvas-pet-name" style="color: #5ba36a;"></span> 嘅相似度高達</div>
                     <div id="canvas-score" style="font-size: 240px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
                     
@@ -223,7 +231,7 @@
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 70px; position: relative;">
+                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 60px; position: relative;">
                     <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
                         <img id="canvas-human" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
@@ -233,12 +241,12 @@
                     </div>
                 </div>
 
-                <div style="position: relative; margin: 60px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
+                <div style="position: relative; margin: 40px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
                     <div id="canvas-mini-title" style="font-size: 48px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
                     <div id="canvas-mini-sub" style="margin-top: 15px; color: #444; font-size: 34px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
                 </div>
 
-                <div style="width: 880px; margin: 45px auto 0; background: #e8f4eb; border-radius: 35px; padding: 45px 50px 35px; box-sizing: border-box; position: relative;">
+                <div style="width: 880px; margin: 40px auto 0; background: #e8f4eb; border-radius: 35px; padding: 45px 50px 35px; box-sizing: border-box; position: relative;">
                     <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 34px; font-weight: 900; padding: 15px 40px; border-radius: 99px;">相似度分析</div>
 
                     <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
@@ -260,14 +268,13 @@
         </div>
     </div>
 
-
     <div id="loader">
         <div class="spinner">⚙️</div>
         <h2 id="loader-text" style="color:#555; margin-top:20px;">AI 正幫你哋搵出命中注定嘅相似度...</h2>
     </div>
 
     <div class="container">
-        <!-- 🔥 Logo 及 Title 更新 🔥 -->
+        <!-- 首頁及上傳頁先有呢個 Default Header -->
         <div id="default-header">
             <header>
                 <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
@@ -346,7 +353,9 @@
 
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
-                    <button class="main-btn btn-share" onclick="shareResultInstant()">📤 分享至社交媒體</button>
+                    <!-- 🔥 轉做分享按鈕 🔥 -->
+                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交媒體</button>
+                    <!-- 🔥 發佈掣改名 🔥 -->
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
                 </div>
@@ -415,8 +424,8 @@
         </div>
     </div>
 
+    <!-- 🔥 JAVASCRIPT LOGIC 🔥 -->
     <script>
-        // 1. Firebase 初始化
         const firebaseConfig = { apiKey: "AIzaSyAZNLy_ujHrFQQPmv5C_r2wlvptgXb2Enw", authDomain: "pet-human-alike.firebaseapp.com", projectId: "pet-human-alike", storageBucket: "pet-human-alike.firebasestorage.app", messagingSenderId: "285758735120", appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95" };
         let db = null; 
         try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); } catch(e) {}
@@ -431,7 +440,20 @@
         const dogKeywords =['dog', 'terrier', 'retriever', 'spaniel', 'shepherd', 'hound', 'wolf', 'poodle', 'collie', 'beagle', 'corgi', 'husky', 'schnauzer', 'bulldog', 'pug', 'shiba', 'akita', 'maltese', 'pomeranian', 'bichon', 'chihuahua'];
         const catKeywords =['cat', 'kitten', 'tabby', 'persian', 'feline'];
 
-        // 🔥 UI 及轉頁邏輯 🔥
+        // 🔥 假數據庫 (留低 10 個，方便你睇排版，唔鍾意可隨時刪) 🔥
+        const fakeLeaderboardData =[
+            { humanName: "Peanut同媽咪", dogName: "", score: 98.765, label: "眼神交流", val: "96%", humanImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=150&h=150&fit=crop", public: true },
+            { humanName: "Golden哥哥", dogName: "", score: 97.432, label: "眼神交流", val: "95%", humanImg: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop", public: true },
+            { humanName: "Meow小公主", dogName: "", score: 96.821, label: "眼神交流", val: "94%", humanImg: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&h=150&fit=crop", public: true },
+            { humanName: "BoBo與爸爸", dogName: "", score: 95.673, label: "眼神交流", val: "93%", humanImg: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1537151608804-ea2d14ac28bc?w=150&h=150&fit=crop", public: true },
+            { humanName: "Corgi女皇", dogName: "", score: 94.562, label: "毛色特徵", val: "95%", humanImg: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1510771463146-e89e6e86560e?w=150&h=150&fit=crop", public: true },
+            { humanName: "貓奴阿Ken", dogName: "", score: 93.871, label: "氣質神態", val: "92%", humanImg: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=150&h=150&fit=crop", public: true },
+            { humanName: "Teddy麻麻", dogName: "", score: 93.210, label: "動作節奏", val: "91%", humanImg: "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=150&h=150&fit=crop", public: true },
+            { humanName: "Mochi日常", dogName: "", score: 92.654, label: "貪食基因", val: "90%", humanImg: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=150&h=150&fit=crop", public: true },
+            { humanName: "柴犬大俠", dogName: "", score: 91.765, label: "眼神交流", val: "90%", humanImg: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=150&h=150&fit=crop", public: true },
+            { humanName: "喵喵和她", dogName: "", score: 91.233, label: "毛色特徵", val: "90%", humanImg: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&h=150&fit=crop", dogImg: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=150&h=150&fit=crop", public: true }
+        ];
+
         function updateCountdown() {
             const pb = document.getElementById('promo-teaser'); if(!pb) return;
             const now = new Date(); const startDate = new Date(2026, 4, 18, 12, 0, 0); const cutoffDate = new Date(2026, 4, 26, 23, 59, 59); 
@@ -455,9 +477,8 @@
             updateCountdown(); 
         }
         
-        switchView('view-home'); // 初始化
+        switchView('view-home');
 
-        // AI 載入及圖片檢測
         async function loadAIinBackground() { try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {} }
         loadAIinBackground();
 
@@ -501,107 +522,106 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
-        // 🔥 核心運算 (修復舊 ID 引起嘅 null 錯誤) 🔥
+        // 🔥 核心運算：極速 UI + 後台 Canvas 生成 🔥
         window.generateResults = async function() {
             document.getElementById('loader').style.display = 'flex';
             let userIP = "Unknown"; try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
             setTimeout(async () => {
-                try {
-                    let colorS = genRandomScore(75), eyeS = genRandomScore(80), actionS = genRandomScore(80), vibeS = genRandomScore(85), funnyS = genRandomScore(88);
-                    let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
-                    finalAvg = parseFloat((finalAvg + (Date.now() % 100) / 10000).toFixed(3)); 
-                    if(finalAvg > 99.999) finalAvg = 99.999;
-                    
-                    state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
+                let colorS = genRandomScore(75), eyeS = genRandomScore(80), actionS = genRandomScore(80), vibeS = genRandomScore(85), funnyS = genRandomScore(88);
+                let finalAvg = parseFloat(((colorS + eyeS + actionS + vibeS + funnyS) / 5).toFixed(3));
+                finalAvg = parseFloat((finalAvg + (Date.now() % 100) / 10000).toFixed(3)); 
+                if(finalAvg > 99.999) finalAvg = 99.999;
+                
+                state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
-                    let cText = "";
-                    if(finalAvg >= 98) cText="❤️ 超級心有靈犀！";
-                    else if(finalAvg >= 96) cText="❤️ 前世肯定係親生兄弟姊妹";
-                    else if(finalAvg >= 94) cText="❤️ 失散多年嘅親生骨肉！";
-                    else if(finalAvg >= 92) cText="❤️ 越養越似！連笑起上嚟都一樣樣";
-                    else if(finalAvg >= 90) cText="❤️ 親緣天定！咁似樣注定做你仔女";
-                    else if(finalAvg >= 88) cText="❤️ 似過同一個祖宗，出街肯定畀人認錯！";
-                    else if(finalAvg >= 86) cText="❤️ 上世住隔離村，今世做埋一家人！";
-                    else if(finalAvg >= 84) cText="❤️ 似似哋，但貪食基因強過主子！";
-                    else cText="❤️ 最佳拍檔！沿途有愛";
-                    
-                    const dynamicComments = {
-                        color: ['你哋最似嘅係講不出但感覺到嗰份氣場。', '一望埋去，人人都知你哋係同色系嘅「一家人」。'],
-                        eye: ['最似嘅地方，就係望人嗰個有戲眼神。', '一對眼已經出賣咗你哋。'],
-                        action: ['原來你哋連細微動作都有默契。', '神同步唔一定係表情，可以係一舉手一投足。'],
-                        vibe: ['最同步嘅，可能係你哋嘅神態同微表情。', '表情未必一樣，但感覺到係有親屬關係。'],
-                        funny: ['原來你哋最同步嘅，係見到食物嗰個反應。', '食嘢呢方面，你哋個靈魂係高度一致。']
-                    };
+                let cText = "";
+                if(finalAvg >= 98) cText="❤️ 超級心有靈犀！";
+                else if(finalAvg >= 96) cText="❤️ 前世肯定係親生兄弟姊妹";
+                else if(finalAvg >= 94) cText="❤️ 失散多年嘅親生骨肉！";
+                else if(finalAvg >= 92) cText="❤️ 越養越似！連笑起上嚟都一樣樣";
+                else if(finalAvg >= 90) cText="❤️ 親緣天定！咁似樣注定做你仔女";
+                else if(finalAvg >= 88) cText="❤️ 似過同一個祖宗，出街肯定畀人認錯！";
+                else if(finalAvg >= 86) cText="❤️ 上世住隔離村，今世做埋一家人！";
+                else if(finalAvg >= 84) cText="❤️ 似似哋，但貪食基因強過主子！";
+                else cText="❤️ 最佳拍檔！沿途有愛";
+                
+                const dynamicComments = {
+                    color: ['你哋最似嘅係講不出但感覺到嗰份氣場。', '一望埋去，人人都知你哋係同色系嘅「一家人」。'],
+                    eye: ['最似嘅地方，就係望人嗰個有戲眼神。', '一對眼已經出賣咗你哋。'],
+                    action: ['原來你哋連細微動作都有默契。', '神同步唔一定係表情，可以係一舉手一投足。'],
+                    vibe: ['最同步嘅，可能係你哋嘅神態同微表情。', '表情未必一樣，但感覺到係有親屬關係。'],
+                    funny: ['原來你哋最同步嘅，係見到食物嗰個反應。', '食嘢呢方面，你哋個靈魂係高度一致。']
+                };
 
-                    const scoreMap = { color: colorS, eye: eyeS, action: actionS, vibe: vibeS, funny: funnyS };
-                    const labelMap = { color: '毛色特徵', eye: '眼神交流', action: '動作節奏', vibe: '氣質神態', funny: '貪食基因' };
-                    
-                    const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
-                    const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
+                const scoreMap = { color: colorS, eye: eyeS, action: actionS, vibe: vibeS, funny: funnyS };
+                const labelMap = { color: '毛色特徵', eye: '眼神交流', action: '動作節奏', vibe: '氣質神態', funny: '貪食基因' };
+                
+                const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
+                const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
-                    // 🔥 完美修正 ID 對接 🔥
-                    document.getElementById('web-human-name').innerText = state.hName;
-                    document.getElementById('web-pet-name').innerText = state.dName; // 之前呢度寫錯咗 res-pet-name
-                    document.getElementById('web-score').innerText = finalAvg + '%';
-                    document.getElementById('web-badge').innerText = cText;
-                    document.getElementById('web-human').src = state.imgs.h1.src; 
-                    document.getElementById('web-pet').src = state.imgs.d1.src;
-                    document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
-                    document.getElementById('web-mini-sub').innerText = dynamicComment;
+                // 第一步：先極速更新 UI 並切換畫面
+                document.getElementById('web-human-name').innerText = state.hName;
+                document.getElementById('web-pet-name').innerText = state.dName;
+                document.getElementById('web-score').innerText = finalAvg + '%';
+                document.getElementById('web-badge').innerText = cText;
+                document.getElementById('web-human').src = state.imgs.h1.src; 
+                document.getElementById('web-pet').src = state.imgs.d1.src;
+                document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
+                document.getElementById('web-mini-sub').innerText = dynamicComment;
 
-                    document.getElementById('canvas-human-name').innerText = state.hName;
-                    document.getElementById('canvas-pet-name').innerText = state.dName;
-                    document.getElementById('canvas-score').innerText = finalAvg + '%';
-                    document.getElementById('canvas-badge').innerText = cText;
-                    document.getElementById('canvas-human').src = state.imgs.h1.src; 
-                    document.getElementById('canvas-pet').src = state.imgs.d1.src;
-                    document.getElementById('canvas-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
-                    document.getElementById('canvas-mini-sub').innerText = dynamicComment;
+                document.getElementById('canvas-human-name').innerText = state.hName;
+                document.getElementById('canvas-pet-name').innerText = state.dName;
+                document.getElementById('canvas-score').innerText = finalAvg + '%';
+                document.getElementById('canvas-badge').innerText = cText;
+                document.getElementById('canvas-human').src = state.imgs.h1.src; 
+                document.getElementById('canvas-pet').src = state.imgs.d1.src;
+                document.getElementById('canvas-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
+                document.getElementById('canvas-mini-sub').innerText = dynamicComment;
 
-                    const ids = ['eye','color','action','vibe','funny'];
-                    ids.forEach(id => {
-                        document.getElementById(`web-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`web-bar-${id}`).style.width = scoreMap[id]+'%';
-                        document.getElementById(`canvas-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`canvas-bar-${id}`).style.width = scoreMap[id]+'%';
+                const ids = ['eye','color','action','vibe','funny'];
+                ids.forEach(id => {
+                    document.getElementById(`web-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`web-bar-${id}`).style.width = scoreMap[id]+'%';
+                    document.getElementById(`canvas-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`canvas-bar-${id}`).style.width = scoreMap[id]+'%';
+                });
+
+                document.getElementById('btn-share-trigger').innerText = "⏳ 圖片生成中...";
+                document.getElementById('loader').style.display = 'none'; 
+                switchView('view-result'); 
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
+
+                // 第二步：UI 出咗之後，背後慢慢畫圖，完全唔會卡住 User！
+                setTimeout(() => {
+                    html2canvas(document.querySelector("#share-card"), { scale: 2, useCORS: true, backgroundColor: '#fffdf5' }).then(canvas => {
+                        canvas.toBlob((b) => { 
+                            state.shareImgBlob = b; 
+                            document.getElementById('btn-share-trigger').innerText = "📤 分享至社交媒體"; // 畫完圖就解鎖個掣
+                            
+                            // 儲存至 Firebase
+                            state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
+                            const hC = document.createElement('canvas'); hC.width=150; hC.height=150; const c1 = hC.getContext('2d');
+                            let sz1 = Math.min(state.imgs.h1.naturalWidth, state.imgs.h1.naturalHeight);
+                            c1.drawImage(state.imgs.h1, (state.imgs.h1.naturalWidth-sz1)/2, (state.imgs.h1.naturalHeight-sz1)/2, sz1, sz1, 0, 0, 150, 150);
+                            
+                            const dC = document.createElement('canvas'); dC.width=150; dC.height=150; const c2 = dC.getContext('2d');
+                            let sz2 = Math.min(state.imgs.d1.naturalWidth, state.imgs.d1.naturalHeight);
+                            c2.drawImage(state.imgs.d1, (state.imgs.d1.naturalWidth-sz2)/2, (state.imgs.d1.naturalHeight-sz2)/2, sz2, sz2, 0, 0, 150, 150);
+
+                            if(db) {
+                                db.collection("certs").doc(state.docId).get().then(snap => {
+                                    if(!snap.exists || finalAvg > (snap.data().score || 0)) {
+                                        db.collection("certs").doc(state.docId).set({
+                                            ...snap.data(),
+                                            dogName: state.dName, humanName: state.hName, score: finalAvg,
+                                            humanImg: hC.toDataURL('image/jpeg', 0.5), dogImg: dC.toDataURL('image/jpeg', 0.5),
+                                            public: false, timestamp: new Date().getTime()
+                                        });
+                                    }
+                                });
+                            }
+                        }, 'image/jpeg', 0.8);
                     });
-
-                    setTimeout(() => {
-                        html2canvas(document.querySelector("#share-card"), { scale: 2, useCORS: true, backgroundColor: '#fffdf5' }).then(canvas => {
-                            canvas.toBlob((b) => { 
-                                state.shareImgBlob = b; 
-                                
-                                state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
-                                const hC = document.createElement('canvas'); hC.width=150; hC.height=150; const c1 = hC.getContext('2d');
-                                let sz1 = Math.min(state.imgs.h1.naturalWidth, state.imgs.h1.naturalHeight);
-                                c1.drawImage(state.imgs.h1, (state.imgs.h1.naturalWidth-sz1)/2, (state.imgs.h1.naturalHeight-sz1)/2, sz1, sz1, 0, 0, 150, 150);
-                                
-                                const dC = document.createElement('canvas'); dC.width=150; dC.height=150; const c2 = dC.getContext('2d');
-                                let sz2 = Math.min(state.imgs.d1.naturalWidth, state.imgs.d1.naturalHeight);
-                                c2.drawImage(state.imgs.d1, (state.imgs.d1.naturalWidth-sz2)/2, (state.imgs.d1.naturalHeight-sz2)/2, sz2, sz2, 0, 0, 150, 150);
-
-                                if(db) {
-                                    db.collection("certs").doc(state.docId).get().then(snap => {
-                                        if(!snap.exists || finalAvg > (snap.data().score || 0)) {
-                                            db.collection("certs").doc(state.docId).set({
-                                                ...snap.data(),
-                                                dogName: state.dName, humanName: state.hName, score: finalAvg,
-                                                humanImg: hC.toDataURL('image/jpeg', 0.5), dogImg: dC.toDataURL('image/jpeg', 0.5),
-                                                public: false, timestamp: new Date().getTime()
-                                            });
-                                        }
-                                    });
-                                }
-                                
-                                document.getElementById('loader').style.display = 'none'; 
-                                switchView('view-result'); 
-                                confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
-                            }, 'image/jpeg', 0.8);
-                        });
-                    }, 200);
-                } catch(error) {
-                    alert("生成圖片錯誤，請試另一張相！");
-                    document.getElementById('loader').style.display = 'none';
-                }
+                }, 800); // 畀瀏覽器 0.8 秒時間 Render UI 先，極致順滑
             }, 500); 
         }
 
@@ -671,7 +691,6 @@
             renderLeaderboard();
         }
 
-        // 排行榜渲染
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -706,7 +725,7 @@
             podiumArea.innerHTML = '';
             order.forEach(item => {
                 if(!item.data) return;
-                let isMe = (state.hName && item.data.humanName === state.hName);
+                let isMe = (state.hName && state.dName && item.data.humanName === state.hName && item.data.dogName === state.dName);
                 
                 podiumArea.innerHTML += `
                     <div class="podium ${item.class} ${isMe ? 'highlight' : ''}">
