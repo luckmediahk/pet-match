@@ -17,7 +17,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Firebase, AI & HTML2Canvas Libraries -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
@@ -26,40 +25,11 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v54.0 -->
+    <!-- Version: v55.0 -->
     <style>
-        :root { 
-            --brand: #5ba36a; 
-            --brand-dark: #458251; 
-            --accent: #facc50; 
-            --danger: #FF6B6B; 
-            --dark: #333; 
-            --bg-cream: #fffdf5; 
-        }
-        
-        body { 
-            font-family: 'Noto Sans TC', 'Fredoka', sans-serif; 
-            background: #eaf4eb; 
-            margin: 0; 
-            padding: 15px; 
-            min-height: 100vh; 
-            color: var(--dark); 
-            overflow-x: hidden; 
-        }
-        
-        .container { 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            background: #ffffff; 
-            border-radius: 35px; 
-            padding: 25px 15px; 
-            box-sizing: border-box; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.08); 
-            position: relative; 
-            z-index: 1;
-        }
-        
+        :root { --brand: #5ba36a; --brand-dark: #458251; --accent: #facc50; --danger: #FF6B6B; --dark: #333; --bg-cream: #fffdf5; }
+        body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf4eb; margin: 0; padding: 15px; min-height: 100vh; color: var(--dark); overflow-x: hidden; }
+        .container { width: 100%; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 35px; padding: 25px 15px; box-sizing: border-box; box-shadow: 0 15px 40px rgba(0,0,0,0.08); position: relative; z-index: 1;}
         header { text-align: center; margin-bottom: 20px; }
         .header-logo { height: 75px; margin-bottom: 5px; object-fit: contain; }
         h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 10px 0 5px; color: var(--brand); text-shadow: 1px 1px 0px #eee; font-weight: 900; letter-spacing: -1px;}
@@ -68,12 +38,13 @@
         .view { display: none; animation: fadeIn 0.4s ease-out; }
         .view.active { display: block; }
 
-        /* 輸入及按鈕 */
         .names-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 20px; border: 1px solid #eee; }
         .names-col { flex: 1; min-width: 140px; }
         .names-col label { font-weight: bold; color: #555; display: block; margin-bottom: 5px; font-size: 0.9rem; text-align: center; }
         .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 1rem; box-sizing: border-box; text-align: center; transition: 0.3s; background: #fff; }
         .form-input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 10px rgba(91,163,106,0.3); transform: scale(1.02);}
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { font-weight: bold; color: #555; display: block; margin-bottom: 8px; font-size: 1rem; }
         
         .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 15px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 var(--brand-dark); transition: transform 0.1s; margin-top: 10px; }
         .main-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--brand-dark); }
@@ -82,7 +53,6 @@
         .sec-btn { background: #fff; color: var(--brand); border: 2px solid var(--brand); box-shadow: 0 4px 0 var(--brand); }
         .action-btn { background: var(--accent); color: var(--dark); box-shadow: 0 6px 0 #d4a000; }
 
-        /* 上傳區域 */
         .round-box { background: #fff; border-radius: 20px; padding: 15px; border: 2px dashed #ccc; margin-top: 10px; }
         .round-title { text-align: center; font-weight: 900; color: #fff; margin-bottom: 15px; font-size: 1rem; background: var(--brand); display: inline-block; padding: 6px 20px; border-radius: 20px; margin-left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 4px 10px rgba(91,163,106,0.3); }
         .match-row { display: flex; gap: 10px; justify-content: center; align-items: stretch; }
@@ -96,7 +66,7 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 WEB 前台分離式框框 🔥 */
+        /* WEB 前台分離式框框 */
         .framed-container { 
             background-color: var(--bg-cream); 
             background-image: url('./bg-top.png'), url('./bg-bottom.png');
@@ -148,12 +118,12 @@
         .btn-share { background: var(--accent); color: #533500; border: none; box-shadow: 0 6px 0 #d4a000; font-size: 1.1rem; }
         .btn-share:active { box-shadow: 0 2px 0 #d4a000; }
 
-        /* 🔥 排行榜 🔥 */
+        /* 🔥 排行榜 (名次牌完美置中) 🔥 */
         .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 40px 0 20px 0; height: 180px; }
         .podium { flex: 1; max-width: 110px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;}
         
         .podium-crown { font-size: 2.2rem; position: absolute; top: -85px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
-        .rank-1 .podium-crown { font-size: 3.5rem; top: -130px; }
+        .rank-1 .podium-crown { font-size: 3.5rem; top: -115px; }
         
         .podium .avatars { position: absolute; top: -50px; display: flex; justify-content: center; width: 100%; z-index: 5;}
         .rank-1 .avatars { top: -65px; }
@@ -162,8 +132,9 @@
         .podium img:nth-child(2) { margin-left: -20px; }
         .rank-1 img:nth-child(2) { margin-left: -25px; }
 
-        .podium-rank-badge { position: absolute; left: 0px; top: -15px; width: 28px; height: 28px; border-radius: 50%; background: #ccc; color: white; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 6; font-size: 0.95rem; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
-        .rank-1 .podium-rank-badge { background: #facc50; width: 36px; height: 36px; font-size: 1.3rem; left: -5px; top: -20px; border: 3px solid #fff;}
+        /* 數字牌置中於兩張相片頂部 */
+        .podium-rank-badge { position: absolute; left: 50%; top: -20px; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: #ccc; color: white; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 6; font-size: 0.95rem; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        .rank-1 .podium-rank-badge { background: #facc50; width: 36px; height: 36px; font-size: 1.3rem; top: -25px; border: 3px solid #fff;}
         .rank-2 .podium-rank-badge { background: #95a5a6; }
         .rank-3 .podium-rank-badge { background: #d35400; }
 
@@ -177,6 +148,7 @@
         .podium.highlight .avatars img { border-color: var(--brand); border-width: 4px; box-shadow: 0 0 15px rgba(91,163,106,0.5); }
         .podium.highlight .podium-rank-badge { background: var(--brand); color: white; border-color: white; }
         .podium.highlight h4 { color: var(--brand); font-weight: 900; }
+        .podium.highlight::after { content: '✨ 我的排名'; position: absolute; bottom: -25px; left: 0; right: 0; font-size: 0.8rem; color: var(--brand); font-weight: 900; text-align: center; white-space: nowrap; }
 
         .rank-list { display: flex; flex-direction: column; gap: 12px; }
         .rank-row { display: flex; align-items: center; background: #fffdf5; padding: 12px 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); gap: 10px; border: 2px solid #f2ead3; position: relative; overflow: hidden;}
@@ -192,7 +164,6 @@
         .rank-score::after { content: '⭐'; font-size: 1rem; }
 
         .my-rank-tag { background: var(--brand); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: 8px; vertical-align: middle; display: inline-block;}
-        .podium-my-rank { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); background: var(--brand); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 900; white-space: nowrap; }
 
         .tnc-link { display: block; text-align: center; margin-top: 25px; color: #aaa; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
         .promo-box { text-align:center; color:#555; font-weight:bold; margin-top:25px; background:#fffcf0; border:2px solid #ffeaa7; padding:15px; border-radius:15px; line-height:1.5; font-size: 0.95rem;}
@@ -208,66 +179,70 @@
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* 🔥 IG Share Card (Hidden for HTML2Canvas) 強制鎖死防 Cut-off 🔥 */
+        /* 🔥 IG Share Card (收緊行距、加大留白、防變形) 🔥 */
         #share-card-container { position: fixed; top: 0; left: 0; z-index: -9999; opacity: 0; pointer-events: none; width: 1080px; height: 1920px; }
     </style>
 </head>
 <body>
 
-    <!-- 🔥 IG Share Card (Hidden for HTML2Canvas) 🔥 -->
     <div id="share-card-container">
         <div id="share-card" style="width: 1080px; height: 1920px; position: relative; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background-color: #fffdf5;">
             
             <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: cover;" onerror="this.style.display='none'">
             
             <div style="position: relative; z-index: 1;">
-                <div style="padding-top: 380px; text-align: center;">
-                    <div style="font-size: 50px; font-weight: 800; color: #6b4c3a;"><span id="canvas-human-name"></span> 同 <span id="canvas-pet-name" style="color: #5ba36a;"></span> 嘅相似度高達</div>
-                    <div id="canvas-score" style="font-size: 240px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
+                <!-- 加大 padding-top 避開頂部波浪 -->
+                <div style="padding-top: 360px; text-align: center;">
+                    <div style="font-size: 48px; font-weight: 800; color: #6b4c3a;"><span id="canvas-human-name"></span> 同 <span id="canvas-pet-name" style="color: #5ba36a;"></span> 嘅相似度高達</div>
+                    <div id="canvas-score" style="font-size: 240px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 0px; letter-spacing: -5px;">98.765%</div>
                     
-                    <div style="margin-top: 30px; position: relative; display: inline-block;">
-                        <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 52px; font-weight: 900; padding: 25px 60px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
-                        <div style="position: absolute; top: 25px; left: -35px; border: 38px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
-                        <div style="position: absolute; top: 25px; right: -35px; border: 38px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
+                    <div style="margin-top: 15px; position: relative; display: inline-block;">
+                        <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 50px; font-weight: 900; padding: 20px 60px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
+                        <div style="position: absolute; top: 20px; left: -35px; border: 38px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
+                        <div style="position: absolute; top: 20px; right: -35px; border: 38px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 70px; position: relative;">
+                <!-- 🔥 相片改用 src="DataURL"，解決 object-fit 變形問題，收緊 margin 🔥 -->
+                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 35px; position: relative;">
                     <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
-                        <img id="canvas-human" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img id="canvas-human" style="width: 100%; height: 100%;">
                     </div>
                     <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 110px; height: 110px; border-radius: 50%; background: #fffcf5; display: flex; align-items: center; justify-content: center; font-size: 55px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 5;">❤️</div>
                     <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
-                        <img id="canvas-pet" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img id="canvas-pet" style="width: 100%; height: 100%;">
                     </div>
                 </div>
 
-                <div style="position: relative; margin: 60px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
-                    <div id="canvas-mini-title" style="font-size: 48px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
-                    <div id="canvas-mini-sub" style="margin-top: 15px; color: #444; font-size: 34px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
+                <!-- 收緊 Margin-top -->
+                <div style="position: relative; margin: 30px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 25px 40px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03); box-sizing: border-box;">
+                    <div id="canvas-mini-title" style="font-size: 46px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
+                    <div id="canvas-mini-sub" style="margin-top: 10px; color: #444; font-size: 34px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
                 </div>
 
-                <div style="width: 880px; margin: 45px auto 0; background: #e8f4eb; border-radius: 35px; padding: 45px 50px 35px; box-sizing: border-box; position: relative;">
-                    <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 34px; font-weight: 900; padding: 15px 40px; border-radius: 99px;">相似度分析</div>
+                <!-- 收緊 Bar 間距 -->
+                <div style="width: 880px; margin: 30px auto 0; background: #e8f4eb; border-radius: 35px; padding: 35px 45px 20px; box-sizing: border-box; position: relative;">
+                    <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 32px; font-weight: 900; padding: 15px 35px; border-radius: 99px;">相似度分析</div>
 
-                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 0px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 0px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div id="loader">
         <div class="spinner">⚙️</div>
@@ -275,12 +250,10 @@
     </div>
 
     <div class="container">
-        <!-- 首頁及上傳頁先有呢個 Default Header -->
         <div id="default-header">
             <header>
                 <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
                 <h1>🐾 AI 人寵相似度大測試</h1>
-                <p class="subtitle" id="home-subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
             </header>
         </div>
 
@@ -354,9 +327,7 @@
 
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
-                    <!-- 🔥 轉做分享按鈕 🔥 -->
-                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交媒體</button>
-                    <!-- 🔥 發佈掣改名 🔥 -->
+                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交平台</button>
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
                 </div>
@@ -394,10 +365,6 @@
                 <b>身份核實與獲獎限制：</b> 本公司將以參加者提交之「姓名、電郵地址及手機號碼」作為身份核對基準。每位參加者及其毛孩組合，最多只會獲得一次得獎資格。<br>
                 <b>一人一寵限制：</b> 得獎者提交之相片必須為「一人一狗」或「一人一貓」的合照或拼圖。如發現不符合此條件（例如多人、多寵、或非指定動物），其得獎資格將會作廢，名次將自動順延予下一位合資格參加者。<br>
                 <b>名次順延機制：</b> 若系統發現重複得獎者或違反資格者，將自動取消其最高排名以外的名次，並按成績順延予下一位。</p>
-                
-                <h3>2. 活動及領獎時間表</h3>
-                <p>活動將於 <b>2026 年 5 月 31 日 23:59 截止</b>。6 月 1 日至 7 日為計算及核實階段。最終得獎名單將於 6 月 8 日在官方 Instagram (@animalssum) 公佈。<br>
-                得獎者將獲電郵通知，如自覺符合資格但未收到通知，請主動透過 IG 聯絡本公司查對。</p>
             </div>
             <button class="main-btn action-btn" style="margin-top:20px;" onclick="switchView('view-home')">返回主頁</button>
         </div>
@@ -418,11 +385,11 @@
             <h2 style="color:var(--brand); margin-bottom: 5px; font-size:1.6rem;">🚀 登記上榜</h2>
             <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">輸入名字上榜，睇下你同毛孩排第幾！</p>
             
-            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 顯示姓名 (會喺排行榜公開)"></div>
-            <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話 (核實身份用，不公開)"></div>
-            <div class="input-group"><input type="email" id="reg-email" class="form-input" placeholder="📧 電郵地址 (不公開)"></div>
+            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 聯絡人姓名 (不會公開、用於領獎核對身份)"></div>
+            <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話 (不會公開)"></div>
+            <div class="input-group"><input type="email" id="reg-email" class="form-input" placeholder="📧 電郵地址 (不會公開)"></div>
             
-            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜，不可撤回。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
+            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜（只會顯示你最初填寫的稱呼），不可撤回。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
             
             <button class="main-btn action-btn" style="margin-bottom:10px; padding:15px; font-size:1.2rem;" onclick="publishToLeaderboard()">✅ 同意發佈並上榜！</button>
             <button class="main-btn sec-btn" style="padding:10px; font-size:1rem;" onclick="document.getElementById('consent-modal').style.display='none'">❌ 唔啦，自己收藏</button>
@@ -477,7 +444,6 @@
         
         switchView('view-home'); // 初始化
 
-        // AI 載入及圖片檢測
         async function loadAIinBackground() { try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {} }
         loadAIinBackground();
 
@@ -504,12 +470,8 @@
         }
 
         window.processAI = function() { 
-            // 重置 IG 掣
             const igBtn = document.getElementById('btn-ig-unlock');
-            if(igBtn) {
-                igBtn.innerText = "👉 去 Follow IG 解鎖";
-                igBtn.disabled = false;
-            }
+            if(igBtn) { igBtn.innerText = "👉 去 Follow IG 解鎖"; igBtn.disabled = false; }
 
             state.hName = document.getElementById('human-name').value.trim();
             state.dName = document.getElementById('dog-name').value.trim();
@@ -528,7 +490,7 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
-        // 極速 UI 更新及後台生成圖片
+        // 🔥 極速 UI 更新及強制方格圖片生成 🔥
         window.generateResults = async function() {
             let userIP = "Unknown"; try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
@@ -565,21 +527,36 @@
                 const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
                 const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
+                // 🔥 製作強制正方形嘅 Base64 圖 (防變形) 🔥
+                const cropSquare = (img) => {
+                    const c = document.createElement('canvas');
+                    const size = Math.min(img.naturalWidth, img.naturalHeight);
+                    c.width = 400; c.height = 400;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, (img.naturalWidth-size)/2, (img.naturalHeight-size)/2, size, size, 0, 0, 400, 400);
+                    return c.toDataURL('image/jpeg', 0.8);
+                };
+
+                const hSquareImg = cropSquare(state.imgs.h1);
+                const dSquareImg = cropSquare(state.imgs.d1);
+
+                // 更新前台 WEB UI
                 document.getElementById('web-human-name').innerText = state.hName;
                 document.getElementById('web-pet-name').innerText = state.dName;
                 document.getElementById('web-score').innerText = finalAvg + '%';
                 document.getElementById('web-badge').innerText = cText;
-                document.getElementById('web-human').src = state.imgs.h1.src; 
-                document.getElementById('web-pet').src = state.imgs.d1.src;
-                document.getElementById('web-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
+                document.getElementById('web-human').src = hSquareImg; // 用正方形圖
+                document.getElementById('web-pet').src = dSquareImg;   // 用正方形圖
+                document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('web-mini-sub').innerText = dynamicComment;
 
+                // 更新隱藏 Canvas 專用 UI
                 document.getElementById('canvas-human-name').innerText = state.hName;
                 document.getElementById('canvas-pet-name').innerText = state.dName;
                 document.getElementById('canvas-score').innerText = finalAvg + '%';
                 document.getElementById('canvas-badge').innerText = cText;
-                document.getElementById('canvas-human').src = state.imgs.h1.src; 
-                document.getElementById('canvas-pet').src = state.imgs.d1.src;
+                document.getElementById('canvas-human').src = hSquareImg; // 用正方形圖
+                document.getElementById('canvas-pet').src = dSquareImg;   // 用正方形圖
                 document.getElementById('canvas-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('canvas-mini-sub').innerText = dynamicComment;
 
@@ -594,6 +571,7 @@
                 switchView('view-result'); 
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
 
+                // 背景偷偷畫圖
                 setTimeout(() => {
                     html2canvas(document.querySelector("#share-card"), { scale: 2, useCORS: true, backgroundColor: '#fffdf5' }).then(canvas => {
                         canvas.toBlob((b) => { 
@@ -601,21 +579,15 @@
                             document.getElementById('btn-share-trigger').innerText = "📤 分享至社交媒體"; 
                             
                             state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
-                            const hC = document.createElement('canvas'); hC.width=150; hC.height=150; const c1 = hC.getContext('2d');
-                            let sz1 = Math.min(state.imgs.h1.naturalWidth, state.imgs.h1.naturalHeight);
-                            c1.drawImage(state.imgs.h1, (state.imgs.h1.naturalWidth-sz1)/2, (state.imgs.h1.naturalHeight-sz1)/2, sz1, sz1, 0, 0, 150, 150);
                             
-                            const dC = document.createElement('canvas'); dC.width=150; dC.height=150; const c2 = dC.getContext('2d');
-                            let sz2 = Math.min(state.imgs.d1.naturalWidth, state.imgs.d1.naturalHeight);
-                            c2.drawImage(state.imgs.d1, (state.imgs.d1.naturalWidth-sz2)/2, (state.imgs.d1.naturalHeight-sz2)/2, sz2, sz2, 0, 0, 150, 150);
-
+                            // 儲存至 Firebase (用返之前縮細嘅正方形圖)
                             if(db) {
                                 db.collection("certs").doc(state.docId).get().then(snap => {
                                     if(!snap.exists || finalAvg > (snap.data().score || 0)) {
                                         db.collection("certs").doc(state.docId).set({
                                             ...snap.data(),
                                             dogName: state.dName, humanName: state.hName, score: finalAvg,
-                                            humanImg: hC.toDataURL('image/jpeg', 0.5), dogImg: dC.toDataURL('image/jpeg', 0.5),
+                                            humanImg: hSquareImg, dogImg: dSquareImg,
                                             public: false, timestamp: new Date().getTime()
                                         });
                                     }
@@ -693,7 +665,7 @@
             renderLeaderboard();
         }
 
-        // 排行榜渲染：過濾假人
+        // 🔥 排行榜渲染 🔥
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
