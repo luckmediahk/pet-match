@@ -26,7 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v53.1 -->
+    <!-- Version: v54.0 -->
     <style>
         :root { 
             --brand: #5ba36a; 
@@ -96,7 +96,7 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* 🔥 WEB 前台分離式框框 (修復電腦版走位) 🔥 */
+        /* 🔥 WEB 前台分離式框框 🔥 */
         .framed-container { 
             background-color: var(--bg-cream); 
             background-image: url('./bg-top.png'), url('./bg-bottom.png');
@@ -104,7 +104,6 @@
             background-repeat: no-repeat, no-repeat;
             background-size: 100% auto, 100% auto;
             border-radius: 40px; 
-            /* 使用 clamp 智能調整上下留白，完美適應手機與電腦 */
             padding: clamp(90px, 25vw, 150px) 15px clamp(90px, 25vw, 150px); 
             box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
             text-align: center; 
@@ -149,12 +148,12 @@
         .btn-share { background: var(--accent); color: #533500; border: none; box-shadow: 0 6px 0 #d4a000; font-size: 1.1rem; }
         .btn-share:active { box-shadow: 0 2px 0 #d4a000; }
 
-        /* 🔥 排行榜 (名次牌放左邊、皇冠調整) 🔥 */
+        /* 🔥 排行榜 🔥 */
         .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 40px 0 20px 0; height: 180px; }
         .podium { flex: 1; max-width: 110px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;}
         
         .podium-crown { font-size: 2.2rem; position: absolute; top: -85px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
-        .rank-1 .podium-crown { font-size: 3.5rem; top: -115px; }
+        .rank-1 .podium-crown { font-size: 3.5rem; top: -130px; }
         
         .podium .avatars { position: absolute; top: -50px; display: flex; justify-content: center; width: 100%; z-index: 5;}
         .rank-1 .avatars { top: -65px; }
@@ -163,7 +162,6 @@
         .podium img:nth-child(2) { margin-left: -20px; }
         .rank-1 img:nth-child(2) { margin-left: -25px; }
 
-        /* 🔥 排行榜 1,2,3 徽章放左方 🔥 */
         .podium-rank-badge { position: absolute; left: 0px; top: -15px; width: 28px; height: 28px; border-radius: 50%; background: #ccc; color: white; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 6; font-size: 0.95rem; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         .rank-1 .podium-rank-badge { background: #facc50; width: 36px; height: 36px; font-size: 1.3rem; left: -5px; top: -20px; border: 3px solid #fff;}
         .rank-2 .podium-rank-badge { background: #95a5a6; }
@@ -175,7 +173,6 @@
         
         .podium h4 { margin: 15px 0 0 0; font-size: 0.8rem; color: #5a4025; line-height: 1.2; word-break: break-word; font-weight: 800;}
         
-        /* 🔥 「我的排名」 Podium Highlight 🔥 */
         .podium.highlight { transform: translateY(-5px); }
         .podium.highlight .avatars img { border-color: var(--brand); border-width: 4px; box-shadow: 0 0 15px rgba(91,163,106,0.5); }
         .podium.highlight .podium-rank-badge { background: var(--brand); color: white; border-color: white; }
@@ -194,7 +191,6 @@
         .rank-score { font-size: 1.2rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; display: flex; align-items: center; gap: 5px;}
         .rank-score::after { content: '⭐'; font-size: 1rem; }
 
-        /* 🔥 「我的排名」專屬 Tag 🔥 */
         .my-rank-tag { background: var(--brand); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: 8px; vertical-align: middle; display: inline-block;}
         .podium-my-rank { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); background: var(--brand); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 900; white-space: nowrap; }
 
@@ -218,61 +214,60 @@
 </head>
 <body>
 
+    <!-- 🔥 IG Share Card (Hidden for HTML2Canvas) 🔥 -->
     <div id="share-card-container">
         <div id="share-card" style="width: 1080px; height: 1920px; position: relative; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background-color: #fffdf5;">
             
             <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: cover;" onerror="this.style.display='none'">
             
             <div style="position: relative; z-index: 1;">
-                <!-- 🔥 間距縮細，完美避開 1920px Cut-off 🔥 -->
-                <div style="padding-top: 240px; text-align: center;">
-                    <div style="font-size: 46px; font-weight: 800; color: #6b4c3a;"><span id="canvas-human-name"></span> 同 <span id="canvas-pet-name" style="color: #5ba36a;"></span> 嘅相似度高達</div>
-                    <div id="canvas-score" style="font-size: 210px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
+                <div style="padding-top: 380px; text-align: center;">
+                    <div style="font-size: 50px; font-weight: 800; color: #6b4c3a;"><span id="canvas-human-name"></span> 同 <span id="canvas-pet-name" style="color: #5ba36a;"></span> 嘅相似度高達</div>
+                    <div id="canvas-score" style="font-size: 240px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
                     
-                    <div style="margin-top: 25px; position: relative; display: inline-block;">
-                        <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 46px; font-weight: 900; padding: 20px 50px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
-                        <div style="position: absolute; top: 20px; left: -30px; border: 35px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
-                        <div style="position: absolute; top: 20px; right: -30px; border: 35px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
+                    <div style="margin-top: 30px; position: relative; display: inline-block;">
+                        <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 52px; font-weight: 900; padding: 25px 60px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
+                        <div style="position: absolute; top: 25px; left: -35px; border: 38px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
+                        <div style="position: absolute; top: 25px; right: -35px; border: 38px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: center; align-items: center; gap: 25px; margin-top: 40px; position: relative;">
-                    <div style="width: 340px; height: 340px; border-radius: 35px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 70px; position: relative;">
+                    <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
                         <img id="canvas-human" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; border-radius: 50%; background: #fffcf5; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 5;">❤️</div>
-                    <div style="width: 340px; height: 340px; border-radius: 35px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 110px; height: 110px; border-radius: 50%; background: #fffcf5; display: flex; align-items: center; justify-content: center; font-size: 55px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 5;">❤️</div>
+                    <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
                         <img id="canvas-pet" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
 
-                <div style="position: relative; margin: 40px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 30px 40px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03); box-sizing: border-box;">
-                    <div id="canvas-mini-title" style="font-size: 44px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
-                    <div id="canvas-mini-sub" style="margin-top: 15px; color: #444; font-size: 32px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
+                <div style="position: relative; margin: 60px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03);">
+                    <div id="canvas-mini-title" style="font-size: 48px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
+                    <div id="canvas-mini-sub" style="margin-top: 15px; color: #444; font-size: 34px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
                 </div>
 
-                <div style="width: 880px; margin: 35px auto 0; background: #e8f4eb; border-radius: 35px; padding: 40px 45px 25px; box-sizing: border-box; position: relative;">
-                    <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 32px; font-weight: 900; padding: 15px 35px; border-radius: 99px;">相似度分析</div>
+                <div style="width: 880px; margin: 45px auto 0; background: #e8f4eb; border-radius: 35px; padding: 45px 50px 35px; box-sizing: border-box; position: relative;">
+                    <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 34px; font-weight: 900; padding: 15px 40px; border-radius: 99px;">相似度分析</div>
 
-                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
-                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 25px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
+                    <div style="margin-bottom: 25px; font-size: 36px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
                     <div style="margin-top: -12px; margin-bottom: 0px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <div id="loader">
         <div class="spinner">⚙️</div>
@@ -360,7 +355,7 @@
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
                     <!-- 🔥 轉做分享按鈕 🔥 -->
-                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交平台</button>
+                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交媒體</button>
                     <!-- 🔥 發佈掣改名 🔥 -->
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
@@ -399,6 +394,10 @@
                 <b>身份核實與獲獎限制：</b> 本公司將以參加者提交之「姓名、電郵地址及手機號碼」作為身份核對基準。每位參加者及其毛孩組合，最多只會獲得一次得獎資格。<br>
                 <b>一人一寵限制：</b> 得獎者提交之相片必須為「一人一狗」或「一人一貓」的合照或拼圖。如發現不符合此條件（例如多人、多寵、或非指定動物），其得獎資格將會作廢，名次將自動順延予下一位合資格參加者。<br>
                 <b>名次順延機制：</b> 若系統發現重複得獎者或違反資格者，將自動取消其最高排名以外的名次，並按成績順延予下一位。</p>
+                
+                <h3>2. 活動及領獎時間表</h3>
+                <p>活動將於 <b>2026 年 5 月 31 日 23:59 截止</b>。6 月 1 日至 7 日為計算及核實階段。最終得獎名單將於 6 月 8 日在官方 Instagram (@animalssum) 公佈。<br>
+                得獎者將獲電郵通知，如自覺符合資格但未收到通知，請主動透過 IG 聯絡本公司查對。</p>
             </div>
             <button class="main-btn action-btn" style="margin-top:20px;" onclick="switchView('view-home')">返回主頁</button>
         </div>
@@ -419,12 +418,11 @@
             <h2 style="color:var(--brand); margin-bottom: 5px; font-size:1.6rem;">🚀 登記上榜</h2>
             <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">輸入名字上榜，睇下你同毛孩排第幾！</p>
             
-            <!-- 🔥 姓名不公開提示 🔥 -->
-            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 聯絡人姓名 (不公開)"></div>
-            <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話 (不公開)"></div>
+            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 顯示姓名 (會喺排行榜公開)"></div>
+            <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話 (核實身份用，不公開)"></div>
             <div class="input-group"><input type="email" id="reg-email" class="form-input" placeholder="📧 電郵地址 (不公開)"></div>
             
-            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將會上榜，並以你輸入的「人類及毛孩名字」作公開顯示。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
+            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜，不可撤回。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
             
             <button class="main-btn action-btn" style="margin-bottom:10px; padding:15px; font-size:1.2rem;" onclick="publishToLeaderboard()">✅ 同意發佈並上榜！</button>
             <button class="main-btn sec-btn" style="padding:10px; font-size:1rem;" onclick="document.getElementById('consent-modal').style.display='none'">❌ 唔啦，自己收藏</button>
@@ -449,10 +447,17 @@
 
         function updateCountdown() {
             const pb = document.getElementById('promo-teaser'); if(!pb) return;
-            const now = new Date(); const startDate = new Date(2026, 4, 18, 12, 0, 0); const cutoffDate = new Date(2026, 4, 26, 23, 59, 59); 
-            if (now >= cutoffDate) pb.innerHTML = "🎁 【全城尋找 100% 餅印人寵】<br>現已截止，進入計算階段！";
-            else if (now < startDate) pb.innerHTML = `🎁 【全城尋找最餅印一對】<br>活動將於 5月18日 正式展開！<br><span style="color:#e74c3c;">敬請期待</span>`;
-            else pb.innerHTML = `🎁 【全城尋找最餅印一對】<br>排行榜頭 20 名可獲得豐富獎品<br><span style="color:#e74c3c;">活動進行中</span>`;
+            const now = new Date(); 
+            const announceDate = new Date(2026, 5, 8, 0, 0, 0); // 6月8日
+            const cutoffDate = new Date(2026, 4, 31, 23, 59, 59); // 5月31日
+            
+            if (now >= announceDate) {
+                pb.innerHTML = `🎁 【全城尋找最餅印一對 - 結果公佈】<br>請到我們 IG (@animalssum) 查看結果！<br><span style="color:#e74c3c;">得獎者將獲電郵通知，如有遺漏請主動聯絡我們。</span>`;
+            } else if (now > cutoffDate) {
+                pb.innerHTML = `🎁 【全城尋找最餅印一對】<br>現已截止，進入計算階段！<br><span style="color:#e74c3c;">6月8日將於 IG 公佈結果</span>`;
+            } else {
+                pb.innerHTML = `🎁 【全城尋找最餅印一對－2026年5月31日截止！】<br>排行榜頭 20 名可獲得豐富獎品<br><span style="color:#e74c3c;">活動火熱進行中 🔥</span>`;
+            }
         }
 
         window.switchView = function(id) { 
@@ -499,17 +504,16 @@
         }
 
         window.processAI = function() { 
-            state.hName = document.getElementById('human-name').value.trim();
-            state.dName = document.getElementById('dog-name').value.trim();
-            document.getElementById('loader').style.display = 'flex'; 
-            
-            // 重置 IG 按鈕狀態
+            // 重置 IG 掣
             const igBtn = document.getElementById('btn-ig-unlock');
             if(igBtn) {
                 igBtn.innerText = "👉 去 Follow IG 解鎖";
                 igBtn.disabled = false;
             }
-            
+
+            state.hName = document.getElementById('human-name').value.trim();
+            state.dName = document.getElementById('dog-name').value.trim();
+            document.getElementById('loader').style.display = 'flex'; 
             setTimeout(() => { document.getElementById('loader').style.display = 'none'; document.getElementById('ig-gate-modal').style.display = 'flex'; }, 2000); 
         }
         
@@ -524,7 +528,7 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
-        // 🔥 極速 UI 更新及後台生成圖片 🔥
+        // 極速 UI 更新及後台生成圖片
         window.generateResults = async function() {
             let userIP = "Unknown"; try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
@@ -567,7 +571,7 @@
                 document.getElementById('web-badge').innerText = cText;
                 document.getElementById('web-human').src = state.imgs.h1.src; 
                 document.getElementById('web-pet').src = state.imgs.d1.src;
-                document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
+                document.getElementById('web-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('web-mini-sub').innerText = dynamicComment;
 
                 document.getElementById('canvas-human-name').innerText = state.hName;
@@ -585,11 +589,11 @@
                     document.getElementById(`canvas-val-${id}`).innerText = scoreMap[id]+'%'; document.getElementById(`canvas-bar-${id}`).style.width = scoreMap[id]+'%';
                 });
 
-                document.getElementById('btn-share-trigger').innerText = "⏳ 準備緊圖片...";
+                document.getElementById('btn-share-trigger').innerText = "⏳ 圖片生成中...";
+                document.getElementById('loader').style.display = 'none'; 
                 switchView('view-result'); 
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
 
-                // 背景產生圖片 (無痛無感)
                 setTimeout(() => {
                     html2canvas(document.querySelector("#share-card"), { scale: 2, useCORS: true, backgroundColor: '#fffdf5' }).then(canvas => {
                         canvas.toBlob((b) => { 
@@ -619,7 +623,7 @@
                             }
                         }, 'image/jpeg', 0.8);
                     });
-                }, 500); 
+                }, 800); 
             }, 100); 
         }
 
@@ -643,8 +647,8 @@
 
         window.handleLeaderboardPush = function() {
             const now = new Date();
-            const cutoffDate = new Date(2026, 4, 26, 23, 59, 59); 
-            const bufferDate = new Date(2026, 5, 2, 23, 59, 59);  
+            const cutoffDate = new Date(2026, 4, 31, 23, 59, 59); 
+            const bufferDate = new Date(2026, 5, 7, 23, 59, 59);  
             
             if (now <= cutoffDate) {
                 document.getElementById('consent-modal').style.display = 'flex';
@@ -689,7 +693,7 @@
             renderLeaderboard();
         }
 
-        // 🔥 排行榜渲染：顯示 Top 50 及自己排名 🔥
+        // 排行榜渲染：過濾假人
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -703,7 +707,7 @@
                     const snap = await db.collection("certs").where("public", "==", true).get();
                     snap.forEach(doc => {
                         let d = doc.data();
-                        if (d.humanName !== 'iris') { combinedData.push(d); } // 隔走 iris
+                        if (d.humanName !== 'iris') { combinedData.push(d); }
                     });
                 } catch(e) {}
             }
@@ -742,7 +746,6 @@
             });
 
             let listHTML = '';
-            // 只列出第 4 至 50 名
             combinedData.slice(3, 50).forEach((item, idx) => {
                 let actualRank = idx + 4;
                 let isMe = (state.hName && state.dName && item.humanName === state.hName && item.dogName === state.dName);
@@ -763,7 +766,6 @@
                 `;
             });
 
-            // 確保跌出 50 名外都會顯示喺最底
             let myRankIndex = combinedData.findIndex(d => state.hName && state.dName && d.humanName === state.hName && d.dogName === state.dName);
             if (myRankIndex >= 50) {
                 const myData = combinedData[myRankIndex];
