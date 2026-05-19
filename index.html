@@ -26,7 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v56.0 -->
+    <!-- Version: v57.0 -->
     <style>
         :root { 
             --brand: #5ba36a; 
@@ -146,8 +146,8 @@
         .btn-share { background: var(--accent); color: #533500; border: none; box-shadow: 0 6px 0 #d4a000; font-size: 1.1rem; }
         .btn-share:active { box-shadow: 0 2px 0 #d4a000; }
 
-        /* 🔥 排行榜 (皇冠與名次牌修正) 🔥 */
-        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 60px 0 45px 0; height: 180px; }
+        /* 🔥 排行榜 🔥 */
+        .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 40px 0 20px 0; height: 180px; }
         .podium { flex: 1; max-width: 110px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;}
         
         .podium-crown { font-size: 2.2rem; position: absolute; top: -85px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
@@ -163,7 +163,6 @@
         .rank-1 img { width: 70px; height: 70px; border: 4px solid #fff;}
         .rank-1 .avatar-right { margin-left: -25px; }
 
-        /* 🔥 排行榜數字牌置中於交疊處頂部 🔥 */
         .podium-rank-badge { position: absolute; left: 50%; top: -15px; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: #ccc; color: white; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 6; font-size: 0.95rem; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         .rank-1 .podium-rank-badge { background: #facc50; width: 36px; height: 36px; font-size: 1.3rem; top: -20px; border: 3px solid #fff;}
         .rank-2 .podium-rank-badge { background: #95a5a6; }
@@ -175,30 +174,37 @@
         
         .podium h4 { margin: 15px 0 0 0; font-size: 0.8rem; color: #5a4025; line-height: 1.2; word-break: break-word; font-weight: 800;}
         
-        /* 🔥 「我的排名」 Podium Highlight 🔥 */
         .podium.highlight { transform: translateY(-5px); }
         .podium.highlight .avatars img { border-color: var(--brand); border-width: 4px; box-shadow: 0 0 15px rgba(91,163,106,0.5); }
         .podium.highlight .podium-rank-badge { background: var(--brand); color: white; border-color: white; }
         .podium.highlight h4 { color: var(--brand); font-weight: 900; }
         .podium.highlight::after { content: '✨ 我的排名'; position: absolute; bottom: -25px; left: 0; right: 0; font-size: 0.8rem; color: var(--brand); font-weight: 900; text-align: center; white-space: nowrap; }
 
+        /* 🔥 排行榜名單：修復打直字問題 🔥 */
         .rank-list { display: flex; flex-direction: column; gap: 12px; }
         .rank-row { display: flex; align-items: center; background: #fffdf5; padding: 12px 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); gap: 10px; border: 2px solid #f2ead3; position: relative; overflow: hidden;}
         .rank-row.highlight { border: 3px solid var(--brand) !important; background: #f0fdf4 !important; } 
 
-        .rank-num { font-size: 1.3rem; font-weight: 900; color: #5ba36a; width: 30px; text-align: center; }
-        .rank-row .rank-avatars { display: flex; width: 75px; justify-content: center; }
+        .rank-num { font-size: 1.1rem; font-weight: 900; color: #5ba36a; width: 25px; text-align: center; flex-shrink: 0; }
+        .rank-row .rank-avatars { display: flex; width: 75px; justify-content: center; flex-shrink: 0; }
         .rank-row img { width: 45px; height: 45px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); object-fit: cover; }
         .rank-row img:nth-child(2) { margin-left: -20px; }
-        .rank-names { flex: 1; display: flex; flex-direction: column; padding-left: 5px; justify-content: center;}
-        .rank-names h4 { margin: 0; font-size: 1rem; color: #4a3b20; font-weight: 800;}
-        .rank-score { font-size: 1.2rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; display: flex; align-items: center; gap: 5px;}
+        
+        /* 🔥 限制名稱區域寬度，文字過長會變成 ... 🔥 */
+        .rank-names { flex: 1; display: flex; flex-direction: column; padding-left: 8px; justify-content: center; min-width: 0; }
+        .rank-names h4 { margin: 0; font-size: 0.95rem; color: #4a3b20; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
+        
+        .rank-score { font-size: 1.1rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
         .rank-score::after { content: '⭐'; font-size: 1rem; }
 
-        /* 🔥 「我的排名」專屬 Tag 🔥 */
-        .my-rank-tag { background: var(--brand); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: 8px; vertical-align: middle; display: inline-block;}
+        /* 🔥 我的排名 Tag 放喺名稱下方 🔥 */
+        .my-rank-tag { background: var(--brand); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.65rem; margin-top: 4px; display: inline-block; width: fit-content;}
 
+        /* T&C */
+        .tnc-content { background: #fff; padding: 25px; border-radius: 20px; text-align: left; color: #444; font-size: 0.9rem; line-height: 1.6; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .tnc-content h3 { color: var(--brand); font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #e2e8e4; padding-bottom: 5px;}
         .tnc-link { display: block; text-align: center; margin-top: 25px; color: #aaa; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
+        
         .promo-box { text-align:center; color:#555; font-weight:bold; margin-top:25px; background:#fffcf0; border:2px solid #ffeaa7; padding:15px; border-radius:15px; line-height:1.5; font-size: 0.95rem;}
         
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
@@ -212,7 +218,7 @@
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* 🔥 IG Share Card (Hidden for HTML2Canvas) 回復 v53.1 完美比例及 Flex 排版 🔥 */
+        /* 🔥 IG Share Card (Hidden for HTML2Canvas) 強制鎖死防 Cut-off 🔥 */
         #share-card-container { position: fixed; top: 0; left: 0; z-index: -9999; opacity: 0; pointer-events: none; width: 1080px; height: 1920px; }
     </style>
 </head>
@@ -255,25 +261,24 @@
                 <div style="width: 880px; margin: 35px auto 0; background: #e8f4eb; border-radius: 35px; padding: 35px 45px 20px; box-sizing: border-box; position: relative;">
                     <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 32px; font-weight: 900; padding: 15px 35px; border-radius: 99px;">相似度分析</div>
 
-                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 18px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
+                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 18px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
+                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
                     <div style="margin-top: -10px; margin-bottom: 0px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <div id="loader">
         <div class="spinner">⚙️</div>
@@ -281,6 +286,7 @@
     </div>
 
     <div class="container">
+        <!-- 首頁及上傳頁先有呢個 Default Header -->
         <div id="default-header">
             <header>
                 <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
@@ -360,7 +366,7 @@
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
                     <!-- 🔥 轉做分享按鈕 🔥 -->
-                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交媒體</button>
+                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交平台</button>
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
                 </div>
@@ -431,7 +437,10 @@
         <div class="modal-content">
             <h2 style="margin-bottom:10px;">🔒 報告已生成！</h2>
             <p>有時你以為係你揀咗佢，其實可能係佢揀咗你。 <br><b>Follow 動物之心</b>，睇更多毛孩故事，支持我哋解鎖結果。</p>
-            <button class="main-btn action-btn" style="padding:15px; font-size:1.1rem;" id="btn-ig-unlock" onclick="unlockResult()">👉 去 Follow IG 解鎖</button>
+            <!-- 🔥 手機版不卡死：改為超連結 🔥 -->
+            <a href="https://www.instagram.com/animalssum/" target="_blank" onclick="unlockResult(event)" style="text-decoration:none; display:block;">
+                <div class="main-btn action-btn" style="padding:15px; font-size:1.1rem; box-sizing:border-box;" id="btn-ig-unlock">👉 去 Follow IG 解鎖</div>
+            </a>
         </div>
     </div>
 
@@ -487,7 +496,7 @@
             document.getElementById(id).classList.add('active'); 
             
             const defaultHeader = document.getElementById('default-header');
-            if (id === 'view-result' || id === 'view-leaderboard') {
+            if (id === 'view-result' || id === 'view-leaderboard' || id === 'view-tnc') {
                 defaultHeader.style.display = 'none';
             } else {
                 defaultHeader.style.display = 'block';
@@ -499,7 +508,6 @@
         
         switchView('view-home'); // 初始化
 
-        // AI 載入及圖片檢測
         async function loadAIinBackground() { try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {} }
         loadAIinBackground();
 
@@ -527,7 +535,7 @@
 
         window.processAI = function() { 
             const igBtn = document.getElementById('btn-ig-unlock');
-            if(igBtn) { igBtn.innerText = "👉 去 Follow IG 解鎖"; igBtn.disabled = false; }
+            if(igBtn) { igBtn.innerText = "👉 去 Follow IG 解鎖"; igBtn.style.opacity = '1'; }
 
             state.hName = document.getElementById('human-name').value.trim();
             state.dName = document.getElementById('dog-name').value.trim();
@@ -535,7 +543,14 @@
             setTimeout(() => { document.getElementById('loader').style.display = 'none'; document.getElementById('ig-gate-modal').style.display = 'flex'; }, 2000); 
         }
         
-        window.unlockResult = function() { document.getElementById('btn-ig-unlock').innerText = "⏳ 驗證中..."; document.getElementById('btn-ig-unlock').disabled = true; window.open('https://www.instagram.com/animalssum/', '_blank'); setTimeout(() => { document.getElementById('ig-gate-modal').style.display = 'none'; generateResults(); }, 3000); }
+        // 🔥 防止 Mobile In-App Browser 雙擊問題 🔥
+        window.unlockResult = function(e) { 
+            const btn = document.getElementById('btn-ig-unlock');
+            if(btn.innerText.includes('驗證中')) { if(e) e.preventDefault(); return; }
+            btn.innerText = "⏳ 驗證中..."; 
+            btn.style.opacity = '0.8';
+            setTimeout(() => { document.getElementById('ig-gate-modal').style.display = 'none'; generateResults(); }, 2000); 
+        }
         
         window.copyCaption = function() { 
             navigator.clipboard.writeText(`我同 ${state.dName} 竟然有 ${state.scores.final}% 相似。\n動物之心話齋：其實唔係你揀毛孩，係佢揀咗你。\n你都試玩：game.animalssum.com`).then(() => { 
@@ -546,9 +561,13 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
-        // 🔥 極速 UI 更新及強制方格圖片生成 🔥
+        // 🔥 極速 UI 更新及非阻塞式生成圖片 🔥
         window.generateResults = async function() {
-            let userIP = "Unknown"; try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
+            document.getElementById('loader').style.display = 'flex';
+            
+            // 🔥 將 IP Fetch 轉為背景執行，絕不阻塞 UI 🔥
+            let userIP = "Unknown"; 
+            fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>userIP=d.ip).catch(e=>{});
 
             setTimeout(async () => {
                 let colorS = genRandomScore(75), eyeS = genRandomScore(80), actionS = genRandomScore(80), vibeS = genRandomScore(85), funnyS = genRandomScore(88);
@@ -583,7 +602,7 @@
                 const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
                 const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
-                // 🔥 製作強制正方形嘅 Base64 圖 (防 IG Share 變形) 🔥
+                // 製作強制正方形嘅 Base64 圖 (防 IG Share 變形)
                 const cropSquare = (img) => {
                     const c = document.createElement('canvas');
                     const size = Math.min(img.naturalWidth, img.naturalHeight);
@@ -601,8 +620,8 @@
                 document.getElementById('web-pet-name').innerText = state.dName;
                 document.getElementById('web-score').innerText = finalAvg + '%';
                 document.getElementById('web-badge').innerText = cText;
-                document.getElementById('web-human').src = hSquareImg; // 用正方形圖
-                document.getElementById('web-pet').src = dSquareImg;   // 用正方形圖
+                document.getElementById('web-human').src = hSquareImg;
+                document.getElementById('web-pet').src = dSquareImg;  
                 document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('web-mini-sub').innerText = dynamicComment;
 
@@ -611,8 +630,8 @@
                 document.getElementById('canvas-pet-name').innerText = state.dName;
                 document.getElementById('canvas-score').innerText = finalAvg + '%';
                 document.getElementById('canvas-badge').innerText = cText;
-                document.getElementById('canvas-human').src = hSquareImg; // 用正方形圖
-                document.getElementById('canvas-pet').src = dSquareImg;   // 用正方形圖
+                document.getElementById('canvas-human').src = hSquareImg;
+                document.getElementById('canvas-pet').src = dSquareImg;  
                 document.getElementById('canvas-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('canvas-mini-sub').innerText = dynamicComment;
 
@@ -627,9 +646,9 @@
                 switchView('view-result'); 
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
 
-                // 背景偷偷畫圖，鎖定座標確保不被裁走
+                // 背景偷偷畫圖
                 setTimeout(() => {
-                    window.scrollTo(0, 0); // 確保捲到最頂先畫
+                    window.scrollTo(0, 0); 
                     html2canvas(document.querySelector("#share-card"), { 
                         scale: 2, 
                         useCORS: true, 
@@ -645,7 +664,7 @@
                             
                             state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                             
-                            // 儲存至 Firebase (用返之前縮細嘅正方形圖)
+                            // 儲存至 Firebase
                             if(db) {
                                 db.collection("certs").doc(state.docId).get().then(snap => {
                                     if(!snap.exists || finalAvg > (snap.data().score || 0)) {
@@ -653,7 +672,7 @@
                                             ...snap.data(),
                                             dogName: state.dName, humanName: state.hName, score: finalAvg,
                                             humanImg: hSquareImg, dogImg: dSquareImg,
-                                            public: false, timestamp: new Date().getTime()
+                                            public: false, timestamp: new Date().getTime(), ip: userIP
                                         });
                                     }
                                 });
@@ -730,7 +749,7 @@
             renderLeaderboard();
         }
 
-        // 🔥 排行榜渲染：頭 1, 2, 3 名徽章置中，移除假人 🔥
+        // 🔥 排行榜渲染：過濾假人及修正排版 🔥
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -744,7 +763,7 @@
                     const snap = await db.collection("certs").where("public", "==", true).get();
                     snap.forEach(doc => {
                         let d = doc.data();
-                        if (d.humanName !== 'iris') { combinedData.push(d); } // 隔走 iris
+                        if (d.humanName !== 'iris') { combinedData.push(d); }
                     });
                 } catch(e) {}
             }
@@ -771,9 +790,9 @@
                     <div class="podium ${item.class} ${isMe ? 'highlight' : ''}">
                         ${item.rank === 1 ? '<div class="podium-crown">👑</div>' : ''}
                         <div class="avatars">
-                            <img src="${item.data.humanImg}" class="avatar-left">
-                            <img src="${item.data.dogImg}" class="avatar-right">
                             <div class="podium-rank-badge">${item.rank}</div>
+                            <img src="${item.data.humanImg}">
+                            <img src="${item.data.dogImg}">
                         </div>
                         <div class="podium-score-ribbon">${item.data.score}%</div>
                         <h4>${item.data.humanName}<br>& ${item.data.dogName || ''}</h4>
@@ -783,7 +802,6 @@
             });
 
             let listHTML = '';
-            // 只列出第 4 至 50 名
             combinedData.slice(3, 50).forEach((item, idx) => {
                 let actualRank = idx + 4;
                 let isMe = (state.hName && state.dName && item.humanName === state.hName && item.dogName === state.dName);
@@ -797,14 +815,14 @@
                             <img src="${item.dogImg}">
                         </div>
                         <div class="rank-names">
-                            <h4>${item.humanName} & ${item.dogName || ''} ${myRankTag}</h4>
+                            <h4>${item.humanName} & ${item.dogName || ''}</h4>
+                            ${myRankTag}
                         </div>
                         <div class="rank-score">${item.score}%</div>
                     </div>
                 `;
             });
 
-            // 確保跌出 50 名外都會顯示喺最底
             let myRankIndex = combinedData.findIndex(d => state.hName && state.dName && d.humanName === state.hName && d.dogName === state.dName);
             if (myRankIndex >= 50) {
                 const myData = combinedData[myRankIndex];
@@ -817,7 +835,8 @@
                             <img src="${myData.dogImg}">
                         </div>
                         <div class="rank-names">
-                            <h4>${myData.humanName} & ${myData.dogName || ''} <span class="my-rank-tag">✨ 我的排名</span></h4>
+                            <h4>${myData.humanName} & ${myData.dogName || ''}</h4>
+                            <span class="my-rank-tag">✨ 我的排名</span>
                         </div>
                         <div class="rank-score">${myData.score}%</div>
                     </div>
