@@ -26,7 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v57.0 -->
+    <!-- Version: v57.1 -->
     <style>
         :root { 
             --brand: #5ba36a; 
@@ -578,14 +578,22 @@
                 state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
                 let cText = "";
-                if(finalAvg >= 98) cText="❤️ 超級心有靈犀！";
-                else if(finalAvg >= 96) cText="❤️ 前世肯定係親生兄弟姊妹";
-                else if(finalAvg >= 94) cText="❤️ 失散多年嘅親生骨肉！";
-                else if(finalAvg >= 92) cText="❤️ 越養越似！連笑起上嚟都一樣樣";
-                else if(finalAvg >= 90) cText="❤️ 親緣天定！咁似樣注定做你仔女";
-                else if(finalAvg >= 88) cText="❤️ 似過同一個祖宗，出街肯定畀人認錯！";
-                else if(finalAvg >= 86) cText="❤️ 上世住隔離村，今世做埋一家人！";
-                else if(finalAvg >= 84) cText="❤️ 似似哋，但貪食基因強過主子！";
+                if(finalAvg >= 99) cText="❤️ 絕頂似樣＋心有靈犀＋親子認證！";
+                else if(finalAvg >= 98) cText="❤️ 分唔到佢學你定你學佢，你哋天生一家！";
+                else if(finalAvg >= 97) cText="❤️ 前世肯定係親生兄弟姊妹";
+                else if(finalAvg >= 96) cText="❤️ 失散多年嘅親生骨肉！";
+                else if(finalAvg >= 95) cText="❤️ 你哋呢兩個餅印，唔係日日都遇到！";
+                else if(finalAvg >= 94) cText="❤️ 越養越似！連笑起上嚟都一樣樣";
+                else if(finalAvg >= 93) cText="❤️ 親緣天定！咁似樣注定做你仔女";
+                else if(finalAvg >= 92) cText="❤️ 似過同一個祖宗，出街肯定畀人認錯！";
+                else if(finalAvg >= 91) cText="❤️ 你以為係你養佢，其實係佢慢慢馴養咗你！";
+                else if(finalAvg >= 90) cText="❤️ 上世住隔離村，今世做埋一家人！";
+                else if(finalAvg >= 89) cText="❤️ 神態完全一致！連發呆個樣都似！";
+                else if(finalAvg >= 88) cText="❤️ 默契爆燈！一個眼神就知對方諗咩！";
+                else if(finalAvg >= 87) cText="❤️ 基因突變？定係相處得耐連樣都變埋？";
+                else if(finalAvg >= 86) cText="❤️ 好似樣，出街實俾人問係咪父子/母女！";
+                else if(finalAvg >= 85) cText="❤️ 氣場極度吻合！直頭係同一個模印出嚟！";
+                else if(finalAvg >= 84) cText="❤️ 似似哋，但你嘅貪食基因肯定強過主子！";
                 else cText="❤️ 最佳拍檔！沿途有愛";
                 
                 const dynamicComments = {
