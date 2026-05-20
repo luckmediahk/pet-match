@@ -13,23 +13,23 @@
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; color: #333; }
         .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        h1 { color: #54b97c; margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
+        h1 { color: #5ba36a; margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
         .export-btn { background: #e74c3c; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
         .export-btn:hover { background: #c0392b; }
         
         .filter-box { background: #fdfbf7; border: 1px solid #facc50; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center;}
-        .filter-box input { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;}
+        .filter-box input[type="date"] { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;}
         .filter-btn { background: #5ba36a; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;}
         .clear-btn { background: #95a5a6; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;}
 
         .stat-box { display: flex; gap: 20px; margin-bottom: 20px; }
-        .stat-card { background: #f0fdf4; border: 1px solid #54b97c; padding: 15px 20px; border-radius: 10px; flex: 1; text-align: center; }
-        .stat-card h3 { margin: 0 0 5px 0; font-size: 1rem; color: #3da065; }
+        .stat-card { background: #f0fdf4; border: 1px solid #5ba36a; padding: 15px 20px; border-radius: 10px; flex: 1; text-align: center; }
+        .stat-card h3 { margin: 0 0 5px 0; font-size: 1rem; color: #458251; }
         .stat-card span { font-size: 2rem; font-weight: 900; color: #2d3436; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #54b97c; color: white; position: sticky; top: 0; }
+        th { background: #5ba36a; color: white; position: sticky; top: 0; }
         tr:hover { background: #f9f9f9; }
         
         .badge { background: #FFD93D; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-left: 5px;}
@@ -39,14 +39,22 @@
 <body>
 
     <div class="admin-container">
-        <h1>🐾 遊戲後台管理系統 <button class="export-btn" onclick="exportToCSV()">📥 匯出 Excel (CSV)</button></h1>
+        <h1>
+            🐾 遊戲後台管理系統
+            <button class="export-btn" onclick="exportToCSV()">📥 匯出 Excel (CSV)</button>
+        </h1>
         
+        <!-- 🔥 全新 Filter Box 🔥 -->
         <div class="filter-box">
             <b>📅 篩選日期：</b>
             <label>由 <input type="date" id="filter-start"></label>
             <label>至 <input type="date" id="filter-end"></label>
             <button class="filter-btn" onclick="applyFilter()">篩選</button>
             <button class="clear-btn" onclick="clearFilter()">清除</button>
+            
+            <label style="margin-left: 15px; cursor: pointer; font-weight: bold; color: #e74c3c;">
+                <input type="checkbox" id="filter-registered" onchange="applyFilter()"> ☑️ 只顯示已登記抽獎
+            </label>
         </div>
 
         <div class="stat-box">
@@ -65,7 +73,7 @@
                         <th>登記姓名</th>
                         <th>聯絡電話</th>
                         <th>電郵地址</th>
-                        <th>IP 地址</th>
+                        <th>IP / 來源</th>
                         <th>遊玩時間</th>
                     </tr>
                 </thead>
@@ -86,16 +94,14 @@
 
         async function loadData() {
             try {
-                // 一次過攞晒，唔用 orderBy 防止 Index Error
                 const snapshot = await db.collection("certs").get();
                 allData = [];
                 snapshot.forEach(doc => {
                     let data = doc.data();
-                    if(!data.timestamp) data.timestamp = 0; // 防止無時間 crash
+                    if(!data.timestamp) data.timestamp = 0;
                     allData.push(data);
                 });
                 
-                // 自己排序
                 allData.sort((a,b) => b.score - a.score);
                 filteredData = [...allData];
                 
@@ -120,7 +126,6 @@
                 const timeStr = data.timestamp === 0 ? "未知" : dateObj.toLocaleString('zh-HK');
                 const regTag = data.regMobile ? `<span class="badge">已登記</span>` : '';
                 
-                // 防止相片炒車
                 const hImg = data.humanImg ? `<img src="${data.humanImg}" class="img-preview" onerror="this.style.display='none'">` : '';
                 const dImg = data.dogImg ? `<img src="${data.dogImg}" class="img-preview" onerror="this.style.display='none'">` : '';
 
@@ -133,7 +138,7 @@
                     <td>${data.regName || '-'} ${regTag}</td>
                     <td>${data.regMobile || '-'}</td>
                     <td>${data.regEmail || '-'}</td>
-                    <td style="font-size:0.8rem; color:#888;">${data.ip || '未知'}</td>
+                    <td style="font-size:0.8rem; color:#888;">${data.ip || '未知'} <br>(${data.refSource || 'organic'})</td>
                     <td style="font-size:0.8rem;">${timeStr}</td>
                 `;
                 tbody.appendChild(tr);
@@ -147,19 +152,23 @@
         function applyFilter() {
             const startStr = document.getElementById('filter-start').value;
             const endStr = document.getElementById('filter-end').value;
+            const onlyRegistered = document.getElementById('filter-registered').checked;
             
-            if(!startStr && !endStr) return renderTable();
-
             const startTime = startStr ? new Date(startStr + "T00:00:00").getTime() : 0;
             const endTime = endStr ? new Date(endStr + "T23:59:59").getTime() : Infinity;
 
-            filteredData = allData.filter(d => d.timestamp >= startTime && d.timestamp <= endTime);
+            filteredData = allData.filter(d => {
+                let passTime = d.timestamp >= startTime && d.timestamp <= endTime;
+                let passReg = onlyRegistered ? (d.regMobile && d.regMobile.trim() !== '') : true;
+                return passTime && passReg;
+            });
             renderTable();
         }
 
         function clearFilter() {
             document.getElementById('filter-start').value = "";
             document.getElementById('filter-end').value = "";
+            document.getElementById('filter-registered').checked = false;
             filteredData = [...allData];
             renderTable();
         }
@@ -167,7 +176,7 @@
         function exportToCSV() {
             if(filteredData.length === 0) return alert("無數據可匯出！");
             
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
             csvContent += "排名,分數,人類名稱,毛孩名稱,動物種類,是否公開,登記姓名,登記電話,登記Email,來源,IP,遊玩時間\n";
 
             filteredData.forEach((row, index) => {

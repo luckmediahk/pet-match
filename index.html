@@ -32,14 +32,29 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v58.0 -->
+    <!-- Version: v58.1 -->
     <style>
         :root { --brand: #5ba36a; --brand-dark: #458251; --accent: #facc50; --danger: #FF6B6B; --dark: #333; --bg-cream: #fffdf5; }
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf4eb; margin: 0; padding: 15px; min-height: 100vh; color: var(--dark); overflow-x: hidden; }
         .container { width: 100%; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 35px; padding: 25px 15px; box-sizing: border-box; box-shadow: 0 15px 40px rgba(0,0,0,0.08); position: relative; z-index: 1;}
         header { text-align: center; margin-bottom: 20px; }
         .header-logo { height: 75px; margin-bottom: 5px; object-fit: contain; }
-        h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 10px 0 5px; color: var(--brand); text-shadow: 1px 1px 0px #eee; font-weight: 900; letter-spacing: -1px;}
+        
+        /* 🔥 完美置中急救：使用 Flexbox 強制鎖死正中間 🔥 */
+        .framed-title { 
+            font-size: clamp(1.6rem, 5vw, 1.8rem); 
+            color: var(--brand); 
+            font-weight: 900; 
+            margin: 0 auto 20px auto; 
+            letter-spacing: -1px; 
+            text-shadow: 1px 1px 0px #fff;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px; 
+            width: 100%;
+        }
+        
         .subtitle { display: block; color: #555; font-size: 1.15rem; font-weight: 900; margin: 5px 0 20px 0; line-height: 1.4; text-align: center; }
 
         .view { display: none; animation: fadeIn 0.4s ease-out; }
@@ -169,9 +184,8 @@
         .rank-names h4 { margin: 0; font-size: 0.95rem; color: #4a3b20; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
         .rank-score { font-size: 1.1rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
         .rank-score::after { content: '⭐'; font-size: 1rem; }
-        .my-rank-tag { background: var(--brand); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.65rem; margin-top: 4px; display: inline-block; width: fit-content; }
+        .my-rank-tag { background: var(--brand); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.65rem; margin-top: 4px; display: inline-block; width: fit-content;}
 
-        /* T&C */
         .tnc-content { background: #fff; padding: 25px; border-radius: 20px; text-align: left; color: #444; font-size: 0.9rem; line-height: 1.6; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .tnc-content h3 { color: var(--brand); font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #e2e8e4; padding-bottom: 5px;}
         .tnc-link { display: block; text-align: center; margin-top: 25px; color: #aaa; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
@@ -205,47 +219,47 @@
                 
                 <div style="text-align: center;">
                     <div style="font-size: 46px; font-weight: 800; color: #6b4c3a;"><span id="canvas-human-name"></span> 同 <span id="canvas-pet-name" style="color: #5ba36a;"></span> 嘅相似度高達</div>
-                    <div id="canvas-score" style="font-size: 220px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
+                    <div id="canvas-score" style="font-size: 240px; line-height: 1; font-weight: 900; color: #5ba36a; font-family: 'Fredoka', sans-serif; margin-top: 10px; letter-spacing: -5px;">98.765%</div>
                     
-                    <div style="margin-top: 20px; position: relative; display: inline-block;">
-                        <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 46px; font-weight: 900; padding: 20px 60px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
-                        <div style="position: absolute; top: 20px; left: -30px; border: 35px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
-                        <div style="position: absolute; top: 20px; right: -30px; border: 35px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
+                    <div style="margin-top: 30px; position: relative; display: inline-block;">
+                        <div id="canvas-badge" style="background: #fff1b8; color: #4a3b20; font-size: 46px; font-weight: 900; padding: 25px 60px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">❤️ 超級心有靈犀！</div>
+                        <div style="position: absolute; top: 25px; left: -35px; border: 38px solid transparent; border-right-color: #dcb030; z-index: 1;"></div>
+                        <div style="position: absolute; top: 25px; right: -35px; border: 38px solid transparent; border-left-color: #dcb030; z-index: 1;"></div>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 40px; position: relative;">
-                    <div style="width: 320px; height: 320px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+                <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 50px; position: relative;">
+                    <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
                         <img id="canvas-human" style="width: 100%; height: 100%;">
                     </div>
-                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; border-radius: 50%; background: #fffcf5; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 5;">❤️</div>
-                    <div style="width: 320px; height: 320px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 110px; height: 110px; border-radius: 50%; background: #fffcf5; display: flex; align-items: center; justify-content: center; font-size: 55px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 5;">❤️</div>
+                    <div style="width: 360px; height: 360px; border-radius: 40px; overflow: hidden; background: #ddd; border: 8px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
                         <img id="canvas-pet" style="width: 100%; height: 100%;">
                     </div>
                 </div>
 
-                <div style="position: relative; margin: 30px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 25px 40px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03); box-sizing: border-box;">
-                    <div id="canvas-mini-title" style="font-size: 42px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
-                    <div id="canvas-mini-sub" style="margin-top: 10px; color: #444; font-size: 32px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
+                <div style="position: relative; margin: 40px auto 0; width: 880px; background: white; border: 4px solid #b9ddb8; border-radius: 30px; padding: 35px 45px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.03); box-sizing: border-box;">
+                    <div id="canvas-mini-title" style="font-size: 44px; font-weight: 900; color: #5ba36a;">👑 你哋最似：眼神交流 96%</div>
+                    <div id="canvas-mini-sub" style="margin-top: 15px; color: #444; font-size: 32px; font-weight: 700; line-height: 1.4;">一對眼已經出賣咗你哋。</div>
                 </div>
 
-                <div style="width: 880px; margin: 35px auto 0; background: #e8f4eb; border-radius: 35px; padding: 35px 45px 20px; box-sizing: border-box; position: relative;">
+                <div style="width: 880px; margin: 45px auto 0; background: #e8f4eb; border-radius: 35px; padding: 40px 45px 25px; box-sizing: border-box; position: relative;">
                     <div style="position: absolute; top: -30px; left: 40px; background: #5ba36a; color: #fff; font-size: 32px; font-weight: 900; padding: 15px 35px; border-radius: 99px;">相似度分析</div>
 
-                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>👀 眼神交流</span><span id="canvas-val-eye" style="color: #5ba36a;">96%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-eye" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🎨 毛色特徵</span><span id="canvas-val-color" style="color: #5ba36a;">95%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-color" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🏃 動作節奏</span><span id="canvas-val-action" style="color: #5ba36a;">93%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-action" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 20px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>✨ 氣質神態</span><span id="canvas-val-vibe" style="color: #5ba36a;">92%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 20px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-vibe" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                     
-                    <div style="margin-bottom: 20px; font-size: 32px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
-                    <div style="margin-top: -10px; margin-bottom: 0px; height: 18px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
+                    <div style="margin-bottom: 20px; font-size: 34px; font-weight: 800; color: #444; display: flex; justify-content: space-between;"><span>🧁 貪食基因</span><span id="canvas-val-funny" style="color: #5ba36a;">90%</span></div>
+                    <div style="margin-top: -12px; margin-bottom: 0px; height: 20px; background: #cce3d1; border-radius: 999px; overflow: hidden;"><div id="canvas-bar-funny" style="height: 100%; background: #5ba36a; border-radius: 999px;"></div></div>
                 </div>
             </div>
         </div>
@@ -258,16 +272,17 @@
     </div>
 
     <div class="container">
-        <!-- 🔥 確保 Default Header 有明確顯示字體 🔥 -->
+        <!-- 🔥 完美置中急救：使用 Flexbox 強制鎖死正中間 🔥 -->
         <div id="default-header">
             <header>
                 <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
+                <h1 class="framed-title"><span>🐾</span><span>AI 人寵相似度大測試</span></h1>
+                <p class="subtitle" id="home-subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
             </header>
         </div>
 
         <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
-            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
             <div class="home-btns">
                 <button class="main-btn btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
                 <button class="main-btn btn-secondary-home" onclick="renderLeaderboard()">🏆 睇全港排行榜</button>
@@ -278,7 +293,6 @@
 
         <!-- VIEW 2: UPLOAD -->
         <div id="view-upload" class="view">
-            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
                 <div class="names-col"><label>🐾 毛孩名字</label><input type="text" id="dog-name" class="form-input" placeholder="例: 旺財" oninput="checkAllReady()"></div>
@@ -307,7 +321,7 @@
         <!-- 🔥 VIEW 3: RESULTS 🔥 -->
         <div id="view-result" class="view">
             <div class="framed-container">
-                <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
+                <h1 class="framed-title"><span>🐾</span><span>AI 人寵相似度大測試</span></h1>
                 
                 <div class="top-area">
                     <div class="top-sub"><span id="web-human-name" style="color:#555;">人類</span> 同 <span id="web-pet-name" style="color:var(--brand);">主子</span> 嘅相似度高達</div>
@@ -338,8 +352,7 @@
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
                     <!-- 🔥 轉做分享按鈕 🔥 -->
-                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享</button>
-                    <!-- 🔥 略過登記，直接上榜 🔥 -->
+                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交平台</button>
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
                 </div>
@@ -349,11 +362,10 @@
         <!-- 🔥 VIEW 4: LEADERBOARD 🔥 -->
         <div id="view-leaderboard" class="view">
             <div class="framed-container">
-                <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
+                <h1 class="framed-title"><span>🐾</span><span>AI 人寵相似度大測試</span></h1>
                 
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <!-- 🔥 排行榜標題更新 🔥 -->
-                    <div style="font-size: 2rem; color: #5a4025; font-weight: 900; margin-bottom: 5px;">毛孩與家長似樣排行榜</div>
+                    <div style="font-size: 2rem; color: #5a4025; font-weight: 900; margin-bottom: 5px;">AI 人寵相似度排行榜</div>
                     <div style="font-size: 0.95rem; color: #666; font-weight: bold;">睇下邊對主人同主子最有家人樣！</div>
                 </div>
                 
@@ -370,7 +382,7 @@
         <!-- VIEW 5: T&C -->
         <div id="view-tnc" class="view">
             <div class="framed-container">
-                <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
+                <h1 class="framed-title"><span>🐾</span><span>AI 人寵相似度大測試</span></h1>
                 <h2 style="text-align:center; color:var(--brand); margin-bottom:15px; font-size:1.6rem;">📜 條款及細則與免責聲明</h2>
                 <div class="tnc-content">
                     <p>歡迎參與由 Animals Sum Love & Hope（動物希望之心）（下稱「本公司」）舉辦的網上遊戲。參加者一經進行遊戲（或上載相片及生成報告），即代表已閱讀、明白並完全同意遵守以下條款及細則與免責聲明：</p>
@@ -411,7 +423,6 @@
         <div class="modal-content">
             <h2 style="margin-bottom:10px;">🔒 報告已生成！</h2>
             <p>有時你以為係你揀咗佢，其實可能係佢揀咗你。 <br><b>Follow 動物之心</b>，睇更多毛孩故事，支持我哋解鎖結果。</p>
-            <!-- 🔥 手機版不卡死：改為超連結 🔥 -->
             <a href="https://www.instagram.com/animalssum/" target="_blank" onclick="unlockResult(event)" style="text-decoration:none; display:block;">
                 <div class="main-btn action-btn" style="padding:15px; font-size:1.1rem; box-sizing:border-box;" id="btn-ig-unlock">👉 去 Follow IG 解鎖</div>
             </a>
@@ -420,25 +431,22 @@
 
     <div id="consent-modal" class="modal-overlay">
         <div class="modal-content" style="max-height: 90vh; overflow-y: auto; padding: 25px 20px;">
-            <h2 style="color:var(--brand); margin-bottom: 5px; font-size:1.6rem;">🚀 參與排行榜</h2>
-            <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">填寫聯絡資料即可參與 <b>頭 20 名豐富獎品</b> 抽獎！你亦可以選擇直接上榜。</p>
+            <h2 style="color:var(--brand); margin-bottom: 5px; font-size:1.6rem;">🚀 登記上榜</h2>
+            <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">輸入名字上榜，睇下你同毛孩排第幾！</p>
             
-            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 聯絡人姓名 (不會公開)"></div>
+            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 聯絡人姓名 (不會公開、用於領獎核對身份)"></div>
             <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話 (不會公開)"></div>
             <div class="input-group"><input type="email" id="reg-email" class="form-input" placeholder="📧 電郵地址 (不會公開)"></div>
             
-            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜（顯示你最初填寫的稱呼）。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
+            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜（只會顯示你最初填寫的稱呼），不可撤回。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
             
-            <!-- 🔥 兩個上榜選擇 🔥 -->
-            <button class="main-btn action-btn" style="margin-bottom:10px; padding:15px; font-size:1.1rem;" onclick="publishToLeaderboard(true)">🎁 登記抽獎並上榜！</button>
-            <button class="main-btn sec-btn" style="margin-bottom:10px; padding:15px; font-size:1.1rem; border: 2px solid var(--brand); color: var(--brand);" onclick="publishToLeaderboard(false)">🚀 略過登記，直接上榜</button>
-            <button class="main-btn sec-btn" style="padding:10px; font-size:1rem; border:none; box-shadow:none; background: transparent; color:#999;" onclick="document.getElementById('consent-modal').style.display='none'">❌ 唔啦，自己收藏</button>
+            <button class="main-btn action-btn" style="margin-bottom:10px; padding:15px; font-size:1.2rem;" onclick="publishToLeaderboard()">✅ 同意發佈並上榜！</button>
+            <button class="main-btn sec-btn" style="padding:10px; font-size:1rem;" onclick="document.getElementById('consent-modal').style.display='none'">❌ 唔啦，自己收藏</button>
         </div>
     </div>
 
     <!-- 🔥 JAVASCRIPT LOGIC 🔥 -->
     <script>
-        // 1. Firebase 初始化
         const firebaseConfig = { apiKey: "AIzaSyAZNLy_ujHrFQQPmv5C_r2wlvptgXb2Enw", authDomain: "pet-human-alike.firebaseapp.com", projectId: "pet-human-alike", storageBucket: "pet-human-alike.firebasestorage.app", messagingSenderId: "285758735120", appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95" };
         let db = null; 
         try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); } catch(e) {}
@@ -643,11 +651,11 @@
                     }).then(canvas => {
                         canvas.toBlob((b) => { 
                             state.shareImgBlob = b; 
-                            document.getElementById('btn-share-trigger').innerText = "📤 分享"; 
+                            document.getElementById('btn-share-trigger').innerText = "📤 分享至社交媒體"; 
                             
                             state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                             
-                            // 儲存至 Firebase (用返之前縮細嘅正方形圖)
+                            // 儲存至 Firebase
                             if(db) {
                                 db.collection("certs").doc(state.docId).get().then(snap => {
                                     if(!snap.exists || finalAvg > (snap.data().score || 0)) {
@@ -709,34 +717,30 @@
             renderLeaderboard();
         }
 
-        // 🔥 發佈及登記抽獎 (支援雙軌制) 🔥
-        window.publishToLeaderboard = async function(withReg) {
-            let updateData = { public: true };
-            
-            if (withReg) {
-                const rEmail = document.getElementById('reg-email').value.trim();
-                const rName = document.getElementById('reg-name').value.trim();
-                const rMobile = document.getElementById('reg-mobile').value.trim();
+        window.publishToLeaderboard = async function() {
+            const rEmail = document.getElementById('reg-email').value.trim();
+            const rName = document.getElementById('reg-name').value.trim();
+            const rMobile = document.getElementById('reg-mobile').value.trim();
 
-                if(!rName || !rMobile || !rEmail) return alert("❌ 請填寫聯絡資料參與抽獎！");
-                
-                updateData.regName = rName;
-                updateData.regMobile = rMobile;
-                updateData.regEmail = rEmail;
-            }
+            if(!rName || !rMobile || !rEmail) return alert("❌ 請填寫聯絡資料！");
             
             document.getElementById('consent-modal').style.display = 'none'; 
             document.getElementById('loader').style.display = 'flex';
             
             if(db && state.docId) {
-                await db.collection("certs").doc(state.docId).update(updateData); 
+                await db.collection("certs").doc(state.docId).update({ 
+                    public: true, 
+                    regName: rName, 
+                    regMobile: rMobile, 
+                    regEmail: rEmail 
+                }); 
             }
-            alert(withReg ? "✅ 登記並發佈成功！" : "✅ 發佈成功！"); 
+            alert("✅ 發佈成功！"); 
             document.getElementById('loader').style.display = 'none'; 
             renderLeaderboard();
         }
 
-        // 🔥 排行榜渲染：過濾假人 🔥
+        // 排行榜渲染
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -772,8 +776,7 @@
             order.forEach(item => {
                 if(!item.data) return;
                 let isMe = (state.hName && state.dName && item.data.humanName === state.hName && item.data.dogName === state.dName);
-                let myRankTag = isMe ? '<span class="my-rank-tag">✨ 我的排名</span>' : '';
-
+                
                 podiumArea.innerHTML += `
                     <div class="podium ${item.class} ${isMe ? 'highlight' : ''}">
                         ${item.rank === 1 ? '<div class="podium-crown">👑</div>' : ''}
@@ -784,12 +787,13 @@
                         </div>
                         <div class="podium-score-ribbon">${item.data.score}%</div>
                         <h4>${item.data.humanName}<br>& ${item.data.dogName || ''}</h4>
-                        ${myRankTag}
+                        ${isMe ? '<div class="podium-my-rank">✨ 我的排名</div>' : ''}
                     </div>
                 `;
             });
 
             let listHTML = '';
+            // 只列出 4-50名
             combinedData.slice(3, 50).forEach((item, idx) => {
                 let actualRank = idx + 4;
                 let isMe = (state.hName && state.dName && item.humanName === state.hName && item.dogName === state.dName);
