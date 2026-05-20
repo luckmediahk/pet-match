@@ -8,20 +8,22 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>🐾 AnimalsSum | AI 人寵相似度大測試</title>
     
+    <!-- 🔥 進階 SEO 及 Google Search Console 驗證標籤 🔥 -->
     <meta name="description" content="AI 人寵相似度大測試！立即測試你同毛孩有幾似樣！">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://game.animalssum.com/">
+    <meta name="keywords" content="人寵相似度, 動物之心, AnimalsSum, 寵物測試, 似樣測試, 毛孩, 貓狗相, AI測試">
+    <meta name="google-site-verification" content="rBLSojuaCK2DkRWCo1gsPGfxl0CWDczG4VMLCW1ZSz4" />
+    
     <meta property="og:title" content="🐾 AnimalsSum | AI 人寵相似度大測試">
     <meta property="og:description" content="我同主子似唔似樣？立即參加 AI 人寵相似度大測試，睇下你哋有幾似家人！">
     <meta property="og:image" content="https://luckmediahk.github.io/pet-match/og-image.jpg">
     <meta property="og:url" content="https://game.animalssum.com">
     <meta property="og:type" content="website">
-    <!-- 🔥 進階 SEO 設定 🔥 -->
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://game.animalssum.com/">
-    <meta name="keywords" content="人寵相似度, 動物之心, AnimalsSum, 寵物測試, 似樣測試, 毛孩, 貓狗相, AI測試">
 
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Firebase, AI & HTML2Canvas Libraries -->
+    <!-- Firebase, AI & HTML2Canvas -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
@@ -30,43 +32,14 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v57.1 -->
+    <!-- Version: v58.0 -->
     <style>
-        :root { 
-            --brand: #5ba36a; 
-            --brand-dark: #458251; 
-            --accent: #facc50; 
-            --danger: #FF6B6B; 
-            --dark: #333; 
-            --bg-cream: #fffdf5; 
-        }
-        
-        body { 
-            font-family: 'Noto Sans TC', 'Fredoka', sans-serif; 
-            background: #eaf4eb; 
-            margin: 0; 
-            padding: 15px; 
-            min-height: 100vh; 
-            color: var(--dark); 
-            overflow-x: hidden; 
-        }
-        
-        .container { 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            background: #ffffff; 
-            border-radius: 35px; 
-            padding: 25px 15px; 
-            box-sizing: border-box; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.08); 
-            position: relative; 
-            z-index: 1;
-        }
-        
+        :root { --brand: #5ba36a; --brand-dark: #458251; --accent: #facc50; --danger: #FF6B6B; --dark: #333; --bg-cream: #fffdf5; }
+        body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf4eb; margin: 0; padding: 15px; min-height: 100vh; color: var(--dark); overflow-x: hidden; }
+        .container { width: 100%; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 35px; padding: 25px 15px; box-sizing: border-box; box-shadow: 0 15px 40px rgba(0,0,0,0.08); position: relative; z-index: 1;}
         header { text-align: center; margin-bottom: 20px; }
         .header-logo { height: 75px; margin-bottom: 5px; object-fit: contain; }
-        .framed-title { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 10px 0 5px 0; color: var(--brand); font-weight: 900; letter-spacing: -1px; text-align: center; text-shadow: 1px 1px 0px #fff;}
+        h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 10px 0 5px; color: var(--brand); text-shadow: 1px 1px 0px #eee; font-weight: 900; letter-spacing: -1px;}
         .subtitle { display: block; color: #555; font-size: 1.15rem; font-weight: 900; margin: 5px 0 20px 0; line-height: 1.4; text-align: center; }
 
         .view { display: none; animation: fadeIn 0.4s ease-out; }
@@ -167,8 +140,8 @@
         .rank-1 img { width: 70px; height: 70px; border: 4px solid #fff;}
         .rank-1 .avatar-right { margin-left: -25px; }
 
-        .podium-rank-badge { position: absolute; left: 50%; top: -15px; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: #ccc; color: white; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 6; font-size: 0.95rem; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
-        .rank-1 .podium-rank-badge { background: #facc50; width: 36px; height: 36px; font-size: 1.3rem; top: -20px; border: 3px solid #fff;}
+        .podium-rank-badge { position: absolute; left: -10px; top: -15px; width: 30px; height: 30px; border-radius: 50%; background: #ccc; color: white; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 6; font-size: 1rem; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        .rank-1 .podium-rank-badge { background: #facc50; width: 38px; height: 38px; font-size: 1.4rem; left: -15px; top: -20px; border: 3px solid #fff;}
         .rank-2 .podium-rank-badge { background: #95a5a6; }
         .rank-3 .podium-rank-badge { background: #d35400; }
 
@@ -184,7 +157,6 @@
         .podium.highlight h4 { color: var(--brand); font-weight: 900; }
         .podium.highlight::after { content: '✨ 我的排名'; position: absolute; bottom: -25px; left: 0; right: 0; font-size: 0.8rem; color: var(--brand); font-weight: 900; text-align: center; white-space: nowrap; }
 
-        /* 🔥 排行榜名單：修復打直字問題 🔥 */
         .rank-list { display: flex; flex-direction: column; gap: 12px; }
         .rank-row { display: flex; align-items: center; background: #fffdf5; padding: 12px 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); gap: 10px; border: 2px solid #f2ead3; position: relative; overflow: hidden;}
         .rank-row.highlight { border: 3px solid var(--brand) !important; background: #f0fdf4 !important; } 
@@ -193,16 +165,11 @@
         .rank-row .rank-avatars { display: flex; width: 75px; justify-content: center; flex-shrink: 0; }
         .rank-row img { width: 45px; height: 45px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); object-fit: cover; }
         .rank-row img:nth-child(2) { margin-left: -20px; }
-        
-        /* 🔥 限制名稱區域寬度，文字過長會變成 ... 🔥 */
         .rank-names { flex: 1; display: flex; flex-direction: column; padding-left: 8px; justify-content: center; min-width: 0; }
         .rank-names h4 { margin: 0; font-size: 0.95rem; color: #4a3b20; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
-        
         .rank-score { font-size: 1.1rem; font-weight: 900; color: var(--brand); font-family: 'Fredoka', sans-serif; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
         .rank-score::after { content: '⭐'; font-size: 1rem; }
-
-        /* 🔥 我的排名 Tag 放喺名稱下方 🔥 */
-        .my-rank-tag { background: var(--brand); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.65rem; margin-top: 4px; display: inline-block; width: fit-content;}
+        .my-rank-tag { background: var(--brand); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.65rem; margin-top: 4px; display: inline-block; width: fit-content; }
 
         /* T&C */
         .tnc-content { background: #fff; padding: 25px; border-radius: 20px; text-align: left; color: #444; font-size: 0.9rem; line-height: 1.6; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -228,10 +195,10 @@
 </head>
 <body>
 
-    <!-- 🔥 IG Share Card (V53.1 完美排版 + JS 正方形防變形) 🔥 -->
     <div id="share-card-container">
         <div id="share-card" style="width: 1080px; height: 1920px; position: relative; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background-color: #fffdf5;">
             
+            <!-- 強制 object-fit: fill 防止切走底部 -->
             <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: fill;" onerror="this.style.display='none'">
             
             <div style="position: relative; z-index: 1; height: 1920px; display: flex; flex-direction: column; align-items: center; padding-top: 250px; box-sizing: border-box;">
@@ -284,23 +251,23 @@
         </div>
     </div>
 
+
     <div id="loader">
         <div class="spinner">⚙️</div>
         <h2 id="loader-text" style="color:#555; margin-top:20px;">AI 正幫你哋搵出命中注定嘅相似度...</h2>
     </div>
 
     <div class="container">
-        <!-- 首頁及上傳頁先有呢個 Default Header -->
+        <!-- 🔥 確保 Default Header 有明確顯示字體 🔥 -->
         <div id="default-header">
             <header>
                 <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
-                <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
-                <p class="subtitle" id="home-subtitle">30秒測出你同毛孩有幾似？似喺邊個位？</p>
             </header>
         </div>
 
         <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
+            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
             <div class="home-btns">
                 <button class="main-btn btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
                 <button class="main-btn btn-secondary-home" onclick="renderLeaderboard()">🏆 睇全港排行榜</button>
@@ -311,6 +278,7 @@
 
         <!-- VIEW 2: UPLOAD -->
         <div id="view-upload" class="view">
+            <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
             <div class="names-row">
                 <div class="names-col"><label>👤 人類名字</label><input type="text" id="human-name" class="form-input" placeholder="例: 陳大文" oninput="checkAllReady()"></div>
                 <div class="names-col"><label>🐾 毛孩名字</label><input type="text" id="dog-name" class="form-input" placeholder="例: 旺財" oninput="checkAllReady()"></div>
@@ -370,7 +338,8 @@
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
                     <!-- 🔥 轉做分享按鈕 🔥 -->
-                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交平台</button>
+                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享</button>
+                    <!-- 🔥 略過登記，直接上榜 🔥 -->
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
                 </div>
@@ -383,7 +352,8 @@
                 <h1 class="framed-title">🐾 AI 人寵相似度大測試</h1>
                 
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 2rem; color: #5a4025; font-weight: 900; margin-bottom: 5px;">AI 人寵相似度排行榜</div>
+                    <!-- 🔥 排行榜標題更新 🔥 -->
+                    <div style="font-size: 2rem; color: #5a4025; font-weight: 900; margin-bottom: 5px;">毛孩與家長似樣排行榜</div>
                     <div style="font-size: 0.95rem; color: #666; font-weight: bold;">睇下邊對主人同主子最有家人樣！</div>
                 </div>
                 
@@ -421,7 +391,7 @@
                     <b>免責聲明：</b> 互聯網數據傳輸無法保證百分百絕對安全。如因系統故障、黑客攻擊、不可抗力等任何非本公司能完全控制之因素，導致資料遺失或外洩，本公司概不作任何擔保，亦不承擔任何法律責任。</p>
 
                     <h3>4. 放棄追究權利及全面免責</h3>
-                    <p>參加者明白並同意，參與本活動屬自願性質並須自行承擔所有相關風險。無論在任何情況下（包括但不限於系統錯誤、資料外洩、相片被盜用等），參加者均不得向 Animals Sum love & Hope（動物希望之心）或其關聯方提出任何形式的法律訴訟、追討或索償。本公司不承擔任何直接、間接、附帶或衍生的損失責任。</p>
+                    <p>參加者明白並同意，參與本活動屬自願性質並須自行承擔所有相關風險。無論在任何情況下（包括但不限於系統錯誤、資料外洩、相片被盜用等），參加者均不得向 Animals Sum Love & Hope（動物希望之心）或其關聯方提出任何形式的法律訴訟、追討或索償。本公司不承擔任何直接、間接、附帶或衍生的損失責任。</p>
 
                     <h3>5. 活動及領獎時間表</h3>
                     <p>活動將於 <b>2026 年 5 月 31 日 23:59 截止</b>。6 月 1 日至 7 日為計算及核實階段。最終得獎名單將於 <b>6 月 8 日</b>在官方 Instagram (@animalssum) 公佈。<br>
@@ -450,22 +420,25 @@
 
     <div id="consent-modal" class="modal-overlay">
         <div class="modal-content" style="max-height: 90vh; overflow-y: auto; padding: 25px 20px;">
-            <h2 style="color:var(--brand); margin-bottom: 5px; font-size:1.6rem;">🚀 登記上榜</h2>
-            <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">輸入名字上榜，睇下你同毛孩排第幾！</p>
+            <h2 style="color:var(--brand); margin-bottom: 5px; font-size:1.6rem;">🚀 參與排行榜</h2>
+            <p style="font-size:0.95rem; margin-bottom:15px; color:#444;">填寫聯絡資料即可參與 <b>頭 20 名豐富獎品</b> 抽獎！你亦可以選擇直接上榜。</p>
             
-            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 聯絡人姓名 (不會公開、用於領獎核對身份)"></div>
+            <div class="input-group"><input type="text" id="reg-name" class="form-input" placeholder="👤 聯絡人姓名 (不會公開)"></div>
             <div class="input-group"><input type="tel" id="reg-mobile" class="form-input" placeholder="📱 聯絡電話 (不會公開)"></div>
             <div class="input-group"><input type="email" id="reg-email" class="form-input" placeholder="📧 電郵地址 (不會公開)"></div>
             
-            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜（只會顯示你最初填寫的稱呼），不可撤回。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
+            <p style="font-size:0.8rem; color:#888; margin-top:5px; margin-bottom:15px;">⚠️ 提交後成績將公開顯示於排行榜（顯示你最初填寫的稱呼）。<br><span style="text-decoration:underline; cursor:pointer;" onclick="switchView('view-tnc'); document.getElementById('consent-modal').style.display='none';">閱讀條款及細則</span></p>
             
-            <button class="main-btn action-btn" style="margin-bottom:10px; padding:15px; font-size:1.2rem;" onclick="publishToLeaderboard()">✅ 同意發佈並上榜！</button>
-            <button class="main-btn sec-btn" style="padding:10px; font-size:1rem;" onclick="document.getElementById('consent-modal').style.display='none'">❌ 唔啦，自己收藏</button>
+            <!-- 🔥 兩個上榜選擇 🔥 -->
+            <button class="main-btn action-btn" style="margin-bottom:10px; padding:15px; font-size:1.1rem;" onclick="publishToLeaderboard(true)">🎁 登記抽獎並上榜！</button>
+            <button class="main-btn sec-btn" style="margin-bottom:10px; padding:15px; font-size:1.1rem; border: 2px solid var(--brand); color: var(--brand);" onclick="publishToLeaderboard(false)">🚀 略過登記，直接上榜</button>
+            <button class="main-btn sec-btn" style="padding:10px; font-size:1rem; border:none; box-shadow:none; background: transparent; color:#999;" onclick="document.getElementById('consent-modal').style.display='none'">❌ 唔啦，自己收藏</button>
         </div>
     </div>
 
     <!-- 🔥 JAVASCRIPT LOGIC 🔥 -->
     <script>
+        // 1. Firebase 初始化
         const firebaseConfig = { apiKey: "AIzaSyAZNLy_ujHrFQQPmv5C_r2wlvptgXb2Enw", authDomain: "pet-human-alike.firebaseapp.com", projectId: "pet-human-alike", storageBucket: "pet-human-alike.firebasestorage.app", messagingSenderId: "285758735120", appId: "1:285758735120:web:27d2e9ac06d43cf66ddb95" };
         let db = null; 
         try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); } catch(e) {}
@@ -547,7 +520,6 @@
             setTimeout(() => { document.getElementById('loader').style.display = 'none'; document.getElementById('ig-gate-modal').style.display = 'flex'; }, 2000); 
         }
         
-        // 🔥 防止 Mobile In-App Browser 雙擊問題 🔥
         window.unlockResult = function(e) { 
             const btn = document.getElementById('btn-ig-unlock');
             if(btn.innerText.includes('驗證中')) { if(e) e.preventDefault(); return; }
@@ -569,7 +541,6 @@
         window.generateResults = async function() {
             document.getElementById('loader').style.display = 'flex';
             
-            // 🔥 將 IP Fetch 轉為背景執行，絕不阻塞 UI 🔥
             let userIP = "Unknown"; 
             fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>userIP=d.ip).catch(e=>{});
 
@@ -582,8 +553,8 @@
                 state.scores = { final: finalAvg, c: colorS, e: eyeS, a: actionS, v: vibeS, f: funnyS };
 
                 let cText = "";
-                if(finalAvg >= 99) cText="❤️ 絕頂似樣＋心有靈犀＋親子認證！";
-                else if(finalAvg >= 98) cText="❤️ 分唔到佢學你定你學佢，你哋天生一家！";
+                if(finalAvg >= 99) cText="❤️ 超級心有靈犀！";
+                else if(finalAvg >= 98) cText="❤️ 分唔到佢學你定你學佢，你哋天生一對！";
                 else if(finalAvg >= 97) cText="❤️ 前世肯定係親生兄弟姊妹";
                 else if(finalAvg >= 96) cText="❤️ 失散多年嘅親生骨肉！";
                 else if(finalAvg >= 95) cText="❤️ 你哋呢兩個餅印，唔係日日都遇到！";
@@ -595,9 +566,9 @@
                 else if(finalAvg >= 89) cText="❤️ 神態完全一致！連發呆個樣都似！";
                 else if(finalAvg >= 88) cText="❤️ 默契爆燈！一個眼神就知對方諗咩！";
                 else if(finalAvg >= 87) cText="❤️ 基因突變？定係相處得耐連樣都變埋？";
-                else if(finalAvg >= 86) cText="❤️ 好似樣，出街實俾人問係咪父子/母女！";
+                else if(finalAvg >= 86) cText="❤️ 似似哋，出街實俾人問係咪父子/母女！";
                 else if(finalAvg >= 85) cText="❤️ 氣場極度吻合！直頭係同一個模印出嚟！";
-                else if(finalAvg >= 84) cText="❤️ 似似哋，但你嘅貪食基因肯定強過主子！";
+                else if(finalAvg >= 84) cText="❤️ 似似哋，但貪食基因肯定強過主子！";
                 else cText="❤️ 最佳拍檔！沿途有愛";
                 
                 const dynamicComments = {
@@ -672,11 +643,11 @@
                     }).then(canvas => {
                         canvas.toBlob((b) => { 
                             state.shareImgBlob = b; 
-                            document.getElementById('btn-share-trigger').innerText = "📤 分享至社交媒體"; 
+                            document.getElementById('btn-share-trigger').innerText = "📤 分享"; 
                             
                             state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                             
-                            // 儲存至 Firebase
+                            // 儲存至 Firebase (用返之前縮細嘅正方形圖)
                             if(db) {
                                 db.collection("certs").doc(state.docId).get().then(snap => {
                                     if(!snap.exists || finalAvg > (snap.data().score || 0)) {
@@ -684,7 +655,7 @@
                                             ...snap.data(),
                                             dogName: state.dName, humanName: state.hName, score: finalAvg,
                                             humanImg: hSquareImg, dogImg: dSquareImg,
-                                            public: false, timestamp: new Date().getTime(), ip: userIP
+                                            public: false, timestamp: new Date().getTime()
                                         });
                                     }
                                 });
@@ -738,30 +709,34 @@
             renderLeaderboard();
         }
 
-        window.publishToLeaderboard = async function() {
-            const rEmail = document.getElementById('reg-email').value.trim();
-            const rName = document.getElementById('reg-name').value.trim();
-            const rMobile = document.getElementById('reg-mobile').value.trim();
+        // 🔥 發佈及登記抽獎 (支援雙軌制) 🔥
+        window.publishToLeaderboard = async function(withReg) {
+            let updateData = { public: true };
+            
+            if (withReg) {
+                const rEmail = document.getElementById('reg-email').value.trim();
+                const rName = document.getElementById('reg-name').value.trim();
+                const rMobile = document.getElementById('reg-mobile').value.trim();
 
-            if(!rName || !rMobile || !rEmail) return alert("❌ 請填寫聯絡資料！");
+                if(!rName || !rMobile || !rEmail) return alert("❌ 請填寫聯絡資料參與抽獎！");
+                
+                updateData.regName = rName;
+                updateData.regMobile = rMobile;
+                updateData.regEmail = rEmail;
+            }
             
             document.getElementById('consent-modal').style.display = 'none'; 
             document.getElementById('loader').style.display = 'flex';
             
             if(db && state.docId) {
-                await db.collection("certs").doc(state.docId).update({ 
-                    public: true, 
-                    regName: rName, 
-                    regMobile: rMobile, 
-                    regEmail: rEmail 
-                }); 
+                await db.collection("certs").doc(state.docId).update(updateData); 
             }
-            alert("✅ 發佈成功！"); 
+            alert(withReg ? "✅ 登記並發佈成功！" : "✅ 發佈成功！"); 
             document.getElementById('loader').style.display = 'none'; 
             renderLeaderboard();
         }
 
-        // 🔥 排行榜渲染：過濾假人及修正排版 🔥
+        // 🔥 排行榜渲染：過濾假人 🔥
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -797,7 +772,8 @@
             order.forEach(item => {
                 if(!item.data) return;
                 let isMe = (state.hName && state.dName && item.data.humanName === state.hName && item.data.dogName === state.dName);
-                
+                let myRankTag = isMe ? '<span class="my-rank-tag">✨ 我的排名</span>' : '';
+
                 podiumArea.innerHTML += `
                     <div class="podium ${item.class} ${isMe ? 'highlight' : ''}">
                         ${item.rank === 1 ? '<div class="podium-crown">👑</div>' : ''}
@@ -808,7 +784,7 @@
                         </div>
                         <div class="podium-score-ribbon">${item.data.score}%</div>
                         <h4>${item.data.humanName}<br>& ${item.data.dogName || ''}</h4>
-                        ${isMe ? '<div class="podium-my-rank">✨ 我的排名</div>' : ''}
+                        ${myRankTag}
                     </div>
                 `;
             });
@@ -827,8 +803,7 @@
                             <img src="${item.dogImg}">
                         </div>
                         <div class="rank-names">
-                            <h4>${item.humanName} & ${item.dogName || ''}</h4>
-                            ${myRankTag}
+                            <h4>${item.humanName} & ${item.dogName || ''}</h4>${myRankTag}
                         </div>
                         <div class="rank-score">${item.score}%</div>
                     </div>
@@ -847,8 +822,7 @@
                             <img src="${myData.dogImg}">
                         </div>
                         <div class="rank-names">
-                            <h4>${myData.humanName} & ${myData.dogName || ''}</h4>
-                            <span class="my-rank-tag">✨ 我的排名</span>
+                            <h4>${myData.humanName} & ${myData.dogName || ''}</h4><span class="my-rank-tag">✨ 我的排名</span>
                         </div>
                         <div class="rank-score">${myData.score}%</div>
                     </div>
