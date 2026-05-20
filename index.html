@@ -32,7 +32,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v60.0 -->
+    <!-- Version: v59.2 -->
     <style>
         :root { --brand: #5ba36a; --brand-dark: #458251; --accent: #facc50; --danger: #FF6B6B; --dark: #333; --bg-cream: #fffdf5; }
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf4eb; margin: 0; padding: 15px; min-height: 100vh; color: var(--dark); overflow-x: hidden; }
@@ -74,7 +74,7 @@
         .bubble { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 6px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; display: none; z-index: 10; width: 95%; white-space: normal; line-height: 1.2; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
         .bubble.err { background: var(--danger); } .bubble.ok { background: var(--brand); } .bubble.warn { background: var(--accent); color: #333; }
 
-        /* WEB 前台分離式框框 */
+        /* 🔥 WEB 前台分離式框框 🔥 */
         .framed-container { 
             background-color: var(--bg-cream); 
             background-image: url('./bg-top.png'), url('./bg-bottom.png');
@@ -129,7 +129,7 @@
         .podium { flex: 1; max-width: 110px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;}
         
         .podium-crown { font-size: 2.2rem; position: absolute; top: -85px; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popUp 0.5s ease;}
-        .rank-1 .podium-crown { font-size: 3.5rem; top: -130px; }
+        .rank-1 .podium-crown { font-size: 3.5rem; top: -115px; }
         
         .podium .avatars { position: absolute; top: -50px; display: flex; justify-content: center; width: 100%; z-index: 5;}
         .rank-1 .avatars { top: -65px; }
@@ -156,7 +156,6 @@
         .podium.highlight .avatars img { border-color: var(--brand); border-width: 4px; box-shadow: 0 0 15px rgba(91,163,106,0.5); }
         .podium.highlight .podium-rank-badge { background: var(--brand); color: white; border-color: white; }
         .podium.highlight h4 { color: var(--brand); font-weight: 900; }
-        .podium.highlight::after { content: '✨ 我的排名'; position: absolute; bottom: -25px; left: 0; right: 0; font-size: 0.8rem; color: var(--brand); font-weight: 900; text-align: center; white-space: nowrap; }
 
         .rank-list { display: flex; flex-direction: column; gap: 12px; }
         .rank-row { display: flex; align-items: center; background: #fffdf5; padding: 12px 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); gap: 10px; border: 2px solid #f2ead3; position: relative; overflow: hidden;}
@@ -190,7 +189,7 @@
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* IG Share Card */
+        /* 🔥 IG Share Card (Hidden for HTML2Canvas) 強制鎖死防 Cut-off 🔥 */
         #share-card-container { position: fixed; top: 0; left: 0; z-index: -9999; opacity: 0; pointer-events: none; width: 1080px; height: 1920px; }
     </style>
 </head>
@@ -199,6 +198,7 @@
     <div id="share-card-container">
         <div id="share-card" style="width: 1080px; height: 1920px; position: relative; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background-color: #fffdf5;">
             
+            <!-- 強制 object-fit: fill 防止切走底部 -->
             <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: fill;" onerror="this.style.display='none'">
             
             <div style="position: relative; z-index: 1; height: 1920px; display: flex; flex-direction: column; align-items: center; padding-top: 250px; box-sizing: border-box;">
@@ -251,13 +251,14 @@
         </div>
     </div>
 
+
     <div id="loader">
         <div class="spinner">⚙️</div>
         <h2 id="loader-text" style="color:#555; margin-top:20px;">AI 正幫你哋搵出命中注定嘅相似度...</h2>
     </div>
 
     <div class="container">
-        <!-- 🔥 首頁 Default Header 🔥 -->
+        <!-- 🔥 確保 Default Header 有明確顯示字體 🔥 -->
         <div id="default-header">
             <header>
                 <img src="./logo.png" alt="Animals Sum" class="header-logo" crossorigin="anonymous" onerror="this.style.display='none'">
@@ -306,6 +307,8 @@
         <!-- 🔥 VIEW 3: RESULTS 🔥 -->
         <div id="view-result" class="view">
             <div class="framed-container">
+                <h1 class="framed-title"><span>🐾</span><span>AI 人寵相似度大測試</span></h1>
+                
                 <div class="top-area">
                     <div class="top-sub"><span id="web-human-name" style="color:#555;">人類</span> 同 <span id="web-pet-name" style="color:var(--brand);">主子</span> 嘅相似度高達</div>
                     <div class="big-score" id="web-score">98.765%</div>
@@ -334,7 +337,8 @@
 
                 <div class="action-btns-grid">
                     <button class="main-btn btn-copy" onclick="copyCaption()">🔗 分享鏈結</button>
-                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交平台</button>
+                    <!-- 🔥 轉做分享按鈕 🔥 -->
+                    <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享</button>
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="showConsentModal()">🎁 信心之獎 (登記領獎)</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border: 2px solid var(--brand); color: var(--brand); box-shadow: 0 4px 0 var(--brand);" onclick="renderLeaderboard()">🏆 睇全港排行榜</button>
                     <button class="main-btn sec-btn" style="grid-column: 1 / -1; border:none; box-shadow:none; background: transparent; color:#888;" onclick="location.reload()">🏠 返回主頁</button>
@@ -345,6 +349,8 @@
         <!-- 🔥 VIEW 4: LEADERBOARD 🔥 -->
         <div id="view-leaderboard" class="view">
             <div class="framed-container">
+                <h1 class="framed-title"><span>🐾</span><span>AI 人寵相似度大測試</span></h1>
+                
                 <div style="text-align: center; margin-bottom: 20px;">
                     <div style="font-size: 2rem; color: #5a4025; font-weight: 900; margin-bottom: 5px;">毛孩與家長似樣排行榜</div>
                     <div style="font-size: 0.95rem; color: #666; font-weight: bold;">睇下邊對主人同主子最有家人樣！</div>
@@ -363,6 +369,7 @@
         <!-- VIEW 5: T&C -->
         <div id="view-tnc" class="view">
             <div class="framed-container">
+                <h1 class="framed-title"><span>🐾</span><span>AI 人寵相似度大測試</span></h1>
                 <h2 style="text-align:center; color:var(--brand); margin-bottom:15px; font-size:1.6rem;">📜 條款及細則與免責聲明</h2>
                 <div class="tnc-content">
                     <p>歡迎參與由 Animals Sum Love & Hope（動物希望之心）（下稱「本公司」）舉辦的網上遊戲。參加者一經進行遊戲（或上載相片及生成報告），即代表已閱讀、明白並完全同意遵守以下條款及細則與免責聲明：</p>
@@ -436,7 +443,7 @@
         let aiReady = false;
         let state = { hName: '', dName: '', petType: 'Dog', imgs: { h1:null, d1:null }, scores: {}, shareImgBlob: null, docId: null, refSource: 'organic' };
 
-        // 🔥 無假數據 🔥
+        // 🔥 無任何 Fake Data 🔥
         const fakeLeaderboardData = [];
 
         function updateCountdown() {
@@ -523,10 +530,11 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
-        // 🔥 極速 UI 更新及強制方格圖片生成 🔥
+        // 🔥 極速 UI 更新及非阻塞式生成圖片 🔥
         window.generateResults = async function() {
             document.getElementById('loader').style.display = 'flex';
             
+            // 🔥 將 IP Fetch 轉為背景執行，絕不阻塞 UI 🔥
             let userIP = "Unknown"; 
             fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>userIP=d.ip).catch(e=>{});
 
@@ -571,6 +579,7 @@
                 const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
                 const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
+                // 製作強制正方形嘅 Base64 圖 (防 IG Share 變形)
                 const cropSquare = (img) => {
                     const c = document.createElement('canvas');
                     const size = Math.min(img.naturalWidth, img.naturalHeight);
@@ -583,21 +592,23 @@
                 const hSquareImg = cropSquare(state.imgs.h1);
                 const dSquareImg = cropSquare(state.imgs.d1);
 
+                // 更新前台 WEB UI
                 document.getElementById('web-human-name').innerText = state.hName;
                 document.getElementById('web-pet-name').innerText = state.dName;
                 document.getElementById('web-score').innerText = finalAvg + '%';
                 document.getElementById('web-badge').innerText = cText;
-                document.getElementById('web-human').src = hSquareImg;
-                document.getElementById('web-pet').src = dSquareImg;  
-                document.getElementById('web-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
+                document.getElementById('web-human').src = hSquareImg; // 用正方形圖
+                document.getElementById('web-pet').src = dSquareImg;   // 用正方形圖
+                document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('web-mini-sub').innerText = dynamicComment;
 
+                // 更新隱藏 Canvas 專用 UI
                 document.getElementById('canvas-human-name').innerText = state.hName;
                 document.getElementById('canvas-pet-name').innerText = state.dName;
                 document.getElementById('canvas-score').innerText = finalAvg + '%';
                 document.getElementById('canvas-badge').innerText = cText;
-                document.getElementById('canvas-human').src = hSquareImg;
-                document.getElementById('canvas-pet').src = dSquareImg;  
+                document.getElementById('canvas-human').src = hSquareImg; // 用正方形圖
+                document.getElementById('canvas-pet').src = dSquareImg;   // 用正方形圖
                 document.getElementById('canvas-mini-title').innerText = `👑 你哋最似：${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('canvas-mini-sub').innerText = dynamicComment;
 
@@ -612,8 +623,9 @@
                 switchView('view-result'); 
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
 
+                // 背景偷偷畫圖
                 setTimeout(() => {
-                    window.scrollTo(0, 0); 
+                    window.scrollTo(0, 0); // 確保捲到最頂先畫
                     html2canvas(document.querySelector("#share-card"), { 
                         scale: 2, 
                         useCORS: true, 
@@ -625,11 +637,11 @@
                     }).then(canvas => {
                         canvas.toBlob((b) => { 
                             state.shareImgBlob = b; 
-                            document.getElementById('btn-share-trigger').innerText = "📤 分享"; 
+                            document.getElementById('btn-share-trigger').innerText = "📤 分享至社交媒體"; 
                             
                             state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                             
-                            // 儲存至 Firebase (自動上榜)
+                            // 🔥 儲存至 Firebase (自動上榜 public: true) 🔥
                             if(db) {
                                 db.collection("certs").doc(state.docId).get().then(snap => {
                                     if(!snap.exists || finalAvg > (snap.data().score || 0)) {
@@ -692,6 +704,7 @@
             renderLeaderboard();
         }
 
+        // 🔥 發佈及登記抽獎 (支援雙軌制) 🔥
         window.publishToLeaderboard = async function(withReg) {
             let updateData = { public: true };
             
@@ -718,7 +731,7 @@
             renderLeaderboard();
         }
 
-        // 🔥 排行榜渲染：純真實資料 (時間過濾) 🔥
+        // 🔥 排行榜渲染 (無限制顯示所有人，過濾黑名單，無時間限制) 🔥
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -730,15 +743,17 @@
             if(db) {
                 try {
                     const snap = await db.collection("certs").where("public", "==", true).get();
-                    const cutoffTime = new Date(2026, 4, 18, 20, 30, 0).getTime(); 
-
                     snap.forEach(doc => {
                         let d = doc.data();
                         
-                        if (d.timestamp && d.timestamp < cutoffTime) return; // 隱藏 18日 20:30 前嘅測試
-                        if (d.humanName === 'iris') return;
-                        if (d.humanName === 'Carlos testing' && d.dogName === 'Daley') return;
-                        if (d.humanName === 'Leo' && d.dogName === 'Captain') return;
+                        // 🔥 黑名單過濾 (無視大小寫) 🔥
+                        let hn = (d.humanName || '').toLowerCase();
+                        let dn = (d.dogName || '').toLowerCase();
+                        if (hn.includes('iris') || dn.includes('iris')) return;
+                        if (hn.includes('testing') || dn.includes('testing')) return;
+                        if (hn.includes('carlos') || dn.includes('carlos')) return;
+                        if (hn.includes('v28') || dn.includes('v28')) return;
+                        if (hn.includes('leo') && dn.includes('captain')) return;
                         
                         combinedData.push(d);
                     });
@@ -779,6 +794,7 @@
             });
 
             let listHTML = '';
+            // 🔥 顯示所有人 (移除 .slice 限制) 🔥
             combinedData.slice(3).forEach((item, idx) => {
                 let actualRank = idx + 4;
                 let isMe = (state.hName && state.dName && item.humanName === state.hName && item.dogName === state.dName);
