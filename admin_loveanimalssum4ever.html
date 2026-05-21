@@ -12,7 +12,7 @@
     
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; color: #333; }
-        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .admin-container { max-width: 1300px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         h1 { color: #5ba36a; margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
         .export-btn { background: #e74c3c; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
         .export-btn:hover { background: #c0392b; }
@@ -29,8 +29,14 @@
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #5ba36a; color: white; position: sticky; top: 0; }
+        th { background: #5ba36a; color: white; position: sticky; top: 0; user-select: none; }
         tr:hover { background: #f9f9f9; }
+        
+        /* 🔥 加入可點擊排序的樣式 🔥 */
+        .sortable { cursor: pointer; transition: background 0.2s; }
+        .sortable:hover { background: #458251; }
+        .sort-icon { font-size: 0.8rem; margin-left: 5px; opacity: 0.7; }
+        .sortable.active .sort-icon { opacity: 1; }
         
         .badge { background: #FFD93D; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-left: 5px;}
         .img-preview { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 8px;}
@@ -44,7 +50,6 @@
             <button class="export-btn" onclick="exportToCSV()">📥 匯出 Excel (CSV)</button>
         </h1>
         
-        <!-- 🔥 全新 Filter Box 🔥 -->
         <div class="filter-box">
             <b>📅 篩選日期：</b>
             <label>由 <input type="date" id="filter-start"></label>
@@ -58,7 +63,7 @@
         </div>
 
         <div class="stat-box">
-            <div class="stat-card"><h3>總遊玩記錄</h3><span id="total-plays">0</span></div>
+            <div class="stat-card"><h3>顯示數據量</h3><span id="total-plays">0</span></div>
             <div class="stat-card"><h3>已登記抽獎人數</h3><span id="total-regs">0</span></div>
         </div>
 
@@ -66,15 +71,16 @@
             <table id="data-table">
                 <thead>
                     <tr>
-                        <th>排名</th>
-                        <th>分數</th>
-                        <th>人類</th>
-                        <th>主子</th>
-                        <th>登記姓名</th>
-                        <th>聯絡電話</th>
-                        <th>電郵地址</th>
+                        <th>行數</th>
+                        <!-- 🔥 加晒 onClick 排序功能，同埋上下箭嘴 🔥 -->
+                        <th class="sortable active" onclick="sortTable('score', 'num')">分數 <span class="sort-icon" id="icon-score">⬇️</span></th>
+                        <th class="sortable" onclick="sortTable('humanName', 'str')">人類 <span class="sort-icon" id="icon-humanName">↕️</span></th>
+                        <th class="sortable" onclick="sortTable('dogName', 'str')">主子 <span class="sort-icon" id="icon-dogName">↕️</span></th>
+                        <th class="sortable" onclick="sortTable('regName', 'str')">登記姓名 <span class="sort-icon" id="icon-regName">↕️</span></th>
+                        <th class="sortable" onclick="sortTable('regMobile', 'str')">聯絡電話 <span class="sort-icon" id="icon-regMobile">↕️</span></th>
+                        <th class="sortable" onclick="sortTable('regEmail', 'str')">電郵地址 <span class="sort-icon" id="icon-regEmail">↕️</span></th>
                         <th>IP / 來源</th>
-                        <th>遊玩時間</th>
+                        <th class="sortable" onclick="sortTable('timestamp', 'num')">遊玩時間 <span class="sort-icon" id="icon-timestamp">↕️</span></th>
                     </tr>
                 </thead>
                 <tbody id="table-body">
@@ -91,6 +97,9 @@
 
         let allData = [];
         let filteredData = [];
+        
+        // 🔥 排序控制變數 🔥
+        let currentSort = { key: 'score', asc: false }; // 預設分數由高至低
 
         async function loadData() {
             try {
@@ -102,21 +111,59 @@
                     allData.push(data);
                 });
                 
-                allData.sort((a,b) => b.score - a.score);
                 filteredData = [...allData];
+                executeSort(); // 載入後預設排序一次
                 
-                renderTable();
             } catch(e) {
                 console.error("載入失敗:", e);
                 document.getElementById('table-body').innerHTML = `<tr><td colspan="9" style="color:red; text-align:center;">讀取資料失敗，請檢查權限或網絡連線。</td></tr>`;
             }
         }
 
+        // 🔥 排序邏輯引擎 🔥
+        function sortTable(key, type) {
+            // 如果㩒同一個標題，反轉順序；如果㩒新標題，預設由高至低(或A-Z)
+            if (currentSort.key === key) {
+                currentSort.asc = !currentSort.asc;
+            } else {
+                currentSort.key = key;
+                currentSort.asc = (type === 'str') ? true : false; 
+            }
+            
+            // 更新 UI 箭嘴
+            document.querySelectorAll('th.sortable').forEach(th => th.classList.remove('active'));
+            document.querySelectorAll('.sort-icon').forEach(icon => icon.innerText = '↕️');
+            
+            const activeIcon = document.getElementById('icon-' + key);
+            if(activeIcon) {
+                activeIcon.innerText = currentSort.asc ? '⬆️' : '⬇️';
+                activeIcon.parentElement.classList.add('active');
+            }
+
+            executeSort();
+        }
+
+        // 執行陣列排序並渲染
+        function executeSort() {
+            filteredData.sort((a, b) => {
+                let valA = a[currentSort.key] || '';
+                let valB = b[currentSort.key] || '';
+
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                if (valA < valB) return currentSort.asc ? -1 : 1;
+                if (valA > valB) return currentSort.asc ? 1 : -1;
+                return 0;
+            });
+            renderTable();
+        }
+
         function renderTable() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
             
-            let rank = 1;
+            let rowNum = 1;
             let regCount = 0;
 
             filteredData.forEach(data => {
@@ -131,18 +178,18 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><b>#${rank}</b></td>
-                    <td style="color:#5ba36a; font-weight:bold;">${data.score}%</td>
+                    <td style="color:#aaa;">${rowNum}</td>
+                    <td style="color:#5ba36a; font-weight:bold; font-size:1.1rem;">${data.score}%</td>
                     <td>${hImg}${data.humanName || '無名氏'}</td>
                     <td>${dImg}${data.dogName || '無名氏'}</td>
                     <td>${data.regName || '-'} ${regTag}</td>
                     <td>${data.regMobile || '-'}</td>
                     <td>${data.regEmail || '-'}</td>
-                    <td style="font-size:0.8rem; color:#888;">${data.ip || '未知'} <br>(${data.refSource || 'organic'})</td>
+                    <td style="font-size:0.8rem; color:#888;">${data.ip || '未知'}<br>${data.refSource ? `(${data.refSource})` : ''}</td>
                     <td style="font-size:0.8rem;">${timeStr}</td>
                 `;
                 tbody.appendChild(tr);
-                rank++;
+                rowNum++;
             });
 
             document.getElementById('total-plays').innerText = filteredData.length;
@@ -162,7 +209,7 @@
                 let passReg = onlyRegistered ? (d.regMobile && d.regMobile.trim() !== '') : true;
                 return passTime && passReg;
             });
-            renderTable();
+            executeSort(); // 篩選完重新套用目前嘅排序
         }
 
         function clearFilter() {
@@ -170,14 +217,14 @@
             document.getElementById('filter-end').value = "";
             document.getElementById('filter-registered').checked = false;
             filteredData = [...allData];
-            renderTable();
+            executeSort();
         }
 
         function exportToCSV() {
             if(filteredData.length === 0) return alert("無數據可匯出！");
             
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
-            csvContent += "排名,分數,人類名稱,毛孩名稱,動物種類,是否公開,登記姓名,登記電話,登記Email,來源,IP,遊玩時間\n";
+            csvContent += "行數,分數,人類名稱,毛孩名稱,動物種類,是否公開,登記姓名,登記電話,登記Email,來源,IP,遊玩時間\n";
 
             filteredData.forEach((row, index) => {
                 const dateObj = new Date(row.timestamp);
