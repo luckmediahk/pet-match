@@ -17,7 +17,6 @@
     
     <meta property="og:title" content="🐾 AnimalsSum | AI 人寵相似度大測試">
     <meta property="og:description" content="我同主子似唔似樣？立即參加 AI 人寵相似度大測試，睇下你哋有幾似家人！">
-    <!-- 🔥 完美修復 OG Image，轉為使用正式 Logo 🔥 -->
     <meta property="og:image" content="https://game.animalssum.com/logo.png">
     <meta property="og:url" content="https://game.animalssum.com">
     <meta property="og:type" content="website">
@@ -33,7 +32,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v62.0 -->
+    <!-- Version: v63.0 -->
     <style>
         :root { --brand: #5ba36a; --brand-dark: #458251; --accent: #facc50; --danger: #FF6B6B; --dark: #333; --bg-cream: #fffdf5; }
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf4eb; margin: 0; padding: 15px; min-height: 100vh; color: var(--dark); overflow-x: hidden; }
@@ -190,8 +189,16 @@
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* IG Share Card (Hidden for HTML2Canvas) */
-        #share-card-container { position: fixed; top: 0; left: 0; z-index: -9999; opacity: 0; pointer-events: none; width: 1080px; height: 1920px; }
+        /* 🔥 IG Share Card Fix - 完美隱藏，不受 Scroll 影響 🔥 */
+        #share-card-container { 
+            position: absolute; /* 由 fixed 轉 absolute，確保 100% 唔會因為 user 下拉頁面而移位 */
+            top: -9999px; /* 收埋喺最頂、最左，唔影響畫面，亦唔會有 scrollbar */
+            left: -9999px; 
+            z-index: -9999; 
+            pointer-events: none; 
+            width: 1080px; 
+            height: 1920px; 
+        }
     </style>
 </head>
 <body>
@@ -199,7 +206,8 @@
     <div id="share-card-container">
         <div id="share-card" style="width: 1080px; height: 1920px; position: relative; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background-color: #fffdf5;">
             
-            <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 0; object-fit: fill;" onerror="this.style.display='none'">
+            <!-- 🔥 修改了 background image 的樣式，確保完全貼合唔出界 🔥 -->
+            <img src="./bg-frame.png" crossorigin="anonymous" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; display: block;" onerror="this.style.display='none'">
             
             <div style="position: relative; z-index: 1; height: 1920px; display: flex; flex-direction: column; align-items: center; padding-top: 250px; box-sizing: border-box;">
                 
@@ -336,7 +344,6 @@
                 </div>
 
                 <div class="action-btns-grid">
-                    <!-- 🔥 按鈕更新為「下載分析」 🔥 -->
                     <button class="main-btn btn-copy" onclick="downloadShareImg()">📥 下載分析</button>
                     <button class="main-btn btn-share" onclick="shareResultInstant()" id="btn-share-trigger">📤 分享至社交平台</button>
                     <button class="main-btn action-btn" style="grid-column: 1 / -1; padding:20px; font-size:1.3rem; animation: pulseBtn 2s infinite;" onclick="handleLeaderboardPush()">🚀 推送成績去排行榜</button>
@@ -393,7 +400,7 @@
 
                     <h3>5. 活動及領獎時間表</h3>
                     <p>活動將於 <b>2026 年 5 月 31 日 23:59 截止</b>。6 月 1 日至 7 日為計算及核實階段。最終得獎名單將於 <b>6 月 8 日</b>在官方 Instagram (@animalssum) 公佈。<br>
-                    得獎者將獲電郵通知，如自覺符合資格但未收到通知，請主動透過 IG 聯絡本公司查對。</p>
+                    得獎者將獲電郵通知，如自覺符合資格但未收到通知，請主াস্থ্য透過 IG 聯絡本公司查對。</p>
 
                     <h3>6. 保留最終決定權</h3>
                     <p>本公司保留隨時修改、暫停、取消遊戲及活動、更改獎品分配機制及修訂本條款與細則之絕對權利，而毋須事先另行通知。如有任何爭議，本公司保留一切最終決定權。</p>
@@ -442,7 +449,6 @@
         let aiReady = false;
         let state = { hName: '', dName: '', petType: 'Dog', imgs: { h1:null, d1:null }, scores: {}, shareImgBlob: null, docId: null, refSource: 'organic' };
 
-        // 🔥 無任何假數據 🔥
         const fakeLeaderboardData = [];
 
         function updateCountdown() {
@@ -475,7 +481,7 @@
             updateCountdown(); 
         }
         
-        switchView('view-home'); // 初始化
+        switchView('view-home');
 
         async function loadAIinBackground() { try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {} }
         loadAIinBackground();
@@ -520,7 +526,6 @@
             setTimeout(() => { document.getElementById('ig-gate-modal').style.display = 'none'; generateResults(); }, 2000); 
         }
         
-        // 保留 Copy Caption 功能以備不時之需
         window.copyCaption = function() { 
             navigator.clipboard.writeText(`我同 ${state.dName} 竟然有 ${state.scores.final}% 相似。\n動物之心話齋：其實唔係你揀毛孩，係佢揀咗你。\n你都試玩：game.animalssum.com`).then(() => { 
                 document.querySelector('.btn-copy').innerText = '✅ 已複製'; 
@@ -530,11 +535,9 @@
 
         function genRandomScore(min) { return parseFloat(((Math.random() * (99.999 - min)) + min).toFixed(3)); }
 
-        // 🔥 極速 UI 更新及非阻塞式生成圖片 🔥
         window.generateResults = async function() {
             document.getElementById('loader').style.display = 'flex';
             
-            // 🔥 將 IP Fetch 轉為背景執行，絕不阻塞 UI 🔥
             let userIP = "Unknown"; 
             fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>userIP=d.ip).catch(e=>{});
 
@@ -579,7 +582,6 @@
                 const topKey = Object.keys(scoreMap).reduce((a, b) => scoreMap[a] >= scoreMap[b] ? a : b);
                 const dynamicComment = dynamicComments[topKey][Math.floor(Math.random() * dynamicComments[topKey].length)];
 
-                // 製作強制正方形嘅 Base64 圖 (防 IG Share 變形)
                 const cropSquare = (img) => {
                     const c = document.createElement('canvas');
                     const size = Math.min(img.naturalWidth, img.naturalHeight);
@@ -592,7 +594,6 @@
                 const hSquareImg = cropSquare(state.imgs.h1);
                 const dSquareImg = cropSquare(state.imgs.d1);
 
-                // 更新前台 WEB UI
                 document.getElementById('web-human-name').innerText = state.hName;
                 document.getElementById('web-pet-name').innerText = state.dName;
                 document.getElementById('web-score').innerText = finalAvg + '%';
@@ -602,7 +603,6 @@
                 document.getElementById('web-mini-title').innerText = `${labelMap[topKey]} ${scoreMap[topKey]}%`;
                 document.getElementById('web-mini-sub').innerText = dynamicComment;
 
-                // 更新隱藏 Canvas 專用 UI
                 document.getElementById('canvas-human-name').innerText = state.hName;
                 document.getElementById('canvas-pet-name').innerText = state.dName;
                 document.getElementById('canvas-score').innerText = finalAvg + '%';
@@ -623,17 +623,16 @@
                 switchView('view-result'); 
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } }); 
 
-                // 背景偷偷畫圖
+                // 🔥 背景偷偷畫圖 - 完美修正版 🔥
                 setTimeout(() => {
-                    window.scrollTo(0, 0); 
+                    // 我哋而家用咗 absolute top: -9999px，所以唔洗再強制 window.scrollTo(0,0)，玩家體驗會更好
                     html2canvas(document.querySelector("#share-card"), { 
                         scale: 2, 
                         useCORS: true, 
                         backgroundColor: '#fffdf5',
-                        windowWidth: 1080,
-                        windowHeight: 1920,
-                        y: 0,
-                        x: 0
+                        // 強制定義尺寸，由 html2canvas 自己對齊目標元素，唔洗再理 x, y 坐標！
+                        width: 1080,
+                        height: 1920
                     }).then(canvas => {
                         canvas.toBlob((b) => { 
                             state.shareImgBlob = b; 
@@ -641,7 +640,6 @@
                             
                             state.docId = `${state.hName.replace(/\s+/g, '').toLowerCase()}_${state.dName.replace(/\s+/g, '').toLowerCase()}`;
                             
-                            // 🔥 儲存至 Firebase (自動上榜 public: true) 🔥
                             if(db) {
                                 db.collection("certs").doc(state.docId).get().then(snap => {
                                     if(!snap.exists || finalAvg > (snap.data().score || 0)) {
@@ -664,7 +662,7 @@
         window.shareResultInstant = async function() {
             if(!state.shareImgBlob) return alert("圖片準備中，請稍候...");
             const file = new File([state.shareImgBlob], `AnimalsSum_${state.hName}&${state.dName}.jpg`, { type: "image/jpeg" });
-            const text = `我同 ${state.dName} 喺 AnimalsSum 配對挑戰中攞到 ${state.scores.final}%！快啲嚟測下！ #AnimalsSum人寵似樣測試 @animalssum`;
+            const text = `我同 ${state.dName} 喺 AnimalsSum 配令人寵似樣測試中攞到 ${state.scores.final}%！快啲嚟測下！ #AnimalsSum人寵似樣測試 @animalssum`;
             try {
                 if (navigator.canShare && navigator.canShare({ files:[file] })) { 
                     await navigator.share({ title: 'AnimalsSum', text: text, files:[file] }); 
@@ -679,7 +677,6 @@
             } catch(e) { console.log(e); }
         }
 
-        // 🔥 安全的下載圖片功能 🔥
         window.downloadShareImg = function() { 
             if(!state.shareImgBlob) return alert("圖片準備中，請稍候...");
             const url = URL.createObjectURL(state.shareImgBlob);
@@ -740,7 +737,6 @@
             renderLeaderboard();
         }
 
-        // 🔥 排行榜渲染：顯示所有人，強制剔除死 Bug 黑名單 🔥
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -751,13 +747,11 @@
             let combinedData = [];
             if(db) {
                 try {
-                    // 放棄所有條件，攞晒全個 Database 嘅資料！
                     const snap = await db.collection("certs").get();
                     
                     snap.forEach(doc => {
                         let d = doc.data();
                         
-                        // 🔥 雙重保險：黑名單絕對過濾 (轉細楷檢查) 🔥
                         let hn = (d.humanName || '').toLowerCase();
                         let dn = (d.dogName || '').toLowerCase();
                         
@@ -767,7 +761,6 @@
                         if (hn.includes('v28') || dn.includes('v28')) return;
                         if (hn.includes('leo') && dn.includes('captain')) return;
                         
-                        // 只加入有效數據
                         if (d.humanName && d.dogName && d.score) {
                             combinedData.push(d);
                         }
@@ -809,7 +802,6 @@
             });
 
             let listHTML = '';
-            // 🔥 顯示所有人 (移除 .slice 限制) 🔥
             combinedData.slice(3).forEach((item, idx) => {
                 let actualRank = idx + 4;
                 let isMe = (state.hName && state.dName && item.humanName === state.hName && item.dogName === state.dName);
