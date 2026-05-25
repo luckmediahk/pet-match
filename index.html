@@ -277,6 +277,12 @@
 
         <!-- VIEW 1: HOME -->
         <div id="view-home" class="view active">
+            
+            <!-- 🔥 新增：IG/FB 內置瀏覽器溫馨提示 (預設隱藏) 🔥 -->
+            <div id="inapp-warning" style="display:none; text-align:center; color:#d63031; font-weight:bold; margin-bottom:15px; background:#ffeaea; border:2px solid #ff7675; padding:12px; border-radius:15px; line-height:1.5; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(214,48,49,0.1);">
+                💡 溫馨提示：<br>你用緊 IG/FB 內置瀏覽器，<br>建議撳右上角 ⋯ 選擇「在 Safari / 瀏覽器開啟」，<br>測試速度會快 3 倍，包保唔 Hang 機！
+            </div>
+            
             <div class="home-btns">
                 <button class="main-btn btn-primary-home" onclick="switchView('view-upload')">🎮 立即開始測試</button>
                 <button class="main-btn btn-secondary-home" onclick="renderLeaderboard()">🏆 睇全港排行榜</button>
@@ -486,21 +492,57 @@
         async function loadAIinBackground() { try { models.coco = await cocoSsd.load(); models.mobile = await mobilenet.load(); aiReady = true; } catch(e) {} }
         loadAIinBackground();
 
+       // 🔥 1. 新增：極速安全壓縮相片功能 (完全唔影響 UI) 🔥
+        function compressImage(file, maxWidth, callback) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    let w = img.width, h = img.height;
+                    // 如果大過 800px 先壓縮，細過就保留原狀，保證畫質
+                    if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    // 轉化為輕量級 Base64 格式
+                    callback(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 🔥 2. 更新：checkImg 加入壓縮步驟，防 Hang 機 🔥
         window.checkImg = async function(e, imgId, bubbleId, targetRole) {
             const file = e.target.files[0]; if(!file) return;
-            const img = document.getElementById(imgId); const bubble = document.getElementById(bubbleId); const box = document.getElementById('box-' + imgId.replace('img-',''));
-            box.classList.remove('has-img'); img.style.display = 'none';
+            const img = document.getElementById(imgId); 
+            const bubble = document.getElementById(bubbleId); 
+            const box = document.getElementById('box-' + imgId.replace('img-',''));
             
-            img.onload = async () => {
-                while(!aiReady) await new Promise(r => setTimeout(r, 500));
-                const preds = await models.coco.detect(img); let msg = "", status = "ok";
-                if(targetRole === 'person') msg = "🏃‍♂️ 完美捕捉靚樣！"; else msg = "🐾 毛孩確認 OK！";
-                bubble.innerText = msg; bubble.className = "bubble ok"; state.imgs[imgId.replace('img-','').replace('-','')] = img;
-                checkAllReady();
-            };
-            img.src = URL.createObjectURL(file); img.style.display = 'block'; box.classList.add('has-img'); 
+            box.classList.remove('has-img'); img.style.display = 'none';
             box.querySelector('.ui-elements').style.display = 'none'; box.querySelector('.demo-bg').style.display = 'none';
-            bubble.style.display = 'block'; bubble.innerText = "🔍 AI 檢測中..."; bubble.className = "bubble warn";
+            bubble.style.display = 'block'; bubble.innerText = "🔍 處理中..."; bubble.className = "bubble warn";
+
+            // ⚡ 呼叫壓縮功能，將圖壓到最闊 800px，減輕 RAM 負擔
+            compressImage(file, 800, (compressedSrc) => {
+                img.onload = async () => {
+                    try {
+                        while(!aiReady) await new Promise(r => setTimeout(r, 500));
+                        const preds = await models.coco.detect(img); 
+                        let msg = (targetRole === 'person') ? "🏃‍♂️ 完美捕捉靚樣！" : "🐾 毛孩確認 OK！";
+                        bubble.innerText = msg; bubble.className = "bubble ok"; 
+                    } catch(err) {
+                        // 🛡️ Fallback: 就算 AI 真係神經刀死咗，都當成功，唔好卡死 User!
+                        bubble.innerText = "✅ 圖片已載入！"; bubble.className = "bubble ok"; 
+                    }
+                    state.imgs[imgId.replace('img-','').replace('-','')] = img;
+                    checkAllReady();
+                };
+                // 放入壓縮後嘅圖，取代原本極大嘅 URL.createObjectURL(file)
+                img.src = compressedSrc; 
+                img.style.display = 'block'; box.classList.add('has-img'); 
+            });
         }
 
         window.checkAllReady = function() {
@@ -824,6 +866,18 @@
 
             listArea.innerHTML = listHTML;
         }
+    // 🔥 新增：偵測 IG / FB 內置瀏覽器 🔥
+        window.checkInAppBrowser = function() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            // FBAV = Facebook, FBAN = Facebook, Instagram = IG
+            if (ua.indexOf('FBAV') > -1 || ua.indexOf('FBAN') > -1 || ua.indexOf('Instagram') > -1) {
+                const warnBox = document.getElementById('inapp-warning');
+                if (warnBox) warnBox.style.display = 'block';
+            }
+        }
+        // 網頁一載入就即刻執行檢查
+        checkInAppBrowser();
+    
     </script>
 </body>
 </html>
