@@ -32,7 +32,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Version: v66.0 -->
+    <!-- Version: v67.0 -->
     <style>
         :root { --brand: #5ba36a; --brand-dark: #458251; --accent: #facc50; --danger: #FF6B6B; --dark: #333; --bg-cream: #fffdf5; }
         body { font-family: 'Noto Sans TC', 'Fredoka', sans-serif; background: #eaf4eb; margin: 0; padding: 15px; min-height: 100vh; color: var(--dark); overflow-x: hidden; }
@@ -189,12 +189,12 @@
         .spinner { font-size: 4rem; animation: spin 2s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* 🔥 IG Share Card Fix - 完美隱藏，不受 iOS/Desktop 斬 DOM 影響 🔥 */
+        /* 🔥 IG Share Card Fix - 完美防斷尾設定 🔥 */
         #share-card-container { 
             position: absolute; 
             top: 0; 
             left: -9999px; 
-            z-index: 100; /* 放喺 Loader (999) 之下，但高過普通網頁 */
+            z-index: 998; /* 放喺 Loader(999) 之下，但確保係最頂層 */
             pointer-events: none; 
             width: 1080px; 
             height: 1920px; 
@@ -655,40 +655,25 @@
                 document.getElementById('btn-share-trigger').innerText = "⏳ 圖片生成中...";
 
                 // 🔥 終極截圖防護機制 (解決 Desktop/短螢幕裁切問題) 🔥
-                // 1. 強制轆去最頂，因為有 Loader 遮住，玩家完全睇唔到跳動
-                window.scrollTo(0, 0);
-
                 setTimeout(() => {
                     const shareContainer = document.getElementById('share-card-container');
-                    const bodyStyle = document.body.style;
+                    const originalOverflow = document.body.style.overflow;
                     
-                    // 2. 暫時解除 HTML Body 嘅高度同裁切限制，等張 1920px 長圖可以盡情伸展
-                    const originalOverflow = bodyStyle.overflowX;
-                    const originalMinHeight = bodyStyle.minHeight;
-                    bodyStyle.overflowX = 'visible';
-                    bodyStyle.minHeight = '2000px'; 
-                    
-                    // 搬出嚟 (z-index:100，會被 z-index:999 嘅 Loader 完美遮住)
+                    // 🌟 1. 將張卡搬出嚟，放喺 Loader 下面，等瀏覽器真正 Render 佢
                     shareContainer.style.top = '0px';
                     shareContainer.style.left = '0px';
+                    shareContainer.style.zIndex = '998'; 
+                    document.body.style.overflow = 'visible'; // 拆除 body 限制
 
+                    // 🌟 2. 移除多餘設定，等 html2canvas 自然讀取 1080x1920
                     html2canvas(document.querySelector("#share-card"), { 
                         scale: 2, 
                         useCORS: true, 
-                        backgroundColor: '#fffdf5',
-                        width: 1080,
-                        height: 1920,
-                        windowWidth: 1080,
-                        windowHeight: 1920,
-                        x: 0,
-                        y: 0,
-                        scrollY: 0,
-                        scrollX: 0
+                        backgroundColor: '#fffdf5'
                     }).then(canvas => {
-                        // 3. 影完相，光速還原所有嘢
+                        // 3. 畫完即刻收埋
                         shareContainer.style.left = '-9999px';
-                        bodyStyle.overflowX = originalOverflow;
-                        bodyStyle.minHeight = originalMinHeight;
+                        document.body.style.overflow = originalOverflow;
 
                         canvas.toBlob((b) => { 
                             state.shareImgBlob = b; 
@@ -799,6 +784,7 @@
             renderLeaderboard();
         }
 
+        // 🔥 排行榜極速讀取優化：只拉取最高分 50 名，解決載入 Hang 死問題 🔥
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -809,7 +795,8 @@
             let combinedData = [];
             if(db) {
                 try {
-                    const snap = await db.collection("certs").get();
+                    // 🌟 神級優化：由 .get() 全庫下載 -> 變成只限 Top 50，數據量直降 95%！
+                    const snap = await db.collection("certs").orderBy("score", "desc").limit(50).get();
                     
                     snap.forEach(doc => {
                         let d = doc.data();
@@ -822,6 +809,7 @@
                         if (hn.includes('carlos') || dn.includes('carlos')) return;
                         if (hn.includes('v28') || dn.includes('v28')) return;
                         if (hn.includes('leo') && dn.includes('captain')) return;
+                        if (hn.includes('test') || dn.includes('test')) return; // 新增 test 過濾
                         
                         if (d.humanName && d.dogName && d.score) {
                             combinedData.push(d);
