@@ -784,7 +784,7 @@
             renderLeaderboard();
         }
 
-        // 🔥 排行榜極速讀取優化：只拉取最高分 50 名，解決載入 Hang 死問題 🔥
+        // 🔥 排行榜極速讀取優化 2.0：加大 Quota 避開 Test Account，並限制顯示 100 人防 Hang 機 🔥
         window.renderLeaderboard = async function() {
             switchView('view-leaderboard');
             const podiumArea = document.getElementById('podium-area');
@@ -795,8 +795,8 @@
             let combinedData = [];
             if(db) {
                 try {
-                    // 🌟 神級優化：由 .get() 全庫下載 -> 變成只限 Top 50，數據量直降 95%！
-                    const snap = await db.collection("certs").orderBy("score", "desc").limit(50).get();
+                    // 🌟 改變：由 limit(50) 變 limit(500)，確保攞齊足夠嘅 Raw Data！
+                    const snap = await db.collection("certs").orderBy("score", "desc").limit(500).get();
                     
                     snap.forEach(doc => {
                         let d = doc.data();
@@ -804,12 +804,13 @@
                         let hn = (d.humanName || '').toLowerCase();
                         let dn = (d.dogName || '').toLowerCase();
                         
+                        // 🛡️ 黑名單過濾：剷走晒我哋啲 Test Account
                         if (hn.includes('iris') || dn.includes('iris')) return;
                         if (hn.includes('testing') || dn.includes('testing')) return;
                         if (hn.includes('carlos') || dn.includes('carlos')) return;
                         if (hn.includes('v28') || dn.includes('v28')) return;
                         if (hn.includes('leo') && dn.includes('captain')) return;
-                        if (hn.includes('test') || dn.includes('test')) return; // 新增 test 過濾
+                        if (hn.includes('test') || dn.includes('test')) return;
                         
                         if (d.humanName && d.dogName && d.score) {
                             combinedData.push(d);
@@ -818,6 +819,9 @@
                 } catch(e) { console.log("DB Error", e); }
             }
             
+            // 🌟 確保過濾完之後，最多只顯示 100 個真實玩家，保護手機 RAM 唔會 Hang
+            combinedData = combinedData.slice(0, 100);
+
             if (combinedData.length === 0) {
                 listArea.innerHTML = '<p style="text-align:center; color:#888;">暫時未有人上榜，你快啲做第一名啦！</p>';
                 return;
